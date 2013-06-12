@@ -1,0 +1,7 @@
+x := true;
+if(x == true){
+y := true;
+}
+else{
+z := true;
+}

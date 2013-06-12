@@ -1,0 +1,11 @@
+example1 := procedure(rw ctr){
+
+	if(ctr == om){
+		ctr := 0;
+	}
+	ctr += 1;
+
+};
+
+example1(a);
+print(a);

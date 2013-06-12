@@ -1,0 +1,8 @@
+example2 := procedure(x, rw y, z){
+
+y := y + x + z;
+
+};
+x := 1;
+z := 2;
+example2(x, y, z);

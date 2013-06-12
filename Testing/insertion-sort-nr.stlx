@@ -1,0 +1,72 @@
+// sort l[start .. end] in place
+insertionSort := procedure(rw l, start, end) {    
+    for (i in [start+1 .. end]) {
+        // isSorted(l[start .. i-1]
+        x := l[i];
+        // insert x in l[start .. i-1]
+        k := i - 1;
+        while (true) {
+            // isSorted(l[start .. k]
+            // isSorted(l[k+2 .. i])
+            // forall j in [k+2 .. i]: x < l[j]
+            if (k >= start && x < l[k]) {
+                l[k + 1] := l[k];
+            } else {
+                l[k + 1] := x;
+                break;
+            }
+            k -= 1;
+        }
+    }
+};
+
+
+// n iterations for lists of length k
+testSort := procedure(n, k) {
+    for (i in [1 .. n]) {
+        l := [ rnd({1 .. 200}) : x in [1 .. k] ];
+        c := l;  // save a copy
+        insertionSort(l, 1, #l);
+        isOrdered(l);
+        sameElements(c, l);
+        print(".");
+    }
+    print("All tests passed!");    
+};
+
+isOrdered := procedure(l) {
+    for (i in [1 .. #l-1]) {
+        assert(l[i] <= l[i+1], "test l[i] <= l[i+1] failed for i = $i$, l = $l$");
+    }
+};
+
+// test whether l and s have the same elements with the same mutiplicity
+sameElements := procedure(l, s) {
+    mapL := {};
+    mapR := {};
+    countMap(l, mapL);
+    countMap(r, mapR);
+    assert(mapL == mapR, "wrong count");
+};
+
+// This procedure computes the number of occurrences of each element in l.
+// After this procedure has terminated, map[x] is the number of occurrences 
+// of x in l
+countMap := procedure(l, rw map) {
+    match (l) {
+        case []   : return result;
+        case [x|r]: countMap(r, map);
+                    addElement(map, x);
+    }
+};
+
+// adds 1 to to map[x]
+addElement := procedure(rw map, x) {
+    n := map[x]; 
+    if (n == om) {
+        map[x] := 1;
+    } 
+    map[x] += 1;
+};
+
+testSort(100, 50);

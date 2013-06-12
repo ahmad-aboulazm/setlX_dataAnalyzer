@@ -1,0 +1,9 @@
+switch
+{
+	case (l > m) 	: r:=1;
+	case (l < m) 	: r:=2;
+	case (l >= m) 	: r:=3;
+	case (l == m) 	: r:=4;
+	default 		: r:=0;
+	
+}

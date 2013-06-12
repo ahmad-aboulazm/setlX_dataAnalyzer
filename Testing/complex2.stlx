@@ -1,0 +1,29 @@
+class complex(real, imag) {
+    mReal := real;
+    mImag := imag;
+  static {    
+    sum := 
+        that |-> complex(mReal + that.mReal, mImag + that.mImag);
+  }
+}
+
+x := complex(3,  4);
+y := complex(3, -4);
+
+a := x.mReal;
+b := x.mReel;
+c := x.sum(y);
+d := x.sum2(y);
+
+print("$x$ + $y$ = $x + y$");
+print("$x$ - $y$ = $x - y$");
+print("($x$) * ($y$) = $x * y$");
+print("($x$) / ($y$) = $x / y$");
+print("($x$) ** ($y$) = $x ** y$");
+
+phi := complex(2/3, 1/2);
+for (i in [1..10]) {
+    n := complex(i, 0);
+    z := phi ** n;
+    print(z - exp(log(z)));
+}

@@ -1,0 +1,7 @@
+readWriteProcedureExample := procedure(x, rw y, rw z){
+
+y := x;
+z := x;
+l := x;
+
+};

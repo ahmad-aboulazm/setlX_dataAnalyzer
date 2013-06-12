@@ -1,0 +1,22 @@
+simplify := procedure(e) {
+    p := simplifyParts(e);
+    print("calling simplifyParts($canonical(e)$) = $canonical(p)$");
+    match (p) { 
+        case a * (b * c) : return (a * b) * c;
+        default    : return p;        
+    }
+};
+
+simplifyParts := procedure(e) {
+    match (e) {
+        case s * t : return simplify(s) * simplify(t);
+        default    : return e;
+    }
+};
+
+t := parse("a * (b * c)");
+s := simplify(t);
+print(s);
+
+
+

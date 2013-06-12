@@ -1,0 +1,78 @@
+remainder := procedure(money){
+if(money > 100) 
+{
+	x := money\100;
+	print("$x$ 100s");
+	money := money - (x * 100);
+}
+if(money > 50) 
+{
+	print(" & ");
+	x := money\50;
+	print("$x$ 50s");
+	money := money - (x * 50);
+}
+if(money > 20) 
+{
+	print(" & ");
+	x := money\20;
+	print("$x$ 20s");
+	money := money - (x * 20);
+}
+if(money > 10) 
+{
+	print(" & ");
+	x := money\10;
+	print("$x$ 10s");
+	money := money - (x * 10);
+}
+if(money > 5) 
+{
+	print(" & ");
+	x := money\5;
+	print("$x$ 5s");
+	money := money - (x * 5);
+}
+if(money > 2) 
+{
+	print(" & ");
+	x := money\2;
+	print("$x$ 2s");
+	money := money - (x * 2);
+}
+if(money > 1) 
+{
+	print(" & ");
+	x := money\1;
+	print("$x$ 1s");
+	money := money - (x * 1);
+}
+if(money > 0.5) 
+{
+	print(" & ");
+	x := money\0.5;
+	print("$x$ 0.5s");
+	money := money - (x * 0.5);
+}
+if(money > 0.2) 
+{
+	print(" & ");
+	x := money\0.2;
+	print("$x$ 0.2s");
+	money := money - (x * 0.2);
+}
+if(money > 0.1) 
+{
+	print(" & ");
+	x := money\0.1;
+	print("$x$ 0.1s");
+	money := money - (x * 0.1);
+}
+if(money > 0.01) 
+{
+	print(" & ");
+	x := money\0.01;
+	print("$x$ 0.01s");
+	money := money - (x * 0.01);
+}
+};
