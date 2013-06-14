@@ -24,13 +24,13 @@ match(code){
 											}
 											match(c){
 												case ^block(v)	:	for(w in v){
-																		addDefinedVariables(w, allClassesIdenteties[name][2], false, "", []);
+																		addDefinedVariables(w, allClassesIdenteties[name][2], false, "", [], false, true);
 																	}
 												default			: 	//print("IMPOSSIBLE IN extractClassProperties");
 											}
 											identifyAllProcedures(c, allClassesIdenteties[name][3]); //Non-static procedures
 											identifyAllProcedures(z, allClassesIdenteties[name][3]); //static procedures
-											addDefinedVariables(z, allClassesIdenteties[name][2], false, "", []);
+											addDefinedVariables(z, allClassesIdenteties[name][2], false, "", [], false, true);
 	
 	default                      		: 	return; //Never ever reached
 }
@@ -1113,7 +1113,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 									   return;
 									   
 	case ^setlIterator(^variable(x), [y], z): 
-											addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdenteties); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
+											addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 											if(forLoopCase == true)
 											{
 												forLoopTmpDefVars := forLoopTmpDefVars + tempDefinedVars;
@@ -1148,7 +1148,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 											getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
 											return;
 
-	case ^setlIterator(^variable(x), y, z): addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdenteties); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
+	case ^setlIterator(^variable(x), y, z): addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 											if(forLoopCase == true)
 											{
 												forLoopTmpDefVars := forLoopTmpDefVars + tempDefinedVars;
@@ -1180,7 +1180,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		
 		
 	case ^setlIterator(x, [y], z): 			for(w in x){
-												addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
+												addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 											}
 											if(forLoopCase == true)
 											{
@@ -1217,7 +1217,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 											return;
 
 	case ^setlIterator(x, y, z): 			for(w in x){
-											addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
+											addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 											}
 											if(forLoopCase == true)
 											{
@@ -1308,25 +1308,49 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 										getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 										return; // This is always a directly used lamda definition
 	
-	case ^memberAccess(x, y)		 :	if(!isProcedure){
-										found := false;
-										tempXUsed := {};
-										getUsedVariables(x, tempXUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
-										tempX := first(tempXUsed);
-										tempYUsed := {};
-										getUsedVariables(y, tempYUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
-										tempY := first(tempYUsed);
-										for(o in allClassesIdenteties){
-											if((tempX in o[2][4]) && (tempY in o[2][2])){
-												found := true;
+	case ^memberAccess(x, y)		 :	if((str(x) != "this") && isClass){
+											if(!isProcedure){
+												found := false;
+												tempXUsed := {};
+												getUsedVariables(x, tempXUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
+												tempX := first(tempXUsed);
+												tempYUsed := {};
+												getUsedVariables(y, tempYUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
+												tempY := first(tempYUsed);
+												for(o in allClassesIdenteties){
+													if((tempX in o[2][4]) && (tempY in o[2][2])){
+														found := true;
+													}
+												}
+												if(found == false){
+													print("Usage of variable $tempY$ for object $tempX$ is uncorrect");
+												}
+											}
+											getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+										}
+										else{
+											if((str(x) != "this") && isClass && (!(str(y) in allClassesIdenteties[className][2]))){
+												print("Class variable $y$ does not exist !");
 											}
 										}
-										if(found == false){
-										   print("Usage of variable $tempY$ for object $tempX$ is uncorrect");
+										if(!isClass){
+											found := false;
+											tempXUsed := {};
+											getUsedVariables(x, tempXUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
+											tempX := first(tempXUsed);
+											tempYUsed := {};
+											getUsedVariables(y, tempYUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
+											tempY := first(tempYUsed);
+											for(o in allClassesIdenteties){
+												if((tempX in o[2][4]) && (tempY in o[2][2])){
+													found := true;
+												}
+											}
+											if(found == false){
+												print("Usage of variable $tempY$ for object $tempX$ is uncorrect");
+											}
+											getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 										}
-										}
-										getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
-											  
 	
 	default                          :  temp := {};
 										getMatchedVariables(l, temp);
@@ -1347,11 +1371,11 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClassesIdenteties) {	
+addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck) {	
 //print("addDefinedVariables : " + canonical(l));
 	match(l){
 	
-	case ^block(x)                   : for(y in x){addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);} return;
+	case ^block(x)                   : for(y in x){addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);} return;
 	
 	case ^variable(x)                : return;											   
 	
@@ -1365,47 +1389,50 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClass
 													return;
 	
 	case ^assignment(^variable(x), y): 	definedVars := definedVars + {x};
-										addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);
-										if(isClass && (x in allClassesIdenteties[className][2])){
+										addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+										if(isClass && (x in allClassesIdenteties[className][2]) && isProcedure){
 										   print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$, if you wish to assign the member variable add a prefix this. to it.");
 										}
 										return;
 	
-	case ^assignment(^memberAccess(x, y), _):	return; 
+	case ^assignment(^memberAccess(x, y), _):	if(classCheck && str(x) == "this"){
+												   definedVars := definedVars + {str(y)};
+												}
+												return; 
 	
-	case ^assignment([a|b], y)		 	: for(z in [a|b]){addDefinedVariables(^assignment(z,2), definedVars, isClass, className, allClassesIdenteties);} return; //Just putting any fake assignment for the 
+	case ^assignment([a|b], y)		 	: for(z in [a|b]){addDefinedVariables(^assignment(z,2), definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);} return; //Just putting any fake assignment for the 
 																											   //variable to be counted as a defined variable.
 	
 	case ^assignment(x, y)				: return;
 	
 	//Mathematics
-	case ^difference(x, y)           : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^sum(x, y)                  : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^sumAssignment(x, y)		 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^differenceAssignment(x, y) : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^quotientAssignment(x, y)   : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties); return;	
-	case ^integerDivision(x, y)		 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^quotient(x, y)             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^product(x, y)              : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^modulo(x, y)               : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^power(x, y)  	             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
+	case ^difference(x, y)           : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^sum(x, y)                  : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^sumAssignment(x, y)		 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^differenceAssignment(x, y) : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^quotientAssignment(x, y)   : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;	
+	case ^integerDivision(x, y)		 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^quotient(x, y)             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^product(x, y)              : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^modulo(x, y)               : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^power(x, y)  	             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
 	
 	//Booleans
-	case ^equals(x, y)               : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^notEqual(x, y)              : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^greaterThan(x, y)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^lessThan(x, y)             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^lessOrEqual(x, y)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^greaterOrEqual(x, y)       : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^not(x)                     : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties); return;
+	case ^equals(x, y)               : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^notEqual(x, y)              : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^greaterThan(x, y)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^lessThan(x, y)             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^lessOrEqual(x, y)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^greaterOrEqual(x, y)       : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^not(x)                     : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
 									   return;
 
-	case ^iterator(x, y, z)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(z, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^range(x, y, z)             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(z, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^conjunction(x, y)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^disjunction(x, y)			 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-	case ^in(x, y)                   : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
-//	case [x]                         : for(y in x) {addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);} return;
+	case ^iterator(x, y, z)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(z, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^range(x, y, z)             : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(z, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^conjunction(x, y)          : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^disjunction(x, y)			 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+	case ^in(x, y)                   : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+//	case [x]                         : for(y in x) {addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);} return;
 	
 	//return, backtrack, continue, break, exit
 	case ^return(x)                  : return;
@@ -1424,23 +1451,23 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClass
 	case ^setlIterator(_,_,_)        : return;
 	
 	//Other stuff
-	case ^collectionAccess(x, y)	 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties); return;
+	case ^collectionAccess(x, y)	 : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
 	case ^collectionAccessRangeDummy()	:	return;
 	case ^cardinality(x)			 : return; // It is only used but not defined.
 	case ^exists(x, y)				 : return;
 	case ^sumOfMembers([a|b])		 : for(y in [a|b]){
-									   addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);	
+									   addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);	
 									   }
 									   return;
-	case ^sumOfMembersBinary(x, [a|b]) : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);
+	case ^sumOfMembersBinary(x, [a|b]) : addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
 										 for(y in [a|b]){
-										   addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);	
+										   addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);	
 										 }
 									     return;
 	case ^explicitListWithRest([a|b], y): for(x in [a|b]){
-											addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties);
+											addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
 										  }
-										  addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties);
+										  addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
 										  return;
 	case ^memberAccess(_,_)			:	return; //Accessing class variables only uses objects and might define their class variables BUT never defines any external variable
 	
@@ -1495,7 +1522,7 @@ match(l){
 																      checkProcedure(x, ^procedure(y, ^block([z])), allProceduresIdenteties, allClassesIdenteties, {}, isClass, className);
 																   }
 																   else{
-																      checkProcedure(x, ^procedure(y, ^block([z])), allProceduresIdenteties, allClassesIdenteties, allClassesIdenteties[className][2] + {"this"}, isClass, className);
+																	  checkProcedure(x, ^procedure(y, ^block([z])), allProceduresIdenteties, allClassesIdenteties, allClassesIdenteties[className][2] + {"this"}, isClass, className);
 																   }
 																}
 																else{
@@ -1548,15 +1575,15 @@ match(l){
 									   checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 									   return;
 	
-	case ^tryCatchLngBranch(x, y)    : addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties);
+	case ^tryCatchLngBranch(x, y)    : addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties, isProcedure, false);
 									   checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 									   checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 									   return;
-	case ^tryCatchUsrBranch(x, y)    : addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties);
+	case ^tryCatchUsrBranch(x, y)    : addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties, isProcedure, false);
 									   checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 									   checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 									   return;
-	case ^tryCatchBranch(x, y)       : addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties);
+	case ^tryCatchBranch(x, y)       : addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties, isProcedure, false);
 									   checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 									   checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 									   return;
@@ -1755,7 +1782,7 @@ match(l){
 													   print("Variable(s) " + undefinedVariables + " is(are) called to be used in procedure called " + procName + " without being defined !");
 													}
 													else{
-													   print("Variable(s) " + undefinedVariables + " is(are) called to be used in procedure called " + procName + "in class " + className + " without being defined !");
+													   print("Variable(s) " + undefinedVariables + " is(are) called to be used in procedure called " + procName + " in class " + className + " without being defined !");
 													}
 												}
 												else
@@ -1769,7 +1796,7 @@ match(l){
 												}
 											}
 											temp := definedVars;
-											addDefinedVariables(l, definedVars, isClass, className, allClassesIdenteties);
+											addDefinedVariables(l, definedVars, isClass, className, allClassesIdenteties, isProcedure, false);
 											temp2 := definedVars - temp;
 											temp3 := temp2 - (matchTmp+forLoopTmpDefVars);  // for the case where iterators are replaced as "v := str(v)"
 											definedVars := temp + temp3;
