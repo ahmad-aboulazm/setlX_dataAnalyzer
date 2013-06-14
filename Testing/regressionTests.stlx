@@ -3,10 +3,10 @@
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 test := procedure(fileName, expectedOutput, rw allPassed){
-	
+	print("Now testing $fileName$");
 	output := run("setlx analyzeCode.stlx --params $fileName$");
 	if(output[1] != expectedOutput){
-		//print(output[1]);
+		print(output[1]);
 		print("Testing $fileName$ has failed");
 		allPassed := false;
 	}
@@ -145,18 +145,19 @@ expectedOutput := 	["NOW CHECKING $fileName$", "DONE CHECKING $fileName$"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "complex.stlx";
-expectedOutput := 	["NOW CHECKING complex.stlx", "PROCEDURE atan2 is called to be used without being defined unless defined through a returned procedure !!",
+expectedOutput := 	["NOW CHECKING complex.stlx", 
+					"PROCEDURE atan2 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
 					"DONE CHECKING complex.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "counter-closure.stlx";
 expectedOutput := 	["NOW CHECKING counter-closure.stlx", 
-					"PROCEDURE ctr0 is called to be used without being defined unless defined through a returned procedure !!", 
-					"PROCEDURE ctr0 is called to be used without being defined unless defined through a returned procedure !!", 
-					"PROCEDURE ctr0 is called to be used without being defined unless defined through a returned procedure !!", 
-					"PROCEDURE ctr9 is called to be used without being defined unless defined through a returned procedure !!", 
-					"PROCEDURE ctr9 is called to be used without being defined unless defined through a returned procedure !!", 
-					"PROCEDURE ctr9 is called to be used without being defined unless defined through a returned procedure !!", 
+					"PROCEDURE ctr0 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
+					"PROCEDURE ctr0 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
+					"PROCEDURE ctr0 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
+					"PROCEDURE ctr9 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
+					"PROCEDURE ctr9 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
+					"PROCEDURE ctr9 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
 					"Variable(s) {\"ctr0\", \"ctr9\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING counter-closure.stlx"];
 test(fileName, expectedOutput, allPassed);
@@ -214,8 +215,8 @@ expectedOutput := 	["NOW CHECKING finite-difference.stlx",
 					"ATTENTION parameter f in procedure delta is being used as a procedure, check that this is correct.", 
 					"ATTENTION! Procedure \"g\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.", 
 					"ATTENTION! Procedure \"h\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.", 
-					"PROCEDURE deltaG is called to be used without being defined unless defined through a returned procedure !!", 
-					"PROCEDURE deltaH is called to be used without being defined unless defined through a returned procedure !!", 
+					"PROCEDURE deltaG is undefined unless defined through a returned procedure or assigned to another procedure!!", 
+					"PROCEDURE deltaH is undefined unless defined through a returned procedure or assigned to another procedure!!", 
 					"Variable(s) {\"deltaG\", \"deltaH\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING finite-difference.stlx"];
 test(fileName, expectedOutput, allPassed);
