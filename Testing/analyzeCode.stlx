@@ -1350,7 +1350,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 												}
 											}
 											if(found == false){
-												if(!(isProcedure && (str(x) in procParameters))){ //This condition is for cases were a procedure parameter might be actually an object
+												if(!(isProcedure && (str(x) in procParameters) && (str(y) in {m : n in allClassesIdenteties, m in n[2][2]}))){ //This condition is for cases were a procedure parameter might be actually an object
 												   print("Usage of variable $tempY$ for object $tempX$ is uncorrect");
 												}
 											}
