@@ -232,6 +232,9 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	
 	case ^assignment(x, ^call(y, z)) : 	if(y in domain(allClassesIdenteties)){
 										   allClassesIdenteties[y][4] += {str(x)};
+										   for(i in z){
+											  allClassesIdenteties[y][4] += {str(i)};
+										   }
 										}
 										getUsedVariables(^call(y, z), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 	
@@ -1347,7 +1350,9 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 												}
 											}
 											if(found == false){
-												print("Usage of variable $tempY$ for object $tempX$ is uncorrect");
+												if(!(isProcedure && (str(x) in procParameters))){ //This condition is for cases were a procedure parameter might be actually an object
+												   print("Usage of variable $tempY$ for object $tempX$ is uncorrect");
+												}
 											}
 											getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 										}
