@@ -14,8 +14,18 @@ match(code){
 
 
 extractClassProperties := procedure(code, name, rw allClassesIdenteties){
-
+//print("extractClassProperties: $canonical(code)$");
 match(code){
+	case ^setlClass([], c, z)			:	match(c){
+												case ^block(v)	:	for(w in v){
+																		addDefinedVariables(w, allClassesIdenteties[name][2], false, "", [], false, true);
+																	}
+												default			: 	//print("IMPOSSIBLE IN extractClassProperties");
+											}
+											identifyAllProcedures(c, allClassesIdenteties[name][3]); //Non-static procedures
+											identifyAllProcedures(z, allClassesIdenteties[name][3]); //static procedures
+											addDefinedVariables(z, allClassesIdenteties[name][2], false, "", [], false, true);
+											
 	case ^setlClass([a|b], c, z)		:	for(x in [a|b]){
 												match(x){
 													case ^parameter(w) 	:	allClassesIdenteties[name][1] += {str(w)};
@@ -1042,7 +1052,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 																for(o in allClassesIdenteties){
 																	//print("$spliting[1]$ in $o[2][4]$, $spliting[2]$ in $domain(o[2][3])$");
 																	if(((spliting[1] in o[2][4]) && (spliting[2] in domain(o[2][3]))) || 
-																		(isClass && (((spliting[1] in o[2][2]) && (spliting[2] in domain(o[2][3])))))){
+																		(isClass && (((spliting[1] in o[2][2]) && (spliting[2] in domain(o[2][3]))))) || 
+																		(isProcedure && (spliting[1] in procParameters) && (spliting[2] in domain(o[2][3])))){
 																		found := true;
 																		getUsedVariables(^variable(spliting[1]), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 																		for(z in y){
