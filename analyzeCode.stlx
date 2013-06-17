@@ -1050,19 +1050,16 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 																spliting += [n[1..(position-1)]];
 																spliting += [n[(position+1)..]];
 																for(o in allClassesIdenteties){
-																	//print("$spliting[1]$ in $o[2][4]$, $spliting[2]$ in $domain(o[2][3])$");
-																	if(((spliting[1] in o[2][4]) && (spliting[2] in domain(o[2][3]))) || 
-																		(isClass && (((spliting[1] in o[2][2]) && (spliting[2] in domain(o[2][3]))))) || 
-																		(isProcedure && (spliting[1] in procParameters) && (spliting[2] in domain(o[2][3])))){
+																	if(spliting[2] in domain(o[2][3])){
 																		found := true;
-																		getUsedVariables(^variable(spliting[1]), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+																		getUsedVariables(spliting[1], usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 																		for(z in y){
 																			getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 																		}
 																	}
 																}
 																if(found == false){
-																	print("Calling of procedure $spliting[2]$ for object $spliting[1]$ is uncorrect! unless $spliting[1]$ was defined to the correct object that has this procedure through a return from a procedure.");
+																	print("Calling of procedure $spliting[2]$ for object $spliting[1]$ is uncorrect!");
 																	getUsedVariables(^variable(spliting[1]), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 																	for(z in y){
 																		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
@@ -1298,6 +1295,10 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 									   return;
 	
+	case ^forall(x, y)				 : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									   return;
+									   
 	case ^sumOfMembers([a|b])		 : for(y in [a|b]){
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 									   }
@@ -1471,6 +1472,7 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClass
 	case ^collectionAccessRangeDummy()	:	return;
 	case ^cardinality(x)			 : return; // It is only used but not defined.
 	case ^exists(x, y)				 : return;
+	case ^forall(x, y)				 : return;
 	case ^sumOfMembers([a|b])		 : for(y in [a|b]){
 									   addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);	
 									   }
