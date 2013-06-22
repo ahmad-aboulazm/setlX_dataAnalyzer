@@ -1,0 +1,3 @@
+\contentsline {section}{\numberline {1}Introduction to \textsc {setlX}}{3}{section.1}
+\contentsline {subsection}{\numberline {1.1}\textsc {SetlX} Data Types}{3}{subsection.1.1}
+\contentsline {subsection}{\numberline {1.2}Statements in \textsc {setlX}}{9}{subsection.1.2}
