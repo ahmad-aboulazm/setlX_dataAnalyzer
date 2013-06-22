@@ -17,38 +17,38 @@ allPassed := true;
 //Simple Tests
 fileName := "basicTest1.stlx";
 expectedOutput := 	["NOW CHECKING basicTest1.stlx", 
-					"Variable(s) {\"y\"} is(are) called to be used in procedure called f without being defined !", 
-					"Variable(s) {\"x\"} is(are) defined but never used in the procedure called f!!", 
+					"Variables {\"y\"} is called to be used in procedure called f without being defined !", 
+					"Variable {\"x\"} is defined but never used in the procedure called f!!", 
 					"DONE CHECKING basicTest1.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest2.stlx";
 expectedOutput := 	["NOW CHECKING basicTest2.stlx", 
-					"Variable(s) {\"l\", \"m\"} is(are) called to be used without being defined !", 
-					"Variable(s) {\"l\", \"m\"} is(are) called to be used without being defined !", 
-					"Variable(s) {\"l\", \"m\"} is(are) called to be used without being defined !", 
-					"Variable(s) {\"l\", \"m\"} is(are) called to be used without being defined !", 
-					"Variable(s) {\"r\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variables {\"l\", \"m\"} are called to be used without being defined !", 
+					"Variables {\"l\", \"m\"} are called to be used without being defined !", 
+					"Variables {\"l\", \"m\"} are called to be used without being defined !", 
+					"Variables {\"l\", \"m\"} are called to be used without being defined !", 
+					"Variable {\"r\"} is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING basicTest2.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest3.stlx";
 expectedOutput := 	["NOW CHECKING basicTest3.stlx", 
-					"Variable(s) {\"l\"} is(are) called to be used without being defined !", 
-					"Variable(s) {\"b\"} is(are) called to be used without being defined !", 
-					"Variable(s) {\"r\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variable {\"l\"} is called to be used without being defined !", 
+					"Variable {\"b\"} is called to be used without being defined !", 
+					"Variable {\"r\"} is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING basicTest3.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest4.stlx";
 expectedOutput := 	["NOW CHECKING basicTest4.stlx", 
-					"Variable(s) {\"y\", \"z\"} is(are) defined but never used in the procedure called aProcedureExample!!", 
+					"Variables {\"y\", \"z\"} are defined but never used in the procedure called aProcedureExample!!", 
 					"DONE CHECKING basicTest4.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest5.stlx";
 expectedOutput := 	["NOW CHECKING basicTest5.stlx", 
-					"Variable(s) {\"l\"} is(are) defined but never used in the procedure called readWriteProcedureExample!!", 
+					"Variable {\"l\"} is defined but never used in the procedure called readWriteProcedureExample!!", 
 					"DONE CHECKING basicTest5.stlx"];
 test(fileName, expectedOutput, allPassed);
 
@@ -62,43 +62,42 @@ test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest8.stlx";
 expectedOutput := 	["NOW CHECKING basicTest8.stlx", 
-					"Variable(s) {\"x\"} is(are) called to be used without being defined !", 
-					"Variable(s) {\"a\", \"m\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variable {\"x\"} is called to be used without being defined !", 
+					"Variables {\"a\", \"m\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING basicTest8.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest9.stlx";
 expectedOutput := 	["NOW CHECKING basicTest9.stlx", 
 					"Variable s1 in an iterator is called without being defined !", 
-					"Variable(s) {\"m\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variable {\"m\"} is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING basicTest9.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest10.stlx";
 expectedOutput := 	["NOW CHECKING basicTest10.stlx", 
 					"Variable z in an iterator is called without being defined !", 
-					"Variable(s) {\"m\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variable {\"m\"} is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING basicTest10.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest10.stlx";
 expectedOutput := 	["NOW CHECKING basicTest10.stlx", 
 					"Variable z in an iterator is called without being defined !", 
-					"Variable(s) {\"m\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variable {\"m\"} is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING basicTest10.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "basicTest11.stlx";
 expectedOutput := 	["NOW CHECKING basicTest11.stlx", 
-					"Variable(s) {\"y\", \"z\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variables {\"y\", \"z\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING basicTest11.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "complex2.stlx";
 expectedOutput := 	["NOW CHECKING complex2.stlx", 
-					"Usage of variable mReel for object x is uncorrect", 
-					"Calling of procedure sum2 for object x is uncorrect! unless x was defined to the correct object that has this procedure through a return from a procedure.", 
-					"Variable(s) {\"a\", \"b\", \"c\", \"d\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Usage of variable mReel for object x is uncorrect", "Calling of procedure sum2 for object x is uncorrect!", 
+					"Variables {\"a\", \"b\", \"c\", \"d\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING complex2.stlx"];
 test(fileName, expectedOutput, allPassed);
 
@@ -114,15 +113,19 @@ expectedOutput := 	["NOW CHECKING $fileName$", "DONE CHECKING $fileName$"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "binary-tree.stlx";
-expectedOutput := 	["NOW CHECKING $fileName$", "Variable(s) {\"v1\"} is(are) called to be used in procedure called insert without being defined !",
-					"Variable(s) {\"cmp\"} is(are) defined but never used in the procedure called demo!!", 
-					"Variable(s) {\"lessThan\"} is(are) called to be used without being defined !", "DONE CHECKING $fileName$"];
+expectedOutput := 	["NOW CHECKING binary-tree.stlx", 
+					"Variables {\"v1\"} is called to be used in procedure called insert without being defined !", 
+					"Variable {\"cmp\"} is defined but never used in the procedure called demo!!", 
+					"Variable {\"lessThan\"} is called to be used without being defined !", 
+					"DONE CHECKING binary-tree.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "binary-tree-no-matching.stlx";
-expectedOutput := 	["NOW CHECKING $fileName$", "Variable(s) {\"v1\"} is(are) called to be used in procedure called insert without being defined !",
-					"Variable(s) {\"cmp\"} is(are) defined but never used in the procedure called demo!!", 
-					"Variable(s) {\"lessThan\"} is(are) called to be used without being defined !", "DONE CHECKING $fileName$"];
+expectedOutput := 	["NOW CHECKING binary-tree-no-matching.stlx", 
+					"Variables {\"v1\"} is called to be used in procedure called insert without being defined !", 
+					"Variable {\"cmp\"} is defined but never used in the procedure called demo!!", 
+					"Variable {\"lessThan\"} is called to be used without being defined !", 
+					"DONE CHECKING binary-tree-no-matching.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "bisection-exception.stlx";
@@ -158,20 +161,21 @@ expectedOutput := 	["NOW CHECKING counter-closure.stlx",
 					"PROCEDURE ctr9 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
 					"PROCEDURE ctr9 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
 					"PROCEDURE ctr9 is undefined unless defined through a returned procedure or assigned to another procedure!!", 
-					"Variable(s) {\"ctr0\", \"ctr9\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variables {\"ctr0\", \"ctr9\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING counter-closure.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "diff.stlx";
-expectedOutput := 	["NOW CHECKING diff.stlx", "ATTENTION! Procedure \"log\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.",
-					"Variable(s) {\"s0\"} is(are) defined but never used in the procedure called simplify!!", 
-					"Variable(s) {\"ln\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+expectedOutput := 	["NOW CHECKING diff.stlx", 
+					"ATTENTION! Procedure \"log\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.", 
+					"Variable {\"s0\"} is defined but never used in the procedure called simplify!!", 
+					"Variable {\"ln\"} is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING diff.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "dijkstra.stlx";
 expectedOutput := 	["NOW CHECKING dijkstra.stlx", 
-					"Calling of procedure shortestPath for object g is uncorrect! unless g was defined to the correct object that has this procedure through a return from a procedure.",
+					"Variable {\"g\"} is defined but never used in the procedure called test!!", 
 					"DONE CHECKING dijkstra.stlx"];
 test(fileName, expectedOutput, allPassed);
 
@@ -196,7 +200,9 @@ expectedOutput := 	["NOW CHECKING $fileName$", "DONE CHECKING $fileName$"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "find-comments.stlx";
-expectedOutput := 	["NOW CHECKING $fileName$", "DONE CHECKING $fileName$"];
+expectedOutput := 	["NOW CHECKING find-comments-scan.stlx", 
+					"Variables {\"c\"} is called to be used in procedure called printComments without being defined !", 
+					"DONE CHECKING find-comments-scan.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "find-comments-scan.stlx";
@@ -217,23 +223,23 @@ expectedOutput := 	["NOW CHECKING finite-difference.stlx",
 					"ATTENTION! Procedure \"h\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.", 
 					"PROCEDURE deltaG is undefined unless defined through a returned procedure or assigned to another procedure!!", 
 					"PROCEDURE deltaH is undefined unless defined through a returned procedure or assigned to another procedure!!", 
-					"Variable(s) {\"deltaG\", \"deltaH\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variables {\"deltaG\", \"deltaH\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING finite-difference.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "insertion-sort-nr.stlx";
-expectedOutput := 	["NOW CHECKING insertion-sort-nr.stlx",
-					"Variable(s) {\"r\"} is(are) called to be used in procedure called sameElements without being defined !", 
-					"Variable(s) {\"s\"} is(are) defined but never used in the procedure called sameElements!!", 
-					"Variable(s) {\"result\"} is(are) called to be used in procedure called countMap without being defined !", 
+expectedOutput := 	["NOW CHECKING insertion-sort-nr.stlx", 
+					"Variables {\"r\"} is called to be used in procedure called sameElements without being defined !", 
+					"Variable {\"s\"} is defined but never used in the procedure called sameElements!!", 
+					"Variables {\"result\"} is called to be used in procedure called countMap without being defined !", 
 					"DONE CHECKING insertion-sort-nr.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "knapsack-cached.stlx";
-expectedOutput := 	["NOW CHECKING knapsack-cached.stlx",
+expectedOutput := 	["NOW CHECKING knapsack-cached.stlx", 
 					"ATTENTION! Procedure \"knapsackDP\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.", 
 					"ATTENTION! Procedure \"knapsackDP\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.", 
-					"Variable(s) {\"start\", \"stop\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variables {\"start\", \"stop\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING knapsack-cached.stlx"];
 test(fileName, expectedOutput, allPassed);
 
@@ -272,14 +278,14 @@ expectedOutput := 	["NOW CHECKING $fileName$", "DONE CHECKING $fileName$"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "performance.stlx";
-expectedOutput := 	["NOW CHECKING performance.stlx",
-					"Variable(s) {\"start\", \"stop\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+expectedOutput := 	["NOW CHECKING performance.stlx", 
+					"Variables {\"start\", \"stop\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING performance.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 fileName := "performance-bool.stlx";
 expectedOutput := 	["NOW CHECKING performance-bool.stlx", 
-					"Variable(s) {\"start\", \"stop\"} is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
+					"Variables {\"start\", \"stop\"} are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure", 
 					"DONE CHECKING performance-bool.stlx"];
 test(fileName, expectedOutput, allPassed);
 
@@ -375,8 +381,10 @@ test(fileName, expectedOutput, allPassed);
 
 //Testing the code itself
 fileName := "analyzeCode.stlx";
-expectedOutput := 	["NOW CHECKING analyzeCode.stlx", "Variable params in an iterator is called without being defined !",
-					"Variable(s) {\"params\"} is(are) called to be used without being defined !", "DONE CHECKING analyzeCode.stlx"];
+expectedOutput := 	["NOW CHECKING analyzeCode.stlx", 
+					"Variable params in an iterator is called without being defined !", 
+					"Variable {\"params\"} is called to be used without being defined !", 
+					"DONE CHECKING analyzeCode.stlx"];
 test(fileName, expectedOutput, allPassed);
 
 

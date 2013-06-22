@@ -144,7 +144,12 @@ checkProcedure := procedure(name, x, rw allProceduresIdenteties, allClassesIdent
 								unUsedProcVars -= classVariables;
 								if(unUsedProcVars != {})
 								{
-									print("Variable(s) " + unUsedProcVars + " is(are) defined but never used in the procedure called " + name + "!!");
+									if(#unUsedProcVars == 1){
+									   print("Variable " + unUsedProcVars + " is defined but never used in the procedure called " + name + "!!");
+								    }
+									else{
+									   print("Variables " + unUsedProcVars + " are defined but never used in the procedure called " + name + "!!");									
+									}
 								}
 								
 
@@ -977,6 +982,9 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	case ^call(x, y)                 : 	procedureName := x;
 										counter := 1;
 										if(x in domain(allProceduresIdenteties)){
+											if(#y != #allProceduresIdenteties[procedureName]){
+											  print("ATTENTION! Procedure $procedureName$ is being called with $#y$ parameter(s) instead of $#allProceduresIdenteties[procedureName]$ parameter(s)");
+											}
 											for(z in y){
 												match(z){
 											
@@ -1002,7 +1010,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 																		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 																		counter := counter + 1;
 												}
-											} 
+											}
 										}
 										else{
 											if(isClass && (x in domain(allClassesIdenteties[className][3]))){
@@ -1053,6 +1061,9 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 																	if(spliting[2] in domain(o[2][3])){
 																		found := true;
 																		getUsedVariables(spliting[1], usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+																		if(#y != #(o[2][3][spliting[2]])){
+																			print("ATTENTION! Procedure $spliting[2]$ of class $o[1]$ is being called with $#y$ parameter(s) instead of $#(o[2][3][spliting[2]])$ parameter(s)");
+																		}
 																		for(z in y){
 																			getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 																		}
@@ -1659,11 +1670,21 @@ match(l){
 											{
 												if(isProcedure)
 												{
-													print("Variable(s) " + undefinedVariables + " is(are) called to be used in a match statement in procedure called " + procName + " without being defined !");
+													if(#undefinedVariables == 1){
+													   print("Variable " + undefinedVariables + " is called to be used in a match statement in procedure called " + procName + " without being defined !");
+													}
+													else{
+													   print("Variables " + undefinedVariables + " are called to be used in a match statement in procedure called " + procName + " without being defined !");													
+													}
 												}
 												else
 												{
-													print("Variable(s) " + undefinedVariables + "in a match statement is(are) called to be used without being defined !");
+													if(#undefinedVariables == 1){
+													   print("Variable " + undefinedVariables + "in a match statement is called to be used without being defined !");
+													}
+													else{
+													   print("Variables " + undefinedVariables + "in a match statement are called to be used without being defined !");													
+													}
 												}
 											}
 										 return;
@@ -1697,11 +1718,23 @@ match(l){
 											{
 												if(isProcedure)
 												{
-													print("Variable(s) " + undefinedVariables + " is(are) called to be used in a match statement in procedure called " + procName + " without being defined !");
+													if(#undefinedVariables == 1)
+													{
+													   print("Variable " + undefinedVariables + " is called to be used in a match statement in procedure called " + procName + " without being defined !");
+													}
+													else{
+													   print("Variables " + undefinedVariables + " are called to be used in a match statement in procedure called " + procName + " without being defined !");
+													}
 												}
 												else
 												{
-													print("Variable(s) " + undefinedVariables + "in a match statement is(are) called to be used without being defined !");
+													if(#undefinedVariables == 1)
+													{
+													   print("Variable " + undefinedVariables + "in a match statement is called to be used without being defined !");
+													}
+													else{
+													   print("Variables " + undefinedVariables + "in a match statement are called to be used without being defined !");													
+													}
 												}
 											}
 										 return;
@@ -1797,19 +1830,39 @@ match(l){
 												if(isProcedure)
 												{
 													if(!isClass){
-													   print("Variable(s) " + undefinedVariables + " is(are) called to be used in procedure called " + procName + " without being defined !");
+													   if(#undefinedVariables == 1){
+													      print("Variables " + undefinedVariables + " is called to be used in procedure called " + procName + " without being defined !");
+													   }
+													   else{
+													      print("Variables " + undefinedVariables + " are called to be used in procedure called " + procName + " without being defined !");													   
+													   }
 													}
 													else{
-													   print("Variable(s) " + undefinedVariables + " is(are) called to be used in procedure called " + procName + " in class " + className + " without being defined !");
+													   if(#undefinedVariables == 1){
+													      print("Variable " + undefinedVariables + " is called to be used in procedure called " + procName + " in class " + className + " without being defined !");
+													   }
+													   else{
+													      print("Variables " + undefinedVariables + " are called to be used in procedure called " + procName + " in class " + className + " without being defined !");													   
+													   }
 													}
 												}
 												else
 												{
 													if(!isClass){
-													   print("Variable(s) " + undefinedVariables + " is(are) called to be used without being defined !");
+													   if(#undefinedVariables == 1){
+													      print("Variable " + undefinedVariables + " is called to be used without being defined !");
+													   }
+													   else{
+													      print("Variables " + undefinedVariables + " are called to be used without being defined !");
+													   }
 													}
 													else{
-													   print("Variable(s) " + undefinedVariables + " is(are) called in class " + className + " to be used without being defined !");
+													   if(#undefinedVariables == 1){
+													      print("Variable " + undefinedVariables + " is called in class " + className + " to be used without being defined !");
+													   }
+													   else{
+													      print("Variables " + undefinedVariables + " are called in class " + className + " to be used without being defined !");													      
+													   }
 													}
 												}
 											}
@@ -1853,7 +1906,13 @@ for(directory in params){
 	unUsedVars := definedVars-allUsedVars;
 	if(unUsedVars != {})
 	{
-		print("Variable(s) " + unUsedVars + " is(are) defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure");
+		if(#unUsedVars == 1){
+		   print("Variable " + unUsedVars + " is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure");
+		}
+		else{
+		   print("Variables " + unUsedVars + " are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure");
+		
+		}
 	}
 
 	//print(allClassesIdenteties);
