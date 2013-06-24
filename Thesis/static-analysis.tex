@@ -22,11 +22,12 @@
 
 
 \begin{document}
-
+\begin{Huge}
 \title{Data Analyzing for \textsc{SetlX}}
 \author{Ahmad Aboulazm}
 \date{\today}
 \maketitle
+\end{Huge}
 \pagebreak
 \tableofcontents
 \pagebreak
@@ -396,14 +397,451 @@ Figure \ref{fig:binary-tree-no-matching.stlx} actually shows how terms can be us
 \end{figure}
 
 \subsection{Statements in \textsc{setlX}}
+In this subsection we are going to talk about different kinds of statements in \textsc{setlX}. The most basic statements are the assignment statements. In \textsc{setlX}, you can have a single assignment like
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{x := 2;}
+\\[0.2cm]
+which assigns the variable $x$ to the value of $2$, Chained assignments can also be used as
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{a := b := 2;}
+\\[0.2cm]
+which assigns both variables $a$ and $b$ to the value of 2, you can also have simultaneous assignments at the same time like
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{[x, y, z] := [1, 2, 3];}
+\\[0.2cm]
+which assigns variable $x$ to a value of 1, variable $y$ to a value of 2 and variable $z$ to a value of 3. Simultaneous assignment can also be useful when swapping values is needed. For example, the statement
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{[x, y] := [y, x];}
+\\[0.2cm]
+actually swaps the values between $x$ and $y$.
+\\
+
+Functions and their structure have been discussed before but lets see some more examples about them. Looking at figure \ref{fig:primes-slim.stlx}, the first function 'factors' is a function that computes the factors of a given number while the second one 'primes' make use of the function 'factors' to compute all prime numbers upto a given number $p$. We can give a grammar rule for defining a function as
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{fctDef -> VAR ":=" "procedure" "(" paramList ")" "{" block "}" ";"}
+\\[0.2cm]
+where the symbols in this grammar means the following
+\begin{enumerate}
+\item \texttt{VAR} is a variable which will be used as the name of the function further on.
+\item \texttt{paramList} is the list of parameters used in the function separated by commas. Parameters can just be a variable name or a variable name preceded by "rw" which means that this variable is a "read-write" variable and after the procedure is executed, that variable's value might actually be changed.
+\item \texttt{block} is the code holding the logic of the function itself.
+\end{enumerate}
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    factors := procedure(p) {
+        return { f in { 1 .. p } | p % f == 0 };
+    };
+    primes := procedure(n) {
+        return { p in { 2 .. n } | factors(p) == { 1, p } };
+    };
+    print(primes(100));
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A naive program to compute primes.}
+\label{fig:primes-slim.stlx}
+\end{figure}
+
+There is actually a simpler way to define a procedure in \textsc{setlX} if the procedure's logic is a single expression, which is called the lambda definition and has the grammar rule
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{fctDef -> ID ":=" "lambdaParams" "|->" exp ";"}
+\\[0.2cm]
+where \texttt{lambdaParams} is either a single parameter or a set of parameters enclosed by square brackets. An example of using the lambda definition is
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{double := x \-> x*2;}
+\\[0.2cm]
+\\
+
+\textsc{setlX} supports \textsl{if-then-else statements}, \textsl{switch statements} and \textsl{match statements}. An example of the use of the \textsl{if-then-else statements} is shown in figure \ref{fig:toBin.stlx} while an example for the use of the \textsl{switch statements} is shown in figure \ref{fig:sort3.stlx}.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    toBin := procedure(n) {
+        if (n < 2) {
+            return str(n);
+        } else {
+            r := n % 2;
+            n := floor(n / 2);
+            return toBin(n) + toBin(r);
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A function to compute the binary representation of a natural number.}
+\label{fig:toBin.stlx}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    sort3 := procedure(l) {
+        [ x, y, z ] := l;
+        if (x <= y) {
+            if (y <= z) {
+                return [ x, y, z ];
+            } else if (x <= z) { 
+                return [ x, z, y ];
+            } else {
+                return [ z, x, y ];
+            }
+        } else if (z <= y) { 
+            return [z, y, x];
+        } else if (x <= z) { 
+            return [ y, x, z ];
+        } else {
+            return [ y, z, x ];
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A function to sort a list of three elements.}
+\label{fig:sort3.stlx}
+\end{figure}
+
+As for match statements, there are different types of matching statements. One kind is called \textsl{string-matching}. One example for it is shown in figure \ref{fig:reverse.stlx}
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    reverse := procedure(s) {
+        match (s) {
+            case []   : return s;
+            case [c|r]: return reverse(r) + c;
+            default   : abort("type error in reverse($s$)");
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A function that reverses a string.}
+\label{fig:reverse.stlx}
+\end{figure}
+calling \texttt{reverse("abc");} will yield an output of "cba". There are other kinds of matching like \textsl{list-matching}, \textsl{set-matching} and \textsl{term-matching}. Term-Matching is the most elaborate form of matching, it's similar to the matching provided in programming languages \href{http://en.wikipedia.org/wiki/Prolog}{\textsl{Prolog}} and 
+\href{http://en.wikipedia.org/wiki/ML_(programming_language)}{\textsc{Ml}}. An example for \textsl{term-matching} is shown in figure \ref{fig:binary-tree.stlx} which does the same work as the code shown in figure \ref{fig:binary-tree-no-matching.stlx} discussed previously.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    insert := procedure(m, k1) {
+        match (m) {
+            case Nil() : 
+                 return Node(k1, Nil(), Nil());
+            case Node(k2, l, r): 
+                 if (k1 == k2) {
+                     return Node(k1, l, r);
+                 } else if (compare(k1, k2) < 0) { 
+                     return Node(k2, insert(l, k1), r);
+                 } else {
+                     return Node(k2, l, insert(r, k1));
+                 }
+            default: abort("Error in insert($m$, $k1$, $v1$)");
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Inserting an element into a binary tree using matching.}
+\label{fig:binary-tree.stlx}
+\end{figure}
+
+A more complex example is shown in figure \ref{fig:diff.stlx} which computes the derivative of $t$ relative to $x$. In order to understand this example better, we have to discuss some predefined functions which convert strings to terms which are the \textsl{canonical} and the \textsl{parse} functions. These functions are going to be discussed in the last sub-chapter entitled \textsl{predefined functions}.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    diff := procedure(t, x) {
+        match (t) {
+            case t1 + t2 :
+                return diff(t1, x) + diff(t2, x);
+            case t1 - t2 :
+                return diff(t1, x) - diff(t2, x);
+            case t1 * t2 :
+                return diff(t1, x) * t2 + t1 * diff(t2, x);
+            case t1 / t2 :
+                return ( diff(t1, x) * t2 - t1 * diff(t2, x) ) / t2 * t2;
+            case f ** g :
+                return diff( @exp(g * @ln(f)), x);
+            case ln(a) :
+                return diff(a, x) / a;
+            case exp(a) :
+                return diff(a, x) * @exp(a);
+            case ^variable(x) : // x is defined above as second argument
+                return 1;
+            case ^variable(y) : // y is undefined, matches any other variable
+                return 0;
+            case n | isNumber(n):   
+                return 0;  
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A function to perform symbolic differentiation.}
+\label{fig:diff.stlx}
+\end{figure}
+
+\textsc{setlX} offers two kinds of loops which are the \textsl{while loops} and the \textsl{for loops}. The while loops follows the grammar rule
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{statement -> "while" "(" boolExpr ")" "{" block "}" }.
+\\[0.2cm]
+Figure \ref{fig:ulam.stlx} is an example for implementing \href{http://en.wikipedia.org/wiki/Collatz_conjecture}{\emph{Collatz conjecture}}: which has the recursive definition
+\begin{enumerate}
+\item $f(n) := 1$ \hspace*{2.13cm} if $n \leq 1$,
+\item $f(n) := \left\{
+       \begin{array}[c]{ll}
+         f(n/2)           & \mbox{if $n \,\texttt{\symbol{37}}\, 2 = 0$;} \\[0.2cm]  
+         f(3 \cdot n + 1) & \mbox{otherwise.} 
+       \end{array}
+       \right.
+      $ 
+\end{enumerate}
+using the while loop.
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    f := procedure(n) {
+        if (n == 0) {
+            return 1;   
+        }
+        while (n != 1) {
+            if (n % 2 == 0) {
+                n /= 2;
+            } else {
+                n := 3 * n + 1;
+            }
+        }
+        return n;
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A program to test the Ulam conjecture.}
+\label{fig:ulam.stlx}
+\end{figure}
+
+On the other hand \textsl{for-loops} follow the grammar rule
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{statement -> "for" "(" iterator("," iterator)* ")" "{" block "}" }.
+\\[0.2cm]
+A simple iterator would be $x$ in $s$ where $s$ is a set or a list or a string. An example for the usage of \textsl{for-loops} is represented in figure \ref{fig:multiplication-table.stlx} and has an output represented in figure \ref{fig:multiplication-table}
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    rightAdjust := procedure(n) {
+        switch {
+            case n < 10 : return "   " + n;
+            case n < 100: return  "  " + n;
+            default:      return   " " + n;
+        }
+    };      
+    for (i in [1 .. 10]) {
+        for (j in [1 .. 10]) {
+            nPrint(rightAdjust(i * j));
+        }
+        print();
+    }
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A simple program to generate a multiplication table.}
+\label{fig:multiplication-table.stlx}
+\end{figure}
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = none,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+       1   2   3   4   5   6   7   8   9  10
+       2   4   6   8  10  12  14  16  18  20
+       3   6   9  12  15  18  21  24  27  30
+       4   8  12  16  20  24  28  32  36  40
+       5  10  15  20  25  30  35  40  45  50
+       6  12  18  24  30  36  42  48  54  60
+       7  14  21  28  35  42  49  56  63  70
+       8  16  24  32  40  48  56  64  72  80
+       9  18  27  36  45  54  63  72  81  90
+      10  20  30  40  50  60  70  80  90 100
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Output of the program in Figure \ref{fig:multiplication-table.stlx}.}
+\label{fig:multiplication-table}
+\end{figure}
+\pagebreak
+
+\subsection{Regular Expressions}
+\textsc{setlX} like most modern programming languages support \href{http://en.wikipedia.org/wiki/Regular_expression}{\emph{Regular expressions}} which is a very powerful tool to process strings. Regular Expressions can be used in match statements. One example for that is shown in figure \ref{fig:regexp.stlx} which is a procedure that takes a certain string and recognize if it's a word, integer or just a white space.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    classify := procedure(s) {
+        match (s) {
+            regex '0|[1-9][0-9]*': print("found an integer");
+            regex '[a-zA-Z]+'    : print("found a word");
+            regex '\s+'          : // skip white space
+            default              : print("unkown: $s$");
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A simple function to recognize numbers and words.}
+\label{fig:regexp.stlx}
+\end{figure} 
+Regular Expressions also can be used for extracting substrings. Consider the example given in figure \ref{fig:extract-phone-code.stlx} which extracts parts of a phone-code in the format of \texttt{+49-711-6673-4504} where $49$ is the country code, $711$ is the area code, $6673$ is the company code and $4504$ is the extension. In this example if an expression is matched, variable $c$ will have the country code, variable $a$ will have the area code, variable $co$ will have the company code, variable $x$ will have the extension, finally variable $e$ will hold the string that matched the whole regular expression.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.3cm,
+                  xrightmargin  = 0.3cm,
+                ]
+    extractCountryArea := procedure(phone) {
+        match (phone) {
+            regex '\+([0-9]+)-([0-9]+)-([0-9]+)-([0-9]+)' as [e, c, a, co, x]:
+                return [c, a];
+            default: abort("The string $phone$ is not a phone number!");
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A function to extract the country and area code of a phone number.}
+\label{fig:extract-phone-code.stlx}
+\end{figure}
+\pagebreak
+Regular Expressions can also be used with \textsl{scan-statements} as shown in figure \ref{fig:find-comments-scan.stlx}. \textsl{Scan Statements} have the general form of
+\\[0.2cm]
+\hspace*{1.3cm} \texttt{scan ($s$) \{}  \\
+\hspace*{1.8cm} \texttt{regex} $r_1$ \texttt{as} $l$ : $b_1$ \\
+\hspace*{1.8cm} $\vdots$                                                  \\
+\hspace*{1.8cm} \texttt{regex} $r_n$ \texttt{as} $l$ : $b_n$ \\
+\hspace*{1.3cm} \texttt{\}}             
+\\[0.2cm]
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    printComments := procedure(file) {
+        s := join(readFile(file), "\n");
+        scan (s) {
+            regex '//[^\n]*'                as c: print(c[1]);
+            regex '/\*([^*]|\*+[^*/])*\*+/' as c: print(c[1]);
+            regex '.|\n'                        : // skip every thing else
+        }
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Extracting comments using the match statement.}
+\label{fig:find-comments-scan.stlx}
+\end{figure}
+
+Given bellow some examples for predefined functions for Regular Expressions.
+\begin{enumerate}
+\item \texttt{testRegexp('(a*)(a+)b',"aaab");} yields a result \texttt{["aaab", "aa", "a"]}. where every item of the list is defined by the order of the opening parenthesis.
+\item \texttt{matches('(a*)(a+)b',"aaab", true);} with three arguments with the last one defined as a boolean \textsl{true} has the exact same effect as the \texttt{testRegexp} and has the same return of \texttt{["aaab", "aa", "a"]}.
+\item \texttt{matches('(a*)(a+)b',"aaab");} with two arguments returns true if the string given matches the regular expression or false otherwise. In this case given in the example the return would be true.
+\item \texttt{replace(s, r, t)} replaces every substring of $s$ that matches the regular expression $r$ by the string $t$.
+\end{enumerate}
 
 
-
-
-
-
-
-
+\subsection{Functional Programming and Closures}
 
 
 
