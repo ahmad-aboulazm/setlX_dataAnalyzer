@@ -278,14 +278,30 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 									   return;
 	
+	case ^sumAssignment(x, [y])		 : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									   if(isClass && (x in allClassesIdenteties[className][2]) && isProcedure){
+										   print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$, if you wish to assign the member variable add a prefix this. to it.");
+										}
+									   return;
+	
 	case ^sumAssignment(x, y)		 : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									   if(isClass && (x in allClassesIdenteties[className][2]) && isProcedure){
+										   print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$, if you wish to assign the member variable add a prefix this. to it.");
+										}
 									   return;
 	case ^differenceAssignment(x, y) : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									   if(isClass && (x in allClassesIdenteties[className][2]) && isProcedure){
+										   print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$, if you wish to assign the member variable add a prefix this. to it.");
+										}
 									   return;
 	case ^quotientAssignment(x, y)   : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									   if(isClass && (x in allClassesIdenteties[className][2]) && isProcedure){
+										   print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$, if you wish to assign the member variable add a prefix this. to it.");
+										}
 									   return;
 	case ^quotient(x, y)             : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
@@ -1831,7 +1847,7 @@ match(l){
 												{
 													if(!isClass){
 													   if(#undefinedVariables == 1){
-													      print("Variables " + undefinedVariables + " is called to be used in procedure called " + procName + " without being defined !");
+													      print("Variable " + undefinedVariables + " is called to be used in procedure called " + procName + " without being defined !");
 													   }
 													   else{
 													      print("Variables " + undefinedVariables + " are called to be used in procedure called " + procName + " without being defined !");													   
