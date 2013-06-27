@@ -247,6 +247,9 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	
 	case ^assignment(x, ^call(y, z)) : 	if(y in domain(allClassesIdenteties)){
 										   allClassesIdenteties[y][4] += {str(x)};
+										   if(#z != #allClassesIdenteties[y][1]){
+										      print("Object $x$ is called to be created of class $y$ with $#z$ parameters instead of $#allClassesIdenteties[y][1]$");
+										   }
 										   for(i in z){
 											  allClassesIdenteties[y][4] += {str(i)};
 										   }
@@ -968,6 +971,16 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 										}
 										return;
 	
+	case ^call("isObject", x)		:	for(y in x){
+											getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+										}
+										return;
+	
+	case ^call("stop", x)			:	for(y in x){
+											getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+										}
+										return;
+										
 	case ^call("load", x)			 :	if(isProcedure){
 											for(y in x){
 											print("NOW CHECKING LOADED FILE $y$");
@@ -1358,6 +1371,11 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 												if(found == false){
 													print("Usage of variable $tempY$ for object $tempX$ is uncorrect");
 												}
+											}
+											else{
+											   if(!(str(y) in {m : n in allClassesIdenteties, m in n[2][2]})){
+											     print("Usage of class variable $y$ for object $x$ is uncorrect");
+											   }
 											}
 											getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 										}
@@ -1830,7 +1848,7 @@ match(l){
 																				"finish","finishLoop","resume","reset","dbgHelp","appendFile","deleteFile",
 																				"get","load","loadLibrary","multiLineMode","nprint","nprintErr","printErr",
 																				"read","writeFile","cacheStats","clearCache","compare","getScope","logo",
-																				"sleep","now","run"};
+																				"sleep","now","run","isObject","stop"};
 													if(!((v in domain(allProceduresIdenteties)) || (v in allPredefinedProcedures))){
 														allVariablesAreDefined := false;
 														undefinedVariables := undefinedVariables + {v};
