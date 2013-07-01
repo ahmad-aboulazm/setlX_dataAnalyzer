@@ -1,6 +1,6 @@
-\documentclass[11pt]{article}
+\documentclass[11pt]{report}
 
-\usepackage{fullpage}
+\usepackage[top= 1.5in, bottom= 1.5in]{geometry}
 \usepackage{graphicx}
 \usepackage{hyperref}
 \usepackage{fancyvrb}
@@ -23,7 +23,7 @@
 
 \begin{document}
 \begin{Huge}
-\title{Data Analyzing for \textsc{SetlX}}
+\title{Static Program Analysis for \textsc{SetlX}}
 \author{Ahmad Aboulazm}
 \date{\today}
 \maketitle
@@ -43,7 +43,7 @@ is to implement similar static analysis techniques for \textsc{SetlX}.  In contr
 \textsl{Prolog} programs, where a predicate can both read a variable and define it, the direction of
 the data flow in \textsc{SetlX} programs is well defined.  Therefore, it is possible to implement a
 static analysis for \textsc{SetlX} programs that is more precise than the corresponding analysis for
-\textsl{Prolog}:  In particular, two different checks are possible.
+\textsl{Prolog}:  In particular, five main different checks are possible.
 
 \begin{enumerate}
 \item We can check whether a variable is defined before it is used.
@@ -51,33 +51,29 @@ static analysis for \textsc{SetlX} programs that is more precise than the corres
 \item We can check whether a variable is read after it is written.  If a variable is written but
       never read afterwards, the assignement to this variable is useless.  This kind of data flow
       analysis is known as live variable analysis.
+\item Checking if any used procedure or class are defined in the code or not.
+\item Checking that any procedure or class are called with the correct number of parameters.
+\item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix \texttt{this.} before the variable's name.
 \end{enumerate}
-Along with some other checks such as 
-\begin{enumerate}
-\item Checking if any used procedure is defined in the code or not.
-\item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix 'this.' before the variable's name.
-\end{enumerate}
-and some other small checks which will be discussed later on. But first lets start by giving a brief introduction about \textsc{setlX} 
-
 \end{abstract}
 
 
-\section{Introduction to \textsc{setlX}}
+\chapter{Introduction to \textsc{setlX}}
 
-New programming languages are being proposed every year, inventors are always asked the same question. Why is a new programming language when there are a lot others ? The answer is always that it consists of an economical, theological and practical arguments. The first claim has been discussed before thus there is no reason to repeat it. As for the second claim, it also won't be discussed here for the fact that the average computer scientist won't have the philosophical background to follow theological discussions. Nevertheless, throughout the examples that will be given, it is hoped that they will convince the reader with the third claim. One main reason for that is that \textsc{setlX} programs are readable and concise which makes them very useful when writing complex algorithms, and also that it is very close to pseudocode but instead the user has actual running program.
+\textsc{setlX} has been invented lately from the old untyped language \href{http://en.wikipedia.org/wiki/SETL}{\emph{SETL}}. It has been invented mainly for educational purposes as it is well suited to familiarize students with set theory, terms and functional programming.
 
-In the following sub-chapters we are going to introduce the most important features of this language.
+In the following sections we are going to introduce the most important features of this language.
 
 \begin{center} If you wish to see the official full tutorial and instructions to download \textsc{setlX} kindly visit this following link : 
 
 \url{http://wwwlehre.dhbw-stuttgart.de/~stroetma/SetlX/setlX.php} \end{center}
 
-\subsection{\textsc{SetlX} Data Types}
+\section{\textsc{SetlX} Data Types}
 
-\textsc{setlX} is an interpreter that can be used to calculate simple calculations. For example by typing 
+\textsc{setlX} is an interpreter that can be used to evaluate simple expressions. For example by typing 
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=>} \texttt{\textsl{1/3 + 2/5;}}
+\texttt{\textsl{1/3 + 2/5;}}
 \\[0.2cm]
 and hitting return yields to this response
 \\[0.2cm]
@@ -87,7 +83,7 @@ and hitting return yields to this response
 This example shows that \textsc{setlX} actually supports rational numbers, it also makes sure that the answer is in the simplest form. So after typing
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=>} \texttt{\textsl{1/3 + 2/3;}}
+\texttt{\textsl{1/3 + 2/3;}}
 \\[0.2cm]
 The response would be
 \\[0.2cm]
@@ -99,7 +95,7 @@ as in this case, the simplest form of the result will have a denominator of 1, t
 The precision of any result computed in \textsc{setlX} is unlimited unless there is no more memory space to take it, so if we compute the factorial of 50
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=>} \texttt{\textsl{50!;}}
+\texttt{\textsl{50!;}}
 \\[0.2cm]
 The result would be
 \\[0.2cm]
@@ -109,7 +105,7 @@ The result would be
 To calculate floating point values in \textsc{setlX} the simplest way is to add 0.0 to the calculated expression as in
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=> \textsl{1/3 + 2/5 + 0.0;}}
+\texttt{\textsl{1/3 + 2/5 + 0.0;}}
 \\[0.2cm]
 which will yield to a result in this case as shown
 \\[0.2cm]
@@ -120,7 +116,7 @@ which will yield to a result in this case as shown
 To create a string in \textsc{setlX}, you just need to put some characters between double quotations. Which makes the \textsl{hello world program} in \textsc{setlX}'s interactive mode as simple as
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=> \textsl{\symbol{34}Hello world!\symbol{34};}}
+\texttt{\textsl{\symbol{34}Hello world!\symbol{34};}}
 \\[0.2cm]
 which outputs 
 \\[0.2cm]
@@ -129,17 +125,19 @@ which outputs
 \texttt{}
 \\[0.2cm]
 
-To assign a value to a variable in \textsc{setlX}, we use the ':=' operator which is the major common thing between \textsc{setlX} and the programming language \textsl{C}
+To assign a value to a variable in \textsc{setlX}, we use the ':=' operator which is the major difference between \textsc{setlX} and the programming language \textsl{C}
 so writing 
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=> \textsl{\symbol{34}x := 2\symbol{34};}}
+\texttt{\textsl{x := 2;}}
 \\[0.2cm]
 assigns the value '2' to the variable 'x'. Always keep in mind that in \textsc{setlX} variables always have to start with a lower case.
 \\
 \\
-\textsc{setlX} provides some operators to create boolean expressions. Which are
+\textsc{setlX} provides some operators to combine boolean expressions. Which are
 \begin{enumerate}
+\item \texttt{>} as the bigger than sign.
+\item \texttt{<} as the smaller than sign.
 \item \texttt{\&\&} as the logical and.
 \item \texttt{||} as the logical or.
 \item \texttt{!} as the logical not.
@@ -172,22 +170,22 @@ we simply write
 The most interesting data type in \textsc{setlX} is the \textsl{set} type. You can create a \textsl{set} by writing
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=> \{1, 2, 3\};}
+\texttt{\{1, 2, 3\};}
 \\[0.2cm]
 which is exactly the same as writing
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=> \{2, 1, 3\};}
+\texttt{\{2, 1, 3\};}
 \\[0.2cm]
 as order doesn't matter in \textsl{sets}. \textsc{setlX} also provides other convenient ways of creating sets, for example writing
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=> \{1..15\};}
+\texttt{\{1..15\};}
 \\[0.2cm]
 will create a \textsl{set} containing all elements counting from 1 till 15 with a step of 1. While writing
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{=> \{a,b..c\};}
+\texttt{\{a,b..c\};}
 \\[0.2cm]
 will create a \textsl{set} containing all elements counting from $a$ till $c$ with a step of $b-a$. The same also applies for descending orders.
 \\
@@ -207,7 +205,7 @@ Another interesting thing about \textsl{sets} in \textsc{setlX} is set comprehen
 \hspace*{1.3cm}
 \texttt{\{ $\textsl{expr}$ :$\;x_1$ in $s_1$, $\cdots$, $x_n$ in $s_n$ | $\textsl{cond}$ \}}.
 \\[0.2cm]
-where \textsl{expr} is an expression that contains $x_1$, $\cdots$, $x_n$ in it which are defined afterwards by $s_1$, $\cdots$, $s_n$ while \textsl{cond} is an extra optional condition if needed. For example 
+where \textsl{expr} is an expression that contains $x_1$, $\cdots$, $x_n$ in it which are bound to the values inside $s_1$, $\cdots$, $s_n$ while \textsl{cond} is an extra optional condition if needed. For example 
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{\{ a * b : a in \{ 1 .. 3 \}, b in \{ 1 .. 3 \} \};}
@@ -244,12 +242,12 @@ which returns the \emph{last} element of the set $s$.
 \item A syntactical difference : the
 curly braces ``\texttt{\{}'' and ``\texttt{\}}'' of sets are substituted with the square brackets
 ``\texttt{[}'' and ``\texttt{]}'' for lists.
-\item A logical difference :  Lists are an ordered collection of elements which can contain an element more than once unlike sets.
+\item A logical difference :  A list is an ordered collection of elements which can contain an element more than once unlike sets.
 \end{enumerate} 
-Away from these two points, lists are almost the same as sets and they support everything mentioned above concerning sets.
+Apart from these two points, lists are almost the same as sets and they support everything mentioned above concerning sets.
 \\
 
-Alike \textsc{setL} the old version of \textsc{setlX}, \textsc{setlX} pairs are supported. A pair is represented in \textsc{setlX} as a list of 2. A binary relation can be represented as a set of pairs. So if we can consider \textsl{r} as a binary relation, then we have a domain and a range represented in the formulas 
+Alike \textsc{setL} the old version of \textsc{setlX}, \textsc{setlX} pairs are supported. A pair is represented in \textsc{setlX} as a list of length two. A binary relation can be represented as a set of pairs. So if we can consider \textsl{r} as a binary relation, then we have a domain and a range represented in the formulas 
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{domain(r) = \{ x :[x,y] in r \}} \quad and \quad
@@ -265,6 +263,8 @@ $r[x] := \left\{
 \end{array} \right.
 $
 \\[0.2cm]
+The symbol $\Omega$ in \textsc{setlX} appears when there is no solution or result to a certain expression.
+
 Binary relations seem very helpful that they actually can be used as functions, but that won't be smart as that would consume a lot of memory and will compute even cases that aren't needed. Thus in \textsc{setlX} \textsl{procedures} are used for that. Figure \ref{fig:primes.stlx} for example defines a procedure that computes prime numbers starting $2$ up to a given number $n$.
 \begin{figure}[!ht]
 \centering
@@ -299,8 +299,8 @@ more about procedures will be discussed later on.
 
 Strings in \textsc{setlX} are a sequence of characters enclosed by double quotes. Here is a list of functions that can be applied to \textsl{Strings} in \textsc{setlX} :
 \begin{enumerate}
-\item \texttt{s1 + s2}: $'+'$ to concatenate strings $s1$ and $s2$.
-\item \texttt{s * n} : $'*'$ to concatenate multiple instances of the string $s$ $n$ times where $n$ is a natural number.
+\item \texttt{s1 + s2}: \texttt{+} to concatenate strings $s1$ and $s2$.
+\item \texttt{s * n} : \texttt{*} to concatenate multiple instances of the string $s$ $n$ times where $n$ is a natural number.
 \item \texttt{s[i]} : to get the $i_{th}$ character of string $s$.
 \end{enumerate}
 \textsc{setlX} also provides \textsl{string interpolation} where any string containing substring of it enclosed between two ``\texttt{\symbol{36}}'' signs, \textsc{setlX} evaluates the expression between them then substitute the result of it into the string. For example, if $n$ has the value of $6$
@@ -325,7 +325,7 @@ will actually print
 \\[0.2cm]
 \\
 
-\textsc{setlX} provides also \textsl{first order terms} similar to the one provided by the programming language \textsl{Prolog}. Terms consists of \textsl{functors} and \textsl{arguments}. The difference between a \textsl{functor} and a \textsl{function} is that \textsl{functors} start with a capital letter and doesn't evaluate anything. An example for using \textsl{Terms} is implementing \href{http://en.wikipedia.org/wiki/Binary_search_tree}{\emph{ordered binary trees}}.
+\textsc{setlX} provides also \textsl{first order terms} similar to the one provided by the programming language \textsl{Prolog}. Terms consists of \textsl{functors} and \textsl{arguments}. The difference between a \textsl{functor} and a \textsl{function} is that \textsl{functors} start with a capital letter and don't evaluate anything. An example for using \textsl{Terms} is implementing \href{http://en.wikipedia.org/wiki/Binary_search_tree}{\emph{ordered binary trees}}.
 \begin{enumerate}
 \item An empty tree is represented as
       \\[0.2cm]
@@ -362,7 +362,7 @@ and executing \texttt{args(Node(3,Nil(),Nil()))} yields a result of \texttt{[3, 
 and executing \texttt{makeTerm(\symbol{34}Node\symbol{34},[ makeTerm(\symbol{34}Nil\symbol{34},[]), makeTerm(\symbol{34}Nil\symbol{34},[]) ])} constructs the term \texttt{Node(3, Nil(), Nil())}.
 \\
 \\
-Figure \ref{fig:binary-tree-no-matching.stlx} actually shows how terms can be used in \textsc{setlX} to implement binary trees.
+Figure \ref{fig:binary-tree-no-matching.stlx} actually shows how terms can be used in \textsc{setlX} to implement ordered binary trees.
 \pagebreak
 \begin{figure}[!ht]
 \centering
@@ -396,8 +396,10 @@ Figure \ref{fig:binary-tree-no-matching.stlx} actually shows how terms can be us
 \label{fig:binary-tree-no-matching.stlx}
 \end{figure}
 
-\subsection{Statements in \textsc{setlX}}
-In this subsection we are going to talk about different kinds of statements in \textsc{setlX}. The most basic statements are the assignment statements. In \textsc{setlX}, you can have a single assignment like
+In an ordered binary tree any node will have nodes with lower values inserted on left of it and any nodes with higher values inserted on right of it, and in case the inserted node has the same value of an existing node then it won't be inserted into the tree. This is exactly what happens in the example shown in figure \ref{fig:binary-tree-no-matching.stlx} where $m$ represents the tree and $k1$ represents the value of the node to be inserted. The tree's parent node is first checked if it's empty by checking if the functor of this node is \texttt{Nill} which will match the first case of the switch statement. If that condition is true then the returned tree will just be the newly inserted node, otherwise if it's a non-empty \texttt{Node} it will then match the second statement, in this case at line '$6$' $k2$ will have the value of this node while $l$ and $r$ will hold the left and right sub-trees of this node respectively. After that three nested \textsl{if-conditions} are executed. If the inserted node's value has the same value of the current node than nothing happens, otherwise if it has a lower value then a recursion happens only this time checking the inserted node with the left sub-tree, the same goes for the case if the inserted node is higher only this time with the right sub-tree. 
+
+\section{Statements in \textsc{setlX}}
+In this section we are going to talk about different kinds of statements in \textsc{setlX}. The most basic statements are the assignment statements. In \textsc{setlX}, you can have a single assignment like
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{x := 2;}
@@ -591,7 +593,7 @@ calling \texttt{reverse("abc");} will yield an output of "cba". There are other 
 \label{fig:binary-tree.stlx}
 \end{figure}
 
-A more complex example is shown in figure \ref{fig:diff.stlx} which computes the derivative of $t$ relative to $x$. In order to understand this example better, we have to discuss some predefined functions which convert strings to terms which are the \textsl{canonical} and the \textsl{parse} functions. These functions are going to be discussed in the last sub-chapter entitled \textsl{predefined functions}.
+A more complex example is shown in figure \ref{fig:diff.stlx} which computes the derivative of $t$ relative to $x$. In order to understand this example better, we have to discuss some predefined functions which convert strings to terms which are the \textsl{canonical} and the \textsl{parse} functions. These functions are going to be discussed in the last section entitled \textsl{predefined functions}.
 
 \begin{figure}[!ht]
 \centering
@@ -745,7 +747,7 @@ A simple iterator would be $x$ in $s$ where $s$ is a set or a list or a string. 
 \end{figure}
 \pagebreak
 
-\subsection{Regular Expressions}
+\section{Regular Expressions}
 \textsc{setlX} like most modern programming languages support \href{http://en.wikipedia.org/wiki/Regular_expression}{\emph{Regular expressions}} which is a very powerful tool to process strings. Regular Expressions can be used in match statements. One example for that is shown in figure \ref{fig:regexp.stlx} which is a procedure that takes a certain string and recognize if it's a word, integer or just a white space.
 
 \begin{figure}[!ht]
@@ -841,7 +843,465 @@ Given bellow some examples for predefined functions for Regular Expressions.
 \end{enumerate}
 
 
-\subsection{Functional Programming and Closures}
+\section{Functional Programming}
+It has been stated previously that \textsc{setlX} is full-fledged functional language. Functions can be used as arguments to other functions and as return values. There is no big difference between the type of a function and any other type that can be assigned to a variable.
+
+Using functions as arguments to other functions is not that commonly seen in conventional programming languages. Figure \ref{fig:reduce.stlx} shows an example for that. In this example the function \textsl{reduce} takes two arguments which are $l$ as a list and $f$ as a function. What this function do is that it reduces the list to one single value at the end by combining all its elements by the function $f$, so if we could say that $f$ was an add function then the function \textsl{reduce} computes the sum of all its elements. In case the list was empty then the function returns the value om($\Omega$).
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    reduce := procedure(l, f) {
+        match (l) {
+            case []     : return;
+            case [x]    : return x;
+            case [x,y|r]: return reduce([f(x,y) | r], f);
+        }    
+    };
+    add      := procedure(a, b) { return a + b; };
+    multiply := procedure(a, b) { return a * b; };
+    
+    l := [1 .. 36];
+    x := reduce(l, add     );
+    y := reduce(l, multiply);
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Implementing a second order function.}
+\label{fig:reduce.stlx}
+\end{figure}
+
+Another example for second ordered functions is shown in figure \ref{fig:merge-sort.stlx}.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    sort := procedure(l, cmp) {
+        if (#l < 2) { return l; }
+        m := #l \ 2;
+        [l1, l2] := [l[.. m], l[m+1 ..]];
+        [s1, s2] := [sort(l1, cmp), sort(l2, cmp)];
+        return merge(s1, s2, cmp);
+    };
+    merge := procedure(l1, l2, cmp) {
+        match ([l1, l2]) {
+            case [[], _] : return l2;
+            case [_, []] : return l1;
+            case [[x1|r1], [x2|r2]] : 
+                 if (cmp(x1, x2)) {
+                     return [x1 | merge(r1, l2, cmp)];
+                 } else {
+                     return [x2 | merge(l1, r2, cmp)];
+                 }
+        }
+    };
+    less    := procedure(x, y) { return x < y; };
+    greater := procedure(x, y) { return y < x; };
+    l  := [1,3,5,4,2];    
+    s1 := sort(l, less   );
+    s2 := sort(l, greater);
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{A generic sort function.}
+\label{fig:merge-sort.stlx}
+\end{figure}
+
+In this example the function \textsl{sort} takes two arguments. The first argument $l$ is a list and the second argument $cmp$ is a function that compares two list elements and returns either true or false. What this function does is that it orders the list according to the second ordered function given as an argument. If for example the function \texttt{less} defined in line 20 was given as an argument, then the resulting list would be ordered ascendingly. If instead the function \texttt{greater} was the argument given, then the resulting list would be ordered descendingly.
+\\
+
+The previous two examples showed how functions can be used as arguments to other functions. As mentioned before functions can also be used as returns from other functions. Shown in figure \ref{fig:finite-difference.stlx} an example that computes the \textsl{discrete-derivative} of a certain function $f$. This example shows how functions can actually be used as a return from other functions.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    delta := procedure(f) {
+        return n |-> f(n+1) - f(n);
+    };    
+    g := n |-> n;
+    h := n |-> 2 ** n;
+    deltaG := delta(g);
+    deltaH := delta(h);
+    
+    print([ deltaG(n) : n in [1 .. 10]]);
+    print([ deltaH(n) : n in [1 .. 10]]);
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Computing the discrete derivative of a given function.}
+\label{fig:finite-difference.stlx}
+\end{figure}
+\pagebreak
+
+\section{Exceptions and Backtracking}
+
+\textsc{setlX} supports means of exception handling and backtracking. But since they are irrelevant to the project itself it won't be discussed here. To know more about them kindly check the official tutorial referenced at the beginning of this chapter. 
+
+\section{Objects and Classes}
+\textsc{setlX} supports some basic means of \href{http://en.wikipedia.org/wiki/Object-oriented_programming}{\emph{object-oriented programming}} most importantly classes. A \href{http://en.wikipedia.org/wiki/Class_(computer_programming)}{\emph{class}} is a collection of \textsl{member-variables} and \textsl{methods} where \textsl{member-variables} are some defined variables and the \textsl{methods} are some defined functions. Figure \ref{fig:point.stlx} shows an example for creating a class \textsl{point} which represents a point in a plane.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    class point(x, y) {
+        mX := x;
+        mY := y;
+    
+        getX  := procedure()  { return mX;             };
+        getY  := procedure()  { return mY;             };
+        setX  := procedure(x) { this.mX := x;          };
+        setY  := procedure(y) { this.mY := y;          };
+        toStr := procedure()  { return "<$mX$, $mY$>"; };
+
+        distance := procedure(p) {
+            return sqrt((mX - p.getX()) ** 2 + (mY - p.getY()) ** 2);
+        };
+    }
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{The class \texttt{point}.}
+\label{fig:point.stlx}
+\end{figure}
+
+The first line of this example defines the class along with the constructor of this class where the constructor takes two arguments $x$ and $y$. The general form of a class definition is as follows
+
+\vspace{0.2cm}
+\hspace*{0.8cm}
+\texttt{class} \textsl{name}$(x_1, \cdots, x_n)$ \texttt{\{}  
+\\
+\hspace*{2.0cm} \textsl{member-and-method-definitions}
+\\
+\hspace*{1.3cm}
+\texttt{\}}
+\\[0.2cm]
+where \textsl{name} is the name of the class, $x_1, \cdots, x_n$ are the formal parameters of the constructor and \textsl{member-and-method-definitions} are the definitions of member variables and methods. In this example \textsl{mX and mY} are the defined member variables while \textsl{getX, getY, setX, setY, toStr and distance} are the class methods.
+
+We can define an object \textsl{origin} of this class
+\texttt{point} by writing
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{origin := point(0, 0);}
+\\[0.2cm]
+then if we would print the object itself by writing 
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{print(origin);}
+\\[0.2cm]
+that would yield the output shown in figure \ref{fig:print_origin}. This output has been formatted this way to make it readable. Note that the constructor of the class \texttt{point} is part of the object origin.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.0cm,
+                  xrightmargin  = 0.0cm,
+                ]
+    object<
+        { distance := procedure(p) { 
+                          return sqrt((mX-p.getX()) ** 2 + (mY-p.getY()) ** 2); 
+                      }; 
+          toStr := procedure() { return "<$mX$, $mY$>"; }; 
+          setX  := procedure(x) { this.mX := x; }; 
+          getY  := procedure() { return mY; }; 
+          mX    := 0; 
+          setY  := procedure(y) { this.mY := y; }; 
+          getX  := procedure()  { return mX; }; 
+          mY    := 0; 
+          class (x, y) { 
+              mX := x; 
+              mY := y; 
+              distance := procedure(p) { 
+                  return sqrt((mX - p.getX()) ** 2 + (mY - p.getY()) ** 2); 
+              }; 
+              getX := procedure() { return mX; };
+              getY := procedure() { return mY; }; 
+              setX := procedure(x) { this.mX := x; }; 
+              setY := procedure(y) { this.mY := y; }; 
+              toStr := procedure() { return "<$mX$, $mY$>"; }; 
+          } 
+        }
+    >
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{The output of the command ``\texttt{print(origin);}''.}
+\label{fig:print_origin}
+\end{figure}
+
+The fact that all methods are stored as part of the object may seem redundant but in fact it's useful in case we needed to disable a method of the class from being used for a certain object. For example to disable the setter methods for the object \textsl{origin} by simply writing
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{origin.setX := om;}
+\\
+\hspace*{1.3cm}
+\texttt{origin.setY := om;}
+\\[0.2cm]
+
+If we don't want to change methods on a per-object basis, we just need to declare these methods to be static as shown in figure \ref{fig:point-static.stlx}.
+
+\begin{figure}[!htb]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    class point(x, y) {
+        mX := x;
+        mY := y;
+    
+      static {
+        getX  := procedure()  { return mX;             };
+        getY  := procedure()  { return mY;             };
+        setX  := procedure(x) { this.mX := x;          };
+        setY  := procedure(y) { this.mY := y;          };
+        toStr := procedure()  { return "<$mX$, $mY$>"; };
+ 
+        distance := procedure(p) {
+            return sqrt((mX - p.getX()) ** 2 + (mY - p.getY()) ** 2);
+        };
+      }
+    }
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{The class \texttt{point} implemented using static methods.}
+\label{fig:point-static.stlx}
+\end{figure}
+
+Now in this case the command 
+\\[0.2cm]
+\hspace*{1.3cm}
+\texttt{print(origin);}
+\\[0.2cm]
+will yield the output shown in figure \ref{fig:point-static.stlx-origin}.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.0cm,
+                  xrightmargin  = 0.0cm,
+                ]
+    object<
+        { mX := 0; 
+          mY := 0; 
+          class (x, y) { 
+              mX := x; 
+              mY := y; 
+            static { 
+              distance := procedure(p) { 
+                              return sqrt((mX-p.getX()) ** 2 + (mY-p.getY()) ** 2); 
+                          }; 
+              getX  := procedure()  { return mX;             }; 
+              getY  := procedure()  { return mY;             }; 
+              setX  := procedure(x) { this.mX := x;          }; 
+              setY  := procedure(y) { this.mY := y;          }; 
+              toStr := procedure()  { return "<$mX$, $mY$>"; }; 
+            } 
+          } 
+        }
+    >
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Output of ``\texttt{print(origin);}''.}
+\label{fig:point-static.stlx-origin}
+\end{figure}
+
+\section{Predefined Functions}
+
+\textsc{setlX} provides a lot of predefined functions for
+\begin{enumerate}
+\item dealing with sets and strings.
+\item dealing with strings.
+\item working with terms.
+\item working with mathematical functions.
+\item dealing with objects.
+\item supporting interactive debugging.
+\item dealing with I/O.
+\end{enumerate}
+
+Some of the predefined functions have been mentioned earlier. Since there are too many predefined functions, we are only going to discuss the most important of them that are used in the implementation of the static analysis.
+
+\begin{enumerate}
+\item \texttt{+}: computes the union of its arguments which are either sets or lists.
+\item \texttt{first}: The function $\texttt{first}(s)$ picks the first  element from the
+      sequence $s$.  The argument $s$ can either be a set, a list, or a string.
+      \item \texttt{fromB}: The function $\texttt{fromB}(s)$ picks the first element from the
+      sequence $s$.  The argument $s$ can either be a set, a list, or a string.  This
+      element is 
+      removed from $s$ and returned.  This function returns the same element as the
+      function \texttt{first} discussed previously.
+\item \texttt{fromE}: The function $\texttt{fromB}(s)$ picks the last element from the
+      sequence $s$.  The argument $s$ can either be a set, a string, or a list.  This element is
+      removed from $s$ and returned.  This function returns the same element as the
+      function \texttt{last} discussed previously.
+\item \texttt{domain}: If $r$ is a binary relation, then the equality
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{domain(r) = \{ x :[x,y] in R \}}
+      \\[0.2cm]
+      holds.  For example, we have
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{domain(\{[1,2],[1,3],[5,7]\}) = \{1,5\}}.
+\item \texttt{execute}: The function \texttt{execute}  is called as
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      $\mathtt{execute}(s)$.
+      \\[0.2cm]
+      Here, $s$ has to be a string that can be parsed as a \textsc{setlX} statement.  This statement
+      is then executed in the current variable context and the result of this evaluation is
+      returned.   Note that $s$ can describe a \textsc{setlX} expression of arbitrary complexity.
+      For example, the statement
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{execute("f := procedure(x) \{ return x * x; \};");}
+      \\[0.2cm]
+      has the same effect as the following statement:
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{f := procedure(x) \{ return x * x; \};}
+\item \texttt{split}: The function \texttt{split} is called as
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      $\texttt{split}(s,t)$.
+      \\[0.2cm]
+      Here, $s$ and $t$ have to be strings.  $t$ can either be a single character or 
+      a regular expression. The call $\mathtt{split}(s, t)$ splits the string $s$ at all
+      occurrences of $t$.  The resulting parts of $s$ are collected into a list.
+      If $t$ is the empty string, the string $s$ is split into all of its characters.
+      For example, the expression
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{split("abc", "");}
+      \\[0.2cm]
+      returns the list \texttt{["a", "b", "c"]}.  As another example,
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{split("abc  xy z", " +");}
+      \\[0.2cm]
+      yields the list
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{["abc", "xy", "z"]}.
+      \\[0.2cm]
+      Note that we have used the regular expression ``\texttt{+}'' to specify one or more
+      blank characters.
+
+      Certain \emph{magic} characters, i.e.~all those characters that serve as operator
+      symbols in regular expressions have to be escaped if they are intended as split
+      characters.  Escaping is done by prefixing two backslash symbols to the respective 
+      character as in the following example:
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{split("abc|xyz", "\symbol{92}\symbol{92}|");}
+      \\[0.2cm]
+      The function \texttt{split} is very handy when processing comma separated values from
+      \textsc{CVS} files.
+\item \texttt{str}:  The function \texttt{str} is called as
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      $\texttt{str}(a)$
+      \\[0.2cm]
+      where the argument $a$ can be anything.  This function computes the string
+      representation of $a$.  For example, after defining the function \texttt{f} as
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{f := procedure(n) \{ return n * n; \};}
+      \\[0.2cm]
+      the expression \texttt{str(f)} evaluates to the string
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{"procedure(n) \{ return n * n; \}"}.
+\item \texttt{canonical}:  Given a term $t$, the expression $\mathtt{canonical}(t)$
+      returns a string that is the canonical representation of the term $t$.  The 
+      point is, that all operators in $t$ are replaced by functors that denote
+      these operators internally.  For example, the expression
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{canonical(parse("x+2*y"));}
+      \\[0.2cm]
+      yields the string
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{\symbol{94}sum(\symbol{94}variable(\symbol{34}x\symbol{34}), \symbol{94}product(2, \symbol{94}variable(\symbol{34}y\symbol{34})))}.
+      \\[0.2cm]
+      This shows that, internally, variables are represented using the functor
+      \texttt{\symbol{94}variable} and that the operator ``\texttt{+}'' is represented by
+      the functor \texttt{\symbol{94}sum}.
+\item \texttt{parseStatements}:  Given a string $s$, the expression
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      $\mathtt{parseStatements}(s)$ 
+      \\[0.2cm]
+      tries to parse the string $s$ as a sequence of \textsc{setlX} statements.   In order to visualize the structure of
+      this term,  the function \texttt{canonical} disussed above can be used.  For
+      example, the expression
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{canonical(parseStatements("x := 1; y := 2; z := x + y;"));}
+      \\[0.2cm]
+      yields the following term (which has been formatted for easier readability):
+\begin{verbatim}
+      ^block([^assignment(^variable("x"), 1), 
+              ^assignment(^variable("y"), 2), 
+              ^assignment(^variable("z"), ^sum(^variable("x"), ^variable("y")))
+             ])
+\end{verbatim}
+\end{enumerate}
+
+\chapter{Implementation}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
