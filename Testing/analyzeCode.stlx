@@ -259,8 +259,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	case ^assignment(^variable(_), y): getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 									   return;
 	
-	case ^assignment([a|b], y)       : getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
-									   return;
+	case ^assignment(^assignListConstructor(_), y): getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+													return;
 									   
 	case ^assignment(x, y)           : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
@@ -1453,8 +1453,8 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClass
 												}
 												return; 
 	
-	case ^assignment([a|b], y)		 	: for(z in [a|b]){addDefinedVariables(^assignment(z,2), definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);} return; //Just putting any fake assignment for the 
-																											   //variable to be counted as a defined variable.
+	case ^assignment(^assignListConstructor([a|b]), y)	: for(z in [a|b]){addDefinedVariables(^assignment(z,2), definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);} return; //Just putting any fake assignment for the 
+																																																		  //variable to be counted as a defined variable.
 	
 	case ^assignment(x, y)				: return;
 	
