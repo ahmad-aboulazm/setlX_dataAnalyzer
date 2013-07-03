@@ -1219,6 +1219,75 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 											getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
 											return;
 
+	case ^setlIterator(^assignListConstructor(x), [y], z): 			
+											for(w in x){
+												addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
+											}
+											if(forLoopCase == true)
+											{
+												forLoopTmpDefVars := forLoopTmpDefVars + tempDefinedVars;
+											}
+											usedVariablesInS := {};
+											for(w in [y])
+											{
+												getUsedVariables(w, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+											}
+											//print(usedVariablesInS);
+											for(v in usedVariablesInS) // Checking that any S is defined before locally or globally
+											{
+												v := str(v);
+												if((v in definedVars) && (!((v in tempDefinedVars) || (v in forLoopTmpDefVars) || (v in exceptionTmp) || (v in matchTmp))))
+												{
+													usedVariables := usedVariables + {v};
+												}
+												
+												if(!((v in tempDefinedVars) || (v in definedVars) || (v in forLoopTmpDefVars) || (v in exceptionTmp) || (v in matchTmp)))
+												{
+													print("Variable " + v + " in an iterator is called without being defined !");
+												}
+											}
+											if(!iteratorCase) // for the loops' cases
+											{
+												for(w in [y])
+												{
+													getUsedVariables(w, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+												}
+											}
+									   
+											getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+											return;
+
+	case ^setlIterator(^assignListConstructor(x), y, z):
+											for(w in x){
+											addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); // Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
+											}
+											if(forLoopCase == true)
+											{
+												forLoopTmpDefVars := forLoopTmpDefVars + tempDefinedVars;
+											}
+											usedVariablesInS := {};
+											getUsedVariables(y, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+											//print(usedVariablesInS);
+											for(v in usedVariablesInS) // Checking that any S is defined before locally or globally
+											{
+												v := str(v);
+												if((v in definedVars) && (!((v in tempDefinedVars) || (v in forLoopTmpDefVars) || (v in exceptionTmp) || (v in matchTmp))))
+												{
+													usedVariables := usedVariables + {v};
+												}
+												
+												if(!((v in tempDefinedVars) || (v in definedVars) || (v in forLoopTmpDefVars) || (v in exceptionTmp) || (v in matchTmp)))
+												{
+													print("Variable " + v + " in an iterator is called without being defined !");
+												}
+											}
+											if(!iteratorCase) // for the loops' cases
+											{
+													getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+											}
+									   
+											getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+											return;
 		
 		
 	case ^setlIterator(x, [y], z): 			for(w in x){
