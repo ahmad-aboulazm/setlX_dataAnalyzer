@@ -1676,7 +1676,7 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClass
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 checkCode := procedure(l, rw definedVars, rw allUsedVars, isProcedure, procName, procParameters, rw procEmbeddedProcedures, rw allProceduresIdenteties, forLoopCase, rw forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, rw allClassesIdenteties) {
-print("checkCode : " + canonical(l));
+//print("checkCode : " + canonical(l));
 match(l){
 	case ^block(l2)                 :  		for(y in l2){
 															checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
