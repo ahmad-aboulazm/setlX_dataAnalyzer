@@ -127,7 +127,7 @@ getProcedureIdentity := procedure(name, code, rw allProceduresIdenteties){
 };
 
 
-checkProcedure := procedure(name, x, rw allProceduresIdenteties, allClassesIdenteties, classVariables, isClass, className){
+checkProcedure := procedure(name, x, rw allProceduresIdenteties, rw allClassesIdenteties, classVariables, isClass, className){
 //print("checkProcedure : " + canonical(x));
 	match(x){
 
@@ -261,7 +261,38 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	
 	case ^assignment(^assignListConstructor(_), y): getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 													return;
-									   
+	
+	case ^assignment(^memberAccess(x, y), z): 
+									if(!isClass){
+									newClassName := "extra-" + str(x);
+									//print(newClassName);
+									if(!(newClassName in domain(allClassesIdenteties))){
+										oldClassProperties := {oc : oc in allClassesIdenteties | str(x) in oc[2][4]};
+										if(#oldClassProperties != 0){
+										   oldClassProperties := first(oldClassProperties);
+										   oldClassProperties := oldClassProperties[2];
+										}
+										else{
+										   a := {f : g in allClassesIdenteties, f in g[2][1]};
+										   b := {f : g in allClassesIdenteties, f in g[2][2]};
+										   c := {f : g in allClassesIdenteties, f in g[2][3]};
+										   d := {f : g in allClassesIdenteties, f in g[2][4]};
+										   oldClassProperties := [a, b, c, d];
+										}
+										oldClassProperties[4] := {str(x)};
+										//print(oldClassProperties);
+										oldClassProperties[2] += {str(y)};
+										allClassesIdenteties := allClassesIdenteties + {[newClassName, oldClassProperties]};
+										//print(allClassesIdenteties);
+									}
+									else{
+										allClassesIdenteties[newClassName][2] += {str(y)};
+									}
+									}
+									getUsedVariables(^memberAccess(x, y), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+									return;
+	
 	case ^assignment(x, y)           : getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 									   getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
 									   return;
@@ -1004,7 +1035,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 									   getUsedVariables(^variable(x), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 									}
 									else{
-									   print("Attention! calling class procedure $y$ for object $x$ iis uncorrect!");
+									   print("Attention! calling class procedure $y$ for object $x$ is uncorrect!");
 									   getUsedVariables(^variable(x), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
 									}
 									for(w in z){
@@ -1453,7 +1484,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 												getUsedVariables(y, tempYUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
 												tempY := first(tempYUsed);
 												for(o in allClassesIdenteties){
-													if((tempX in o[2][4]) && (tempY in o[2][2])){
+													if(tempY in o[2][2]){
 														found := true;
 													}
 												}
@@ -1512,7 +1543,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 											getUsedVariables(y, tempYUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
 											tempY := first(tempYUsed);
 											for(o in allClassesIdenteties){
-												if((tempX in o[2][4]) && (tempY in o[2][2])){
+												if(tempY in o[2][2]){
 													found := true;
 												}
 											}
@@ -1558,7 +1589,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-addDefinedVariables := procedure(l, rw definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck) {	
+addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allClassesIdenteties, isProcedure, classCheck) {	
 //print("addDefinedVariables : " + canonical(l));
 	match(l){
 	
@@ -1733,6 +1764,92 @@ match(l){
 																   checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
 																}
 																return;
+																
+	//Adding members to existing objects
+	case ^assignment(^memberAccess(^variable(a),^variable(b)), ^procedure(y, z)) :	
+																					newClassName := "extra-" + str(a);
+																					//print(newClassName);
+																					if(!(newClassName in domain(allClassesIdenteties))){
+																					   oldClassProperties := {oc : oc in allClassesIdenteties | str(a) in oc[2][4]};
+																					   if(#oldClassProperties != 0){
+																					      oldClassProperties := first(oldClassProperties);
+																					      oldClassProperties := oldClassProperties[2];
+																					   }
+																					   else{
+																					      a := {f : g in allClassesIdenteties, f in g[2][1]};
+																						  b := {f : g in allClassesIdenteties, f in g[2][2]};
+																						  c := {f : g in allClassesIdenteties, f in g[2][3]};
+																						  d := {f : g in allClassesIdenteties, f in g[2][4]};
+																						  oldClassProperties := [a, b, c, d];
+																					   }
+																					   oldClassProperties[4] := {str(a)};
+																					   //print(oldClassProperties);
+																					   checkProcedure(b, ^procedure(y, z), oldClassProperties[3], allClassesIdenteties, oldClassProperties[2] + {"this"}, isClass, className);
+																					   allClassesIdenteties := allClassesIdenteties + {[newClassName, oldClassProperties]};
+																					}
+																					else{
+																					   checkProcedure(b, ^procedure(y, z), allClassesIdenteties[newClassName][3], allClassesIdenteties, allClassesIdenteties[newClassName][2] + {"this"}, isClass, className);
+																					}
+																					allClassesIdenteties[newClassName][3] += {[str(b),[]]};
+																					getProcedureIdentity(str(b), ^procedure(y, z), allClassesIdenteties[newClassName][3]);
+																					return;
+	case ^assignment(^memberAccess(^variable(a),^variable(b)), ^cachedProcedure(y, z)) :	
+																					newClassName := "extra-" + str(a);
+																					//print(newClassName);
+																					if(!(newClassName in domain(allClassesIdenteties))){
+																					   oldClassProperties := {oc : oc in allClassesIdenteties | str(a) in oc[2][4]};
+																					   if(#oldClassProperties != 0){
+																					      oldClassProperties := first(oldClassProperties);
+																					      oldClassProperties := oldClassProperties[2];
+																					   }
+																					   else{
+																					      a := {f : g in allClassesIdenteties, f in g[2][1]};
+																						  b := {f : g in allClassesIdenteties, f in g[2][2]};
+																						  c := {f : g in allClassesIdenteties, f in g[2][3]};
+																						  d := {f : g in allClassesIdenteties, f in g[2][4]};
+																						  oldClassProperties := [a, b, c, d];
+																					   }
+																					   oldClassProperties[4] := {str(a)};
+																					   //print(oldClassProperties);
+																					   checkProcedure(b, ^procedure(y, z), oldClassProperties[3], allClassesIdenteties, oldClassProperties[2] + {"this"}, isClass, className);
+																					   allClassesIdenteties += [newClassName, oldClassProperties];
+																					   
+																					}
+																					else{
+																					   checkProcedure(b, ^procedure(y, z), allClassesIdenteties[newClassName][3], allClassesIdenteties, allClassesIdenteties[newClassName][2] + {"this"}, isClass, className);
+																					}
+																					allClassesIdenteties[newClassName][3] += {[str(b),[]]};
+																					getProcedureIdentity(str(b), ^procedure(y, z), allClassesIdenteties[newClassName][3]);
+																					return;	
+																
+	case ^assignment(^memberAccess(^variable(a),^variable(b)), ^lambdaDefinition(y, z))	:
+																					newClassName := "extra-" + str(a);
+																					//print(newClassName);
+																					if(!(newClassName in domain(allClassesIdenteties))){
+																					   oldClassProperties := {oc : oc in allClassesIdenteties | str(a) in oc[2][4]};
+																					   if(#oldClassProperties != 0){
+																					      oldClassProperties := first(oldClassProperties);
+																					      oldClassProperties := oldClassProperties[2];
+																					   }
+																					   else{
+																					      a := {f : g in allClassesIdenteties, f in g[2][1]};
+																						  b := {f : g in allClassesIdenteties, f in g[2][2]};
+																						  c := {f : g in allClassesIdenteties, f in g[2][3]};
+																						  d := {f : g in allClassesIdenteties, f in g[2][4]};
+																						  oldClassProperties := [a, b, c, d];
+																					   }
+																					   oldClassProperties[4] := {str(a)};
+																					   //print(oldClassProperties);
+																					   checkProcedure(b, ^procedure(y, ^block([z])), oldClassProperties[3], allClassesIdenteties, oldClassProperties[2] + {"this"}, isClass, className);
+																					   allClassesIdenteties += [newClassName, oldClassProperties];
+																					   
+																					}
+																					else{
+																					   checkProcedure(b, ^procedure(y, ^block([z])), allClassesIdenteties[newClassName][3], allClassesIdenteties, allClassesIdenteties[newClassName][2] + {"this"}, isClass, className);
+																					}
+																					allClassesIdenteties[newClassName][3] += {[str(b),[]]};
+																					getProcedureIdentity(str(b), ^procedure(y, ^block([z])), allClassesIdenteties[newClassName][3]);
+																					return;
 	
 	//if condition
 	case ^ifThen(x)   		         : for(y in x) 
