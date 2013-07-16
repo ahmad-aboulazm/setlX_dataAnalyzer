@@ -21,13 +21,40 @@
 
 
 \begin{document}
-\title{Static Program Analysis for \textsc{SetlX}}
-\author{Ahmad Aboulazm}
-\date{\today}
-\maketitle
-\pagebreak
+
+\begin{center}
+\includegraphics [scale=0.25] {GUClogo.pdf}
+\\
+\textbf{Faculty of Media Engineering and Technology}
+\\
+\textbf{German University in Cairo}
+\\
+\includegraphics [scale=0.75] {DHBWlogo.png}
+\\
+\textbf{Faculty of Computer Science}
+\\
+\textbf{Duale Hochschule Baden-Wurttemberg}
+\vspace{2cm}
+\\
+\begin{huge}
+\textbf{Static Program Analysis for \textsc{SetlX}}
+\end{huge}
+\\[2cm]
+\textbf{Bachelor Thesis}
+\begin{tabbing}\hspace{5cm}
+Author: Ahmed AboulAzm\\\hspace{5cm}
+Supervisor: Professor Karl Stroetmann\\\hspace{5cm}
+Submission Date: {\today}
+\end{tabbing}
+\end{center}
+\vspace{1.5cm}
+I hereby certify that the thesis comprises only my original work towards my Bachelor Degree.
+\begin{flushright}
+\textbf{Ahmed AboulAzm}\\
+\today
+\end{flushright}
+
 \tableofcontents
-\pagebreak
 
 
 \chapter{Introduction}
@@ -1296,7 +1323,7 @@ Some of the predefined functions have been mentioned earlier. Since there are to
 
 \chapter{Implementation}
 
-In this chapter we are going to discuss the implementation of the analyzer itself. Since the code is too long, we are going only to discuss the focal points of each part of it.
+In this chapter we are going to discuss the implementation of the analyzer itself. Since the code is too long, we are going to give an overview and state the purpose of every function in it, but we are only going to explain the inner workings of some of them. 
 
 First of all, in order to run the analyzer you have to type
 \\[0.2cm]
@@ -1309,6 +1336,10 @@ in the command line prompt for windows users or in the terminal for Mac or Unix 
 In the upcoming sections we will discuss each part of the code separately. Other parts will be referenced but won't be discussed at the time but instead in their own specified sections.
 
 
+
+
+\section{main Function}
+
 \begin{figure}[!htb]
 \centering
 \begin{Verbatim}[ frame         = lines, 
@@ -1320,63 +1351,61 @@ In the upcoming sections we will discuss each part of the code separately. Other
                   xleftmargin   = 0.8cm,
                   xrightmargin  = 0.8cm,
                 ]
-    for(directory in params){
-	print("NOW CHECKING $directory$");
-	directory := str(directory);
-	l := readFile(directory); 
-	l := +/ [ g + "\n" : g in l ];
-	l := parseStatements(l);
+    main := procedure(params){
+    for(file in params){
+	print("NOW CHECKING $file$");
+	file := str(file);
+	listOfLines := readFile(file); 
+	listOfLinesSeparated := +/ [ g + "\n" : g in listOfLines ];
+	statements := parseStatements(listOfLinesSeparated);
 
 	definedVars := {};
 	allUsedVars := {};
-	allProceduresIdenteties := {};
-	allClassesIdenteties := {};
+	allProceduresidentities := {};
+	allClassesidentities := {};
 	
-	
-	identifyAllProcedures(l, allProceduresIdenteties);
-	identifyAllClasses(l, allClassesIdenteties);
-	analyzeAllLoadedFiles(l, definedVars, allUsedVars,
-	 allProceduresIdenteties, allClassesIdenteties);
-	
-	checkCode(l, definedVars, allUsedVars, false, "", 
-	{}, {}, allProceduresIdenteties, false, {}, {}, {},
-	 false, "", allClassesIdenteties);
-	
+	identifyAllProcedures(statements, allProceduresidentities);
+	identifyAllClasses(statements, allClassesidentities);
+	analyzeAllLoadedFiles(statements, definedVars, allUsedVars,
+	   allProceduresidentities, allClassesidentities);
+	checkCode(statements, definedVars, allUsedVars, false, "", {},
+	    {}, allProceduresidentities, false, {}, {}, {}, false, "", 
+	    allClassesidentities);
 	unUsedVars := definedVars-allUsedVars;
 	if(#unUsedVars != 0)
 	{
 		if(#unUsedVars == 1){
-		   print("Variable " + unUsedVars + " is defined
-		    but never used in the whole code! unless
-		     it(they) was(were) assigned to a returned
-		      procedure");
+		   print("Variable " + unUsedVars + " is defined but 
+		   never used in the whole code! unless it was assigned 
+		   to a returned  procedure");
 		}
 		else{
-		   print("Variables " + unUsedVars + " are
-		    defined but never used in the whole code!
-		     unless it(they) was(were) assigned to a
-		      returned procedure");
+		   print("Variables " + unUsedVars + " are defined but
+		    never used in the whole code! unless they were 
+		    assigned to a returned procedure");
 		
 		}
 	}
-	print("DONE CHECKING $directory$");
+	print("DONE CHECKING $file$");
     }
+    };
 \end{Verbatim}
 \vspace*{-0.3cm}
-\caption{The main part of the analyzer's code.}
+\caption{The main function of the analyzer's code.}
 \label{fig:startAnalyzing}
 \end{figure}
-\section{Main Part}
-The main part of the code is shown in figure \ref{fig:startAnalyzing}.
+
+The main function of the code is shown in figure \ref{fig:startAnalyzing}.
 \begin{enumerate}
-\item The main part consists of a \textsl{for-loop} that loops through the files to be checked printing the beginning and the end of it to notify the user which file is being checked at the moment. 
-\item After reading the file into the variable \texttt{l}, in \textsl{line 5} a new line "$\setminus$n" in then added to the end of each line in the code in order to separate them. The reason for that is to avoid the commenting sign "$\setminus\setminus$" at any line from commenting all code lines followed by it.
-\item After that in \textsl{line 6} the code is then parsed and saved in the same variable \texttt{l}.
-\item In lines $8$ to $11$, four empty sets are created to be used later for checking the code.
-\item In \textsl{line 14} and \textsl{line 15} all existing procedures and classes in the code being checked are saved by a certain format in the variables called \textsl{allProceduresIdenteties} and \textsl{allClassesIdenteties}.
+\item The main function takes one argument '\texttt{params}' which is the file or the list of files to be checked.
+\item The main function consists of a \textsl{for-loop} that loops through the files to be checked printing the beginning and the end of it to notify the user which file is being checked at the moment. 
+\item After reading the file into the variable \texttt{listOfLines}, in \textsl{line 6} a new line "$\setminus$n" in then added to the end of each line in the code in order to separate them. The reason for that is to avoid the commenting sign "//" at any line from commenting all code lines followed by it. That is saved into the variable \texttt{listOfLinesSeparated}.
+\item After that in \textsl{line 7} the code is then parsed and saved in the same variable \texttt{statements}.
+\item In lines $9$ to $12$, four empty sets are created to be used later for checking the code. Sets \texttt{definedVars} and \texttt{allUsedVars} to save the defined and used variables in the code, while \texttt{allProceduresIdentities} and \texttt{allClassesIdentities} are used to save all existing procedures and classes in the code in a certain format that is going to be discussed later.
+\item In \textsl{line 14} and \textsl{line 15} all existing procedures and classes in the code being checked are saved by a certain format in the variables called \textsl{allProceduresIdentities} and \textsl{allClassesIdentities}.
 \item After that in \textsl{line 16} the analyzer checks all files being loaded by the analyzed file using the \textsl{analyzeAllLoadedFiles} function so that any important information in them would be available further on when checking the file being analyzed.
-\item The most important part then comes at \textsl{line 19} which is checking if there is any warning mentioned in the first chapter should appear to the user concerning his/her code using the \textsl{checkCode} function.
-\item Then starting \textsl{line 23} upto \textsl{line 39} the analyzer checks if there were any variables defined throughout the whole code that were never used and in such case it prints to the user a notification concerning these variables.
+\item The most important part then comes at \textsl{line 18} which is checking if there is any problem in the code that should appear to the user using the \textsl{checkCode} function.
+\item Then starting \textsl{line 21} upto \textsl{line 35} the analyzer checks if there were any variables defined throughout the whole code that were never used and in such case it prints to the user a notification concerning these variables.
 \item This process is then repeated in case there were more files to be checked.
 \end{enumerate}
 
@@ -1391,14 +1420,14 @@ The \textsl{checkcode} function takes 15 arguments which are :
 \item \texttt{procName} : which holds the name of the procedure currently being checked. If the current code being checked didn't belong to a procedure then it's just an empty string. 
 \item \texttt{procParameters} : which is the set of parameters of the current procedure being checked. If the current code being checked didn't belong to a procedure then this argument is just an empty set.
 \item \texttt{rw procEmbeddedProcedures} : which is a set that holds all procedures defined inside the procedure being checked in case they existed, if not then it is just the empty set.
-\item \texttt{rw allProceduresIdenteties} : which is a set containing the identities of all existing procedures in the code in a certain format which is discussed in the section entitled \texttt{\textsl{identifyAllProcedures Function}}.
+\item \texttt{rw allProceduresIdentities} : which is a set containing the identities of all existing procedures in the code in a certain format which is discussed in the section entitled \texttt{\textsl{identifyAllProcedures Function}}.
 \item \texttt{forLoopCase} : which is a boolean value that indicates if the current code being checked belonged to a for loop or not.
 \item \texttt{rw forLoopTmpDefVars} : which is a set containing the temporary defined variables in the for-loop case which are the iterators of the loop itself.
 \item \texttt{exceptionTmp} : which is a set containing the temporary defined variables for an exception in case an exception block was being checked. Otherwise, it's just an empty set.
 \item \texttt{matchTmp} : which is a set containing the temporary defined variables in a match case branch in case a match statement was being checked at the moment. Otherwise, it's just the empty set.
 \item \texttt{isClass} : which is a boolean value that indicates if the current code being checked belonged to a class or not.
 \item \texttt{className} : which is the name of the class in case the current code being checked belonged to a class. Otherwise it's just an empty string.
-\item \texttt{rw allClassesIdenteties} : which is a set containing the identities of all existing classes in the code in a certain format which is discussed in the section entitled \textsl{"identifyAllClasses Function"}.
+\item \texttt{rw allClassesIdentities} : which is a set containing the identities of all existing classes in the code in a certain format which is discussed in the section entitled \textsl{"identifyAllClasses Function"}.
 \end{enumerate}
 
 The \textsl{checkCode} function is composed of a big match statement. Its functionality is actually to decompose any block of code to simple statements in order to extract from every statement the defined and used variables in it. An example for that is the if-condition block shown below.
@@ -1416,7 +1445,7 @@ The \textsl{checkCode} function is composed of a big match statement. Its functi
 			checkCode(then, ...);
 			return;
 \end{Verbatim}
-where \texttt{cond} is the condition of the if-statement and the \texttt{then} is the block of code executed in case the condition was satisfied. The \textsl{checkCode} function does the same with all other constructors that contain blocks such as the \textsl{while-loops}, \textsl{for-loops}, \textsl{try-catch}, \textsl{check} and \textsl{switch} statements. However the \textsl{match statements} and the \textsl{scan statements} are held kind of differently by the \textsl{checkCode} function where they are only decomposed at the beginning as shown below
+where \texttt{cond} is the condition of the if-statement and the \texttt{then} is the block of code executed in case the condition was satisfied. The \textsl{checkCode} function does the same with all other constructors that contain blocks such as the \textsl{while-loops}, \textsl{for-loops}, \textsl{try-catch}, \textsl{check} and \textsl{switch} statements. However the \textsl{match statements} and the \textsl{scan statements} are held kind of differently by the \textsl{checkCode} function where they are only decomposed at the beginning as shown below :
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
                   firstnumber   = 1,
@@ -1433,6 +1462,7 @@ where \texttt{cond} is the condition of the if-statement and the \texttt{then} i
 	       	   checkCode(w, ...);
 	    	}
 \end{Verbatim}
+where $x$ is the variable being scanned, $y$ is the optional variable being used and $z$ is the list of cases.
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
                   firstnumber   = 1,
@@ -1448,7 +1478,10 @@ where \texttt{cond} is the condition of the if-statement and the \texttt{then} i
 	       	   checkCode(z, ...);
 	    	} 
 \end{Verbatim}
-Then checking their cases' first part is shown in Figure \ref{fig:matchCaseBranch-part1}
+where $x$ is the variable being matched and $y$ is the list of cases.
+\\
+
+Then checking their cases' first part is shown in Figure \ref{fig:matchCaseBranch-part1}.
 \begin{figure}[!htb]
 \centering
 \begin{Verbatim}[ frame         = lines, 
@@ -1482,10 +1515,468 @@ Then checking their cases' first part is shown in Figure \ref{fig:matchCaseBranc
 		}
 \end{Verbatim}
 \vspace*{-0.3cm}
+\caption{Match case branch-Part 1}
 \label{fig:matchCaseBranch-part1}
 \end{figure}
 
+\begin{enumerate}
+\item In \textsl{line 2} of figure \ref{fig:matchCaseBranch-part1}, all defined variables for a certain case are saved in the set \texttt{matchTmp} using the function \texttt{getMatchedVariables}. The defined variables for the case
+\\[0.2cm]
+\hspace*{0.6cm} 
+\texttt{case sum(variable(x), variable(y)) : $\cdots$}
+\\[0.2cm]
+are the variables $x$ and $y$.
 
+\item In \textsl{line 3}, variable \textsl{usedVarsInMatch} is assigned to an empty set and then all used variables in the condition '\texttt{cond}' and in the do part '\texttt{do}' are added to this set in \textsl{lines 4 and 5}.
+
+\item After that in \textsl{line 6} the variable \texttt{allVariablesAreDefined} is assigned the boolean value of true initially, and an empty set \texttt{undefinedVariables} is declared at \textsl{line 7}.
+
+\item Then starting \textsl{line 8} upto \textsl{line 19} all the used variables are checked if they were defined before or not, if they were not defined before, the boolean variable \texttt{allVariablesAreDefined} is set to false and the undefined variable is added to the set \texttt{undefinedVariables}.
+
+\item In the rest of the match case branch that doesn't appear in the figure, the undefined variables are then printed to the user indicating their location.
+
+\end{enumerate}
+
+The case of procedure assignment is not decomposed as the rest cases but is held in a different way as shown in figure \ref{fig:procedure assignment case}.
+
+\begin{figure}[!htb]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    case ^assignment(^variable(x), ^procedure(y, z)):
+	if(!isProcedure){
+		if(!isClass){
+			checkProcedure(x,^procedure(y,z),
+			   allProceduresidentities, allClassesidentities,
+			   {}, isClass, className);
+			}
+		 else{
+			 checkProcedure(x,^procedure(y,z),
+			    allProceduresidentities,allClassesidentities,
+			    allClassesidentities[className][2] + {"this"},
+			    isClass, className);															   
+			}
+		}
+	else{
+		procEmbeddedProcedures += {x};
+		definedVars := definedVars + {x};
+		allUsedVars += {x};
+		getProcedureParameters(y, definedVars, {});
+		checkCode(z, definedVars, allUsedVars, isProcedure,
+		   procName, procParameters, procEmbeddedProcedures,
+		   allProceduresidentities,forLoopCase,
+		   forLoopTmpDefVars, exceptionTmp, matchTmp, 
+		   isClass, className, allClassesidentities);
+	}
+	return;
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Procedure Assignment case}
+\label{fig:procedure assignment case}
+\end{figure}
+
+\begin{enumerate}
+\item The case of procedure assignment shown in figure \ref{fig:procedure assignment case} is composed of a big \textsl{if-else statement}. The \textsl{then} part is for the normal procedure assignment while the \textsl{else} part is for the procedures created inside other procedures. That is known through the boolean value of the variable \texttt{isProcedure}.
+
+\item The \textsl{then} part then checks if the procedure being checked belonged to a class or not. In both cases the function \texttt{checkProcedure} is called to check the procedure, the only difference is that the class procedures are allowed to use class variables beside the parameters while the normal procedures are allowed to use only the parameters given, so the \texttt{checkProcedure} function is given the class variables \texttt{allClassesIdentities[className][2]} as a parameter in case of class procedures while in case of other procedures the empty set is given as a parameter instead.
+
+\item In the \textsl{else} part the name of the procedure represented in the variable $x$ is added to the set \texttt{procEmbeddedProcedures} in \textsl{line 16}.
+
+\item In \textsl{line 17} the procedure's name is also added to the set \texttt{definedVars} as it might be used as a return value. It is also added to the set \texttt{allUsedVars} in \textsl{line 18} so the user won't be notified that it wasn't used in case it wasn't used as a return.
+
+\item In \textsl{line 19} the procedure's parameters are added to the set \texttt{definedVars} using the function \texttt{getProcedureParameters}.
+
+\item The code of the procedure's code is then checked normally in \textsl{line 20} by recursively calling the \texttt{checkCode} function. 
+
+\end{enumerate}
+
+The cached procedures and the lambda procedures are also held the same way. Object's procedure assignment on the other hand has a total different logic as creating a procedure for a certain object makes this procedure only available for this exact object and not for all objects of the same class. The way this is handled internally is adding an imaginary class in the set \texttt{allClassesIdenteties} exclusive only for the object itself having the same procedures and class variables as its class adding to it the newly created procedure. In case the object's class was unknown because it wasn't declared directly in the code, it is assumed that it has all other classes' properties. After that the procedure is checked normally.
+\\
+\\
+
+Now anything that reaches the default branch would actually be a single statement. The default branch's first part is shown in figure \ref{fig:default case branch}.
+
+\begin{figure}[!htb]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    default:              
+       usedVariables := {};
+       tempDefinedVars := {};
+       iteratorCase := false;
+       getUsedVariables(l, usedVariables, allUsedVars, tempDefinedVars,
+	         definedVars, isProcedure, procName, procParameters,
+	         procEmbeddedProcedures, iteratorCase, allProceduresidentities, 
+	         forLoopCase, forLoopTmpDefVars, exceptionTmp,matchTmp, 
+	         allClassesidentities, isClass, className);
+	allVariablesAreDefined := true;
+	undefinedVariables := {};
+	for(v in usedVariables){
+	   v := str(v);
+	   if(("[" in v) && ("]" in v)){
+		pos := 1;
+		while(true){
+			if(v[pos] == "["){
+				break;
+			}
+			pos += 1;
+		}
+		v := v[..(pos-1)];
+	   }
+	   if((v in definedVars) && (!((v in tempDefinedVars) || 
+	      (v in forLoopTmpDefVars) || (v in exceptionTmp) || 
+	      (v in matchTmp)))){
+		  allUsedVars := allUsedVars + {v};
+	   }
+	   if(!(v in definedVars || v in tempDefinedVars || 
+	      v in forLoopTmpDefVars || v in exceptionTmp ||
+	      v in matchTmp)){
+		   allPredefinedProcedures := { ... };
+		   if(!((v in domain(allProceduresidentities)) ||
+		       (v in allPredefinedProcedures))){
+			   allVariablesAreDefined := false;
+			   undefinedVariables := undefinedVariables + {v};
+		   }
+		   else{
+			  print("ATTENTION! Procedure \"$v$\" is being used 
+			      not as a procedure maybe a parameter to be called,
+			      please check that this is correct.");
+		  }
+	    }
+	 }
+\end{Verbatim}
+\vspace*{-0.5cm}
+\caption{Default case branch's first part}
+\label{fig:default case branch}
+\end{figure}
+
+
+\begin{enumerate}
+\item In \textsl{lines 2 and 3} in figure \ref{fig:default case branch} two empty sets variables are defined which are \texttt{usedVariables} and \texttt{tempDefinedVars}. In \textsl{line 4} the variable \texttt{iteratorCase} is given the boolean value of \textsl{false} initially.
+
+\item In \textsl{line 5} all used variables in the statement are stored in the set \texttt{usedVariables} using the function \texttt{getUsedVariables}.
+
+\item After that in \textsl{lines 10 and 11}, the variable \texttt{allVariablesAreDefined} is assigned to the boolean value of \textsl{true} initially and the variable \texttt{undefinedVariables} is assigned to the empty set.
+
+\item Then starting \textsl{line 12} upto \textsl{line 44} a \textsl{for-loop} loops over the used variables to check if they were defined previously or not.
+
+\item What happens in short from \textsl{line 14} till \textsl{line 23} that if one of the used variables was in the form of a collection access "a[n]" where n is a natural number, the part of the access "[n]" is removed to check if the variable '$a$' was defined previously or not.
+
+\item From \textsl{line 24} till \textsl{line 43}, the definedness of the used variable '$v$' is checked, if it was defined in the set \texttt{definedVariables} only then it will be added to the set \texttt{allUsedVars}. If it wasn't defined at all, we check if it is defined as a procedure, if it wasn't defined as a procedure then the variable \texttt{allVariablesAreDefined} is set to \texttt{false} and the variable '$v$' is added to the set \texttt{undefinedVariables}.
+
+\item In the rest of the default branch that isn't shown in the figure all the undefined variables are printed out to the user with their location.
+
+\item The last part is of the default branch is getting the defined variables of the statement using the \texttt{addDefinedVariables} function as shown:
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{addDefinedVariables(l, definedVars, isClass, className,}
+\\ 
+\hspace*{4.7cm}	
+	\texttt{allClassesidentities, isProcedure, false);}
+\\
+\end{enumerate}
+
+\section{addDefinedVariables Function}
+
+The main job of this function is to extract all defined variables from a certain statement and add them to the set \texttt{definedVars}.
+\\
+
+The \texttt{addDefinedVariables} function takes seven arguments which are :
+
+\begin{enumerate}
+\item \texttt{l} : which is the statement that the function is analyzing.
+
+\item \texttt{rw definedVars} : which is the set that the function saves the defined variables of a statement in.
+
+\item \texttt{isClass} : which is a boolean value that indicates if the statement being analyzed belonged to a class or not.
+
+\item \texttt{className} : which is the name of the class that the statement being analyzed belongs to. If the statement didn't belong to a class then this argument is just an empty string. 
+
+\item \texttt{rw allClassesidentities} : which is the list of all classes in the code along with their properties in a certain format.
+
+\item \texttt{isProcedure} : which is a boolean value that indicates if the statement being analyzed belonged to a procedure or not.
+
+\item  \texttt{classCheck} : which is a boolean value that indicates if the analyzing was part of a class check or not.
+\end{enumerate}
+
+The \texttt{addDefinedVariables} function explores the statement given to it using a match statement until it reaches an assignment, at which then saves the defined variable in it in the \texttt{definedVars} set. The assignment case would be as follows: 
+
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    case ^assignment(^variable(x), y):
+		definedVars := definedVars + {x};
+		addDefinedVariables(y, definedVars, isClass,
+		        className, allClassesidentities, isProcedure,
+		        classCheck);
+		if(isClass && (x in allClassesidentities[className][2]) && 
+		  isProcedure){
+			print("Warning: A new variable $x$ is being
+			   defined instead of assigning the member variable 
+			   of class $className$, if you wish to assign
+			   the member variable add a prefix this. to it.");
+		}
+		return;
+\end{Verbatim}
+where in \textsl{line 2} the defined variable '$x$' is added to the set \texttt{definedVars}, and in \textsl{line 3} the function \texttt{addDefinedVariables} is recursively called on whatever the variable $x$ was assigned to. After that starting \textsl{line 6} the function checks if the defined variable was inside a class and had the same name as a member variable of the class, in this case it prints out to the user a warning that a new variable is created instead of assigning a new value to the member variable, the same goes concerning this warning for sum, difference and quotient assignments.
+\\
+
+In case of mutual assignments, the function recursively calls each assignment by its own as shown below :
+
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    case ^assignment(^assignListConstructor([a|b]), y):
+		for(z in [a|b]){
+			addDefinedVariables(^assignment(z,y), definedVars,
+			    isClass, className, allClassesidentities, 
+			    isProcedure, classCheck);
+		}
+		return;
+\end{Verbatim}
+where \texttt{[a|b]} is the set of variables being assigned to the same value \texttt{y}.
+
+\section{getUsedVariables Function}
+
+The main job of the function \texttt{getUsedVariables} is to get all used variables is a statement and add them to the set \texttt{usedVariables}. However there are so much more logic in this function for handling certain cases which will be discussed in this section.
+\\
+
+The function \texttt{getUsedVariables} takes 18 arguments which are :
+
+\begin{enumerate}
+\item \texttt{l} : which is the statement being checked by the function.
+
+\item \texttt{rw usedVariables} : which is the set the function uses to store the used variables in the statement being checked.
+
+\item \texttt{allUsedVars} : which is the set containing all used variables throughout the whole code so far.
+
+\item \texttt{rw tempDefinedVars} : which is the set containing the temporary defined variables.
+
+\item \texttt{rw definedVars} : which is the set containing all defined variables so far in the code.
+
+\item \texttt{isProcedure} : which is a boolean value indicating if the statement $l$ belonged to a procedure or not.
+
+\item \texttt{procName} : If the statement being checked '$l$' belonged to a procedure, then this argument is the name of that procedure.
+
+\item \texttt{procParameters} : If the statement being checked '$l$' belonged to a procedure, then this argument is a set containing the parameters of this procedure.
+
+\item \texttt{rw procEmbeddedProcedures} : If the statement being checked '$l$' belonged to a procedure, then this argument is a set containing any embedded procedure if existed.
+
+\item \texttt{iteratorCase} : which is a boolean value indicating if an iterator is being checked at the time.
+
+\item \texttt{rw allProceduresidentities} : which is a list containing all procedures in the code and their properties in a certain format.
+
+\item \texttt{forLoopCase} : which is a boolean value indicating if a for-loop is being checked at the time.
+
+\item \texttt{rw forLoopTmpDefVars} : which is a set containing all temporary defined variables for a \textsl{for-loop}.
+
+\item \texttt{exceptionTmp} : which is a set containing temporary defined variables for \textsl{try-catch} statements.
+
+\item \texttt{matchTmp} : which is a set containing all temporary defined variables for a match statement case.
+
+\item \texttt{rw allClassesidentities} : which is a list containing all classes in the code and their properties in a certain format.
+
+\item \texttt{isClass} : which is a boolean value indicating if the statement being checked belonged to a class or not.
+
+\item \texttt{className} : If the statement being checked '$l$' belonged to a class, then this argument is the class name.
+
+\end{enumerate}
+
+The \texttt{getUsedVariables} function consists of a big match statement, it decomposes the statement given to it until it reaches a variable and then add it to the set \texttt{usedVariables} as shown below :
+
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    case ^variable(x):
+		usedVariables := usedVariables + {x};
+		return;
+\end{Verbatim}
+
+Of course the assigned variables are not counted as used variables and that's why they are skipped in the decomposition as shown :
+
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    case ^assignment(^variable(_), y): 
+	getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars,
+	    definedVars, isProcedure, procName,procParameters,
+	    procEmbeddedProcedures, iteratorCase, allProceduresidentities, 
+	    forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp,
+	    allClassesidentities, isClass, className); 
+	return;
+\end{Verbatim}
+
+
+The case of a call '\texttt{call(x, y)}' can happen under so many different circumstances, we will go through all the possible cases and state what happens.
+
+\begin{enumerate}
+
+\item The case of calling the '\texttt{load}' function : This case should do nothing unless it was inside a procedure as the analyzer has already extracted all the needed information from all loaded files that are outside procedures in the main function before checking the code. If the \texttt{load} function was inside a procedure then the file being loaded is checked for any problems and all needed information for the analyzind is extracted from it.
+
+\item In case the function called was a class procedure being called through an object of that class, the analyzer checks that this procedure already exists in the class, in case it didn't exist then a message is printed out to the user that the procedure doesn't exist. After that all variables given as parameters to that function are added to the set \texttt{usedVariables} and the case branch ends.
+
+\item If the call wasn't any of the previous two cases then the function checks if the function was a predefined \textsc{setlX} function. In case it was then all the variables used as parameters are added to the set \texttt{usedVariables} and the case branch ends.
+
+\item After that the the analyzer checks if the function was defined in the code or not by looking in the set \texttt{allProceduresIdentities}, if it was indeed defined in the code the analyzer checks that it is called by the correct number of parameters, if not a message is printed to the user to notify him/her that the function is called with the wrong number of parameters. Then all parameters used are added to the set \texttt{usedVariables} and to the set \texttt{definedVars} as well in case they were rw parameters and that could be known by looking into the set \texttt{allProceduresIdentities}.
+
+\item The analyzer after that checks if the call existed in a class and that the procedure was defined inside it, if that was true then all parameters used are added to the set \texttt{usedVariables} and the case branch ends.
+
+\item Next the analyzer checks if the call existed inside a procedure and if the function was one of the procedure's arguments or existed in the set \texttt{procEmbeddedProcedures} and if one of these cases was satisfied then all the parameters given are added to the set \texttt{usedVariables} and the case branch ends.
+
+\item The analyzer then checks if the call was actually for a class and if it actually was, then all parameters given to the class are added to the set \texttt{usedVariables} and the case branch ends.
+
+\item The last thing the analyzer checks is if the function called was in the set \texttt{definedVars} as that would be a possible case if the procedure was assigned to the variable as a return from another procedure for example. If it did exist in the set then all the parameters given are added to the set \texttt{usedVariables}.
+
+\item If non of the above cases were satisfied then the function called is definitely undefined and a message is printed out to the user that the procedure is undefined.
+
+\end{enumerate}
+
+When the analyzer is dealing with an iteration, it has to check it in a different way than other statements. Shown below in a simple way how it is treated :
+\\
+
+\texttt{getUsedVariables(\{$e$:$\;x_1$ in $s_1$, $\cdots$, $x_n$ in $t_n$ | $c$ \}) :=} \\[0.2cm]
+      \hspace*{0.8cm} 
+      \texttt{getUsedVariables($e$)$\,\cup\,$getUsedVariables($s_1$)$\,\cup \,\cdots\, \cup\,
+     \\ \hspace*{0.9cm} 
+       $getUsedVariables($s_n$)$\,\cup\
+                  ,$getUsedVariables($c$) $\backslash$ $\{x_1, \cdots, x_n \}$}.
+\\
+\\
+      The previous equation needs some discussion.   To understand it, consider the following set definition:
+      \\[0.2cm]
+      \hspace*{1.3cm}
+      \texttt{\{ x * y:$\;$x in s, y in s \}}.
+      \\[0.2cm]
+      This set definition reads only the variable \texttt{s} when it is evaluated.  The reason is that
+      both \texttt{x} and \texttt{y} are local variables that are created for the construction of
+      the set.  Therefore, these variables need \underline{not} be defined when the expression given
+      above is evaluated.
+
+      Actually, the equation given above is still a simplification.  The reason is that 
+      the expression $s_1$ must not use the variable $x_1$, while the expression $s_2$ might use
+      this variable.
+\\
+
+The \texttt{getUsedVariables} function makes sure that any variable used inside the iteration is defined either inside the iteration or outside. In case a variable is used inside an iteration without being defined a message is printed to the user concerning this variable.
+\\
+\\
+
+When a member access '\texttt{memberAccess(x, y)}' is reached in the \texttt{getUsedVariables} function, the function checks if the accessed variable $y$ existed in a class or not, if it didn't then a message is printed to the user concerning it.
+
+\section{identifyAllClasses Function}
+
+The function \texttt{identifyAllClasses} with the help of the function \texttt{extractClassProperties} adds all existing classes in the code to the set \texttt{allClassesIdenteties} along with their properties in a certain format. Every element of the set \texttt{allClassesIdentities} would have the format
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{[Name, [\{parameters\},\{class variables\},\{class proc.s\},\{class objects\}]]}
+\\[0.2cm]
+where
+\begin{enumerate}
+\item \texttt{Name} : is the name of the class.
+\item \texttt{parameters} : are the parameters given for creating an object of that class.
+\item \texttt{class variables} : are the class member variables.
+\item \texttt{class proc.s} : are the member procedures available for objects of that class.
+\item \texttt{objects} : are the objects created from that class. This set is actually given empty when identifying a class and is filled later on while analyzing the code.
+\end{enumerate}
+
+After this function fills the set \texttt{allClassesIdenteties}, the set is used further on a lot in the analysis for accessing information concerning any class.
+
+\section{identifyAllProcedures Function}
+
+The function \texttt{identifyAllProcedures} with the help of the function \texttt{getProcedureIdentity} adds all existing procedures in the code to the set \texttt{allProceduresIdentities} in a certain format. Every element of the set \texttt{allProceduresIdentities} would have the format
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{[Name, [argument-type]]}
+\\[0.2cm]
+where
+\begin{enumerate}
+\item \texttt{Name} : is the name of the procedure defined.
+\item \texttt{argument-type} : is a list of 1s and 0s indicating the types of the parameters given to the procedure in order where '0' indicates a normal parameter while '1' indicates a rw parameter.
+\end{enumerate}
+
+After this function fills the set \texttt{allProceduresIdenteties}, the set is used further on a lot in the analysis for accessing information concerning any procedure.
+
+\section{checkProcedure Function}
+
+The function \texttt{checkProcedure}'s main function is to check on the code of a procedure and if there was anything wrong in it, messages should be printed out to the user. The function \texttt{checkProcedure} does more or less the normal analysis done to the whole code but it is separate as procedures have their own space apart from the code and the only defined variables for their code are parameters and class variable in case the procedure existed in a class.
+
+\section{getProcedureParameters Function}
+
+The function \texttt{getProcedureParameters} takes three arguments which are :
+\begin{enumerate}
+\item \texttt{y} : which is the piece of code that has the parameters of a certain procedure.
+
+\item \texttt{rw allProcedureDefinedVariables} : which is a set used to store all procedure parameters.
+
+\item \texttt{rw allProcedureRWParameters} : which is a set used to store all procedure rw parameters.
+
+\end{enumerate}
+
+\texttt{getProcedureParameters} simply extracts the parameters given to a certain function and adds them to the set argument \texttt{allProcedureDefinedVariables} and also adds the rw parameters to the set argument \texttt{allProcedureRWParameters}.
+
+\section{analyzeAllLoadedFiles Function}
+
+The function \texttt{analyzeAllLoadedFiles} checks the code for any loaded files, in case it found any, it checks the loaded file first for any problems in it, and extracts all useful information as defined procedures or classes from it to be used further on in the analysis.
+\\
+This function only detects loads that are not inside any procedures, other loads that are indeed inside procedures are not targeted by this function and are tackled later.
+
+\section{getMatchedVariables Function}
+
+The function \texttt{getMatchedVariables} extracts all defined variables within a match case and adds them to the set argument \texttt{list}. The reason that a whole separate function is needed to do this job instead of the function \texttt{getUsedVariables} is that the names of the matched functors can't be predicted as the can be named anything as long as they start with a capital letter 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{Ex: Node(\_,\_,\_), Parent(\_,\_) $\cdots$}
+\\[0.2cm]
+
+so this function deals with it in a different way other than a big match statement with cases in it. This function can't be used in analyzing the code but it works perfectly for extracting defined variables in a match case branch.
+
+\section{Helper Functions}
+
+There are two helper function that haven't been discussed in the previous sections which are :
+
+\begin{enumerate}
+\item \texttt{extractClassProperties} : which is used only by \texttt{identifyAllClasses} to help filling the set \texttt{allClassesIdentities} with class properties.
+
+\item \texttt{getProcedureIdentity} : which helps mainly the \texttt{identifyAllProcedures} and \texttt{identifyAllClasses} in filling the list that indicates if the parameters given to a functi
+\end{enumerate}
 
 
 

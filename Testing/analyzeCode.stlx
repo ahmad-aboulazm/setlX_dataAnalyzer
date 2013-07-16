@@ -1,18 +1,18 @@
-identifyAllClasses := procedure(code, rw allClassesIdenteties){
+identifyAllClasses := procedure(code, rw allClassesIdentities){
 
 match(code){
 	case ^block(x):			 	
 		for(y in x){
-			identifyAllClasses(y, allClassesIdenteties);
+			identifyAllClasses(y, allClassesIdentities);
 		}
 		return;
 	
 	case ^classDefiner(x, y): 	
-		allClassesIdenteties := allClassesIdenteties + {[x, [{},{},{},{}]]}; 
+		allClassesIdentities := allClassesIdentities + {[x, [{},{},{},{}]]}; 
 									// [Name, [{parameters},{class variables},
 									//	{class proc.s},{class objects}]]
 		className := x;
-		extractClassProperties(y, className, allClassesIdenteties);
+		extractClassProperties(y, className, allClassesIdentities);
 	
 	default:				 	
 		return; //Do Nothing - All what is targeted is the class definition !
@@ -20,36 +20,36 @@ match(code){
 };
 
 
-extractClassProperties := procedure(code, name, rw allClassesIdenteties){
+extractClassProperties := procedure(code, name, rw allClassesIdentities){
 //print("extractClassProperties: $canonical(code)$");
 match(code){
 	case ^setlClass([], c, z):		
 		match(c){
 			case ^block(v)	:	for(w in v){
-									addDefinedVariables(w, allClassesIdenteties[name][2], false, "", [], false, true);
+									addDefinedVariables(w, allClassesIdentities[name][2], false, "", [], false, true);
 								}
 			default			: 	//print("IMPOSSIBLE IN extractClassProperties");
 		}
-		identifyAllProcedures(c, allClassesIdenteties[name][3]); //Non-static procedures
-		identifyAllProcedures(z, allClassesIdenteties[name][3]); //static procedures
-		addDefinedVariables(z, allClassesIdenteties[name][2], false, "", [], false, true);
+		identifyAllProcedures(c, allClassesIdentities[name][3]); //Non-static procedures
+		identifyAllProcedures(z, allClassesIdentities[name][3]); //static procedures
+		addDefinedVariables(z, allClassesIdentities[name][2], false, "", [], false, true);
 											
 	case ^setlClass([a|b], c, z):	
 		for(x in [a|b]){
 			match(x){
-				case ^parameter(w) 	:	allClassesIdenteties[name][1] += {str(w)};
+				case ^parameter(w) 	:	allClassesIdentities[name][1] += {str(w)};
 				default				:	//print("IMPOSSIBLE TO REACH!");
 			}
 		}
 		match(c){
 			case ^block(v)	:	for(w in v){
-									addDefinedVariables(w, allClassesIdenteties[name][2], false, "", [], false, true);
+									addDefinedVariables(w, allClassesIdentities[name][2], false, "", [], false, true);
 								}
 			default			: 	//print("IMPOSSIBLE IN extractClassProperties");
 		}
-		identifyAllProcedures(c, allClassesIdenteties[name][3]); //Non-static procedures
-		identifyAllProcedures(z, allClassesIdenteties[name][3]); //static procedures
-		addDefinedVariables(z, allClassesIdenteties[name][2], false, "", [], false, true);
+		identifyAllProcedures(c, allClassesIdentities[name][3]); //Non-static procedures
+		identifyAllProcedures(z, allClassesIdentities[name][3]); //static procedures
+		addDefinedVariables(z, allClassesIdentities[name][2], false, "", [], false, true);
 	
 	default:
 		return; //Never ever reached
@@ -78,35 +78,35 @@ getMatchedVariables := procedure(code, rw list){
 };
 
 
-identifyAllProcedures := procedure(code, rw allProceduresIdenteties){
+identifyAllProcedures := procedure(code, rw allProceduresIdentities){
 //print("identifyAllProcedures : " + canonical(code));
 match(code){
-	case ^block(x)                  				 		: 	for(y in x){identifyAllProcedures(y, allProceduresIdenteties);} 
+	case ^block(x)                  				 		: 	for(y in x){identifyAllProcedures(y, allProceduresIdentities);} 
 																return;
 	
-	case ^assignment(^variable(x), ^procedure(y, z)) 		: 	if(!(x in domain(allProceduresIdenteties))){
-																   allProceduresIdenteties := allProceduresIdenteties + {[x, []]};
+	case ^assignment(^variable(x), ^procedure(y, z)) 		: 	if(!(x in domain(allProceduresIdentities))){
+																   allProceduresIdentities := allProceduresIdentities + {[x, []]};
 																}
 																else{
-																   allProceduresIdenteties[x] := [];
+																   allProceduresIdentities[x] := [];
 																}
-																getProcedureIdentity(x, ^procedure(y, z), allProceduresIdenteties);
+																getProcedureIdentity(x, ^procedure(y, z), allProceduresIdentities);
 	
-	case ^assignment(^variable(x), ^cachedProcedure(y, z))	:	if(!(x in domain(allProceduresIdenteties))){
-																   allProceduresIdenteties := allProceduresIdenteties + {[x, []]};
+	case ^assignment(^variable(x), ^cachedProcedure(y, z))	:	if(!(x in domain(allProceduresIdentities))){
+																   allProceduresIdentities := allProceduresIdentities + {[x, []]};
 																}
 																else{
-																   allProceduresIdenteties[x] := [];
+																   allProceduresIdentities[x] := [];
 																}
-																getProcedureIdentity(x, ^procedure(y, z), allProceduresIdenteties);
+																getProcedureIdentity(x, ^procedure(y, z), allProceduresIdentities);
 																
-	case ^assignment(^variable(x), ^lambdaDefinition(y, z))	:	if(!(x in domain(allProceduresIdenteties))){
-																   allProceduresIdenteties := allProceduresIdenteties + {[x, []]};
+	case ^assignment(^variable(x), ^lambdaDefinition(y, z))	:	if(!(x in domain(allProceduresIdentities))){
+																   allProceduresIdentities := allProceduresIdentities + {[x, []]};
 																}
 																else{
-																   allProceduresIdenteties[x] := [];
+																   allProceduresIdentities[x] := [];
 																}
-																getProcedureIdentity(x, ^procedure(y, ^block([z])), allProceduresIdenteties);
+																getProcedureIdentity(x, ^procedure(y, ^block([z])), allProceduresIdentities);
 																return;														
 	
 	default                        					  		: return; //Do Nothing - All what is targeted is the procedure definition !
@@ -116,17 +116,17 @@ match(code){
 };
 
 
-getProcedureIdentity := procedure(name, code, rw allProceduresIdenteties){
+getProcedureIdentity := procedure(name, code, rw allProceduresIdentities){
 //print("getProcedureIdentity : " + canonical(code));
 	match(code){
 	
-		case ^procedure(a, b)				:	for(x in a) {getProcedureIdentity(name, x, allProceduresIdenteties);}
+		case ^procedure(a, b)				:	for(x in a) {getProcedureIdentity(name, x, allProceduresIdentities);}
 												return;
 		
-		case ^parameter(^variable(x))		:	allProceduresIdenteties[name] := allProceduresIdenteties[name] + ["0"];
+		case ^parameter(^variable(x))		:	allProceduresIdentities[name] := allProceduresIdentities[name] + ["0"];
 												return;
 		
-		case ^rwParameter(^variable(x))		:	allProceduresIdenteties[name] := allProceduresIdenteties[name] + ["1"];
+		case ^rwParameter(^variable(x))		:	allProceduresIdentities[name] := allProceduresIdentities[name] + ["1"];
 												return;
 		
 		default								:	//print("Impossible if not [] in getProcedureIdentity ! " + canonical(code));
@@ -137,20 +137,20 @@ getProcedureIdentity := procedure(name, code, rw allProceduresIdenteties){
 };
 
 
-checkProcedure := procedure(name, x, rw allProceduresIdenteties, rw allClassesIdenteties, classVariables, isClass, className){
+checkProcedure := procedure(name, x, rw allProceduresIdentities, rw allClassesIdentities, classVariables, isClass, className){
 //print("checkProcedure : " + canonical(x));
 	match(x){
 
 	case ^procedure(y, z):	
 		allProcedureDefinedVariables := {};
 		allProcedureRWParameters := {};
-		//allProceduresIdenteties := allProceduresIdenteties + {[name, []]};
+		//allProceduresIdentities := allProceduresIdentities + {[name, []]};
 		getProcedureParameters(^procedure(y, z), allProcedureDefinedVariables, allProcedureRWParameters);
 		procedureParameters := allProcedureDefinedVariables;
 		allProcedureUsedVariables := {};
 		allProcedureDefinedVariables += classVariables;
 		checkCode(z, allProcedureDefinedVariables, allProcedureUsedVariables, true, name, procedureParameters,
-				{}, allProceduresIdenteties, false, {}, {}, {}, isClass, className, allClassesIdenteties);
+				{}, allProceduresIdentities, false, {}, {}, {}, isClass, className, allClassesIdentities);
 		//print("allProcedureUsedVariables: $allProcedureUsedVariables$");
 		unUsedProcVars := (allProcedureDefinedVariables-allProcedureUsedVariables)-allProcedureRWParameters;
 		unUsedProcVars -= classVariables;
@@ -166,7 +166,6 @@ checkProcedure := procedure(name, x, rw allProceduresIdenteties, rw allClassesId
 
 	default:
 		//print("This is impossible to reach !");
-
 	}
 
 };
@@ -194,56 +193,56 @@ getProcedureParameters := procedure(y, rw allProcedureDefinedVariables, rw allPr
 
 };
 
-analyzeAllLoadedFiles := procedure(code, rw definedVars, rw allUsedVars, rw allProceduresIdenteties, rw allClassesIdenteties){
+analyzeAllLoadedFiles := procedure(code, rw definedVars, rw allUsedVars, rw allProceduresIdentities, rw allClassesIdentities){
 match(code){
 	case ^block(x):
 		for(y in x){
-			analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+			analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 		} 
 		return;
 	
 	case ^ifThen(x):	
 		for(y in x){
-			analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+			analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 		}
 	
 	case ^ifThenElseIfBranch(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^ifThenBranch(cond, then):
-		analyzeAllLoadedFiles(then, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(then, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^ifThenElseBranch(x):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^while(x, y):
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^for(x, y, z):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(z, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(z, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatch(x, y):	
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatchLngBranch(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatchUsrBranch(x, y):	
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatchBranch(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^check(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
+		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	
 	case ^call("load", x):
@@ -252,10 +251,10 @@ match(code){
 			l := readFile(y); 
 			l := +/ [ g + "\n" : g in l ];
 			l := parseStatements(l);	
-			identifyAllProcedures(l, allProceduresIdenteties);
-			identifyAllClasses(l, allClassesIdenteties);
-			checkCode(l, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdenteties, false, {},
-					{}, {}, false, "", allClassesIdenteties);
+			identifyAllProcedures(l, allProceduresIdentities);
+			identifyAllClasses(l, allClassesIdentities);
+			checkCode(l, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdentities, false, {},
+					{}, {}, false, "", allClassesIdentities);
 			print("DONE CHECKING LOADED FILE $y$");
 		}
 		return;
@@ -268,8 +267,8 @@ match(code){
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVars, rw definedVars, isProcedure, procName,
-			procParameters, rw procEmbeddedProcedures, iteratorCase, rw allProceduresIdenteties, forLoopCase, rw forLoopTmpDefVars,
-			exceptionTmp, matchTmp, rw allClassesIdenteties, isClass, className)  {
+			procParameters, rw procEmbeddedProcedures, iteratorCase, rw allProceduresIdentities, forLoopCase, rw forLoopTmpDefVars,
+			exceptionTmp, matchTmp, rw allClassesIdentities, isClass, className)  {
 //print("getUsedVariables " + canonical(l));
 	match(l){
 	
@@ -285,134 +284,134 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	case ^assignment(x, [a|b]):
 		for(y in [a|b]){
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, 
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase, 
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		}
 		return;
 	
 	case ^assignment(x, ^call(y, z)):
-		if(y in domain(allClassesIdenteties)){
-			allClassesIdenteties[y][4] += {str(x)};
-			if(#z != #allClassesIdenteties[y][1]){
-				print("Object $x$ is called to be created of class $y$ with $#z$ parameters instead of $#allClassesIdenteties[y][1]$");
+		if(y in domain(allClassesIdentities)){
+			allClassesIdentities[y][4] += {str(x)};
+			if(#z != #allClassesIdentities[y][1]){
+				print("Object $x$ is called to be created of class $y$ with $#z$ parameters instead of $#allClassesIdentities[y][1]$");
 			}
 			for(i in z){
-				allClassesIdenteties[y][4] += {str(i)};
+				allClassesIdentities[y][4] += {str(i)};
 			}
 		}
 		getUsedVariables(^call(y, z), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 	
 	case ^assignment(^variable(_), y): 
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^assignment(^assignListConstructor(_), y):
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^assignment(^memberAccess(x, y), z): 
 		if(!isClass){
 			newClassName := "extra-" + str(x);
-			if(!(newClassName in domain(allClassesIdenteties))){
-				oldClassProperties := {oc : oc in allClassesIdenteties | str(x) in oc[2][4]};
+			if(!(newClassName in domain(allClassesIdentities))){
+				oldClassProperties := {oc : oc in allClassesIdentities | str(x) in oc[2][4]};
 				if(#oldClassProperties != 0){
 					oldClassProperties := first(oldClassProperties);
 					oldClassProperties := oldClassProperties[2];
 				}
 				else{
-					a := {f : g in allClassesIdenteties, f in g[2][1]};
-					b := {f : g in allClassesIdenteties, f in g[2][2]};
-					c := {f : g in allClassesIdenteties, f in g[2][3]};
-					d := {f : g in allClassesIdenteties, f in g[2][4]};
+					a := {f : g in allClassesIdentities, f in g[2][1]};
+					b := {f : g in allClassesIdentities, f in g[2][2]};
+					c := {f : g in allClassesIdentities, f in g[2][3]};
+					d := {f : g in allClassesIdentities, f in g[2][4]};
 					oldClassProperties := [a, b, c, d];
 				}
 				oldClassProperties[4] := {str(x)};
 				oldClassProperties[2] += {str(y)};
-				allClassesIdenteties := allClassesIdenteties + {[newClassName, oldClassProperties]};
+				allClassesIdentities := allClassesIdentities + {[newClassName, oldClassProperties]};
 			}
 			else{
-				allClassesIdenteties[newClassName][2] += {str(y)};
+				allClassesIdentities[newClassName][2] += {str(y)};
 			}
 		}
 		getUsedVariables(^memberAccess(x, y), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, 
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase, 
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^assignment(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	//Mathematics
 	case ^difference(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^sum([x], y):
 		for(z in [x]){
 			getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^sum(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^sumAssignment(x, [y]):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^sumAssignment(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^differenceAssignment(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
-		if(isClass && (x in allClassesIdenteties[className][2]) && isProcedure){
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
+		if(isClass && (x in allClassesIdentities[className][2]) && isProcedure){
 			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$,
 					if you wish to assign the member variable add a prefix this. to it.");
 		}
@@ -420,188 +419,188 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	
 	case ^quotientAssignment(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^quotient(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^integerDivision(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^product(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^modulo(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^power(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^minus(x):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 	
 	case ^cartesianProduct(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	//Booleans
 	case ^equals(x, {y|z}):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		for(z in {y|z}){
 			getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		}
 		return;
 	
 	case ^equals(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^unEqual(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^greaterThan(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^lessThan(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^lessOrEqual(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^greaterOrEqual(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^not(x): 
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return;
 	
 	case ^range(x, y, z):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^conjunction(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^disjunction(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^in(x, y): 
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;	
 	
 	//return, backtrack, continue, break, exit
 	case ^return(^variable(x)):
 		getUsedVariables(^variable(x), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^return("nil"):	 return;
@@ -609,15 +608,15 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	case ^return([a|b]): 
 		for(y in [a|b]){
 		    getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);   
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);   
 		}
 		return;
 	
 	case ^return(x):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);   
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);   
 	
 	case ^backtrack():	 return;
 	case ^break():		 return;
@@ -633,10 +632,10 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 				l := readFile(y); 
 				l := +/ [ g + "\n" : g in l ];
 				l := parseStatements(l);	
-				identifyAllProcedures(l, allProceduresIdenteties);
-				identifyAllClasses(l, allClassesIdenteties);
-				checkCode(l, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdenteties, false,
-						{}, {}, {}, false, "", allClassesIdenteties);
+				identifyAllProcedures(l, allProceduresIdentities);
+				identifyAllClasses(l, allClassesIdentities);
+				checkCode(l, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdentities, false,
+						{}, {}, {}, false, "", allClassesIdentities);
 				print("DONE CHECKING LOADED FILE $y$");
 			}
 		}
@@ -644,29 +643,29 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	
 	case ^call(^variable(x), y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return; // This case only happens if you give a ^call in a match statements.
 	
 	case ^call(^memberAccess(^variable(x), ^variable(y)), z):	
-		if(str(y) in {c : b in allClassesIdenteties, c in domain(b[2][3])}){
+		if(str(y) in {c : b in allClassesIdentities, c in domain(b[2][3])}){
 			getUsedVariables(^variable(x), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		else{
 			print("Attention! calling class procedure $y$ for object $x$ is uncorrect!");
 			getUsedVariables(^variable(x), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		for(w in z){
 			getUsedVariables(w, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 	
 	case ^call(x, y): 	
@@ -689,60 +688,55 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		if(x in allPredefinedProcedures){
 			for(z in y){
 				getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 			}
 			return;
 		}
 		procedureName := x;
 		counter := 1;
-		if(x in domain(allProceduresIdenteties)){
-			if(#y != #allProceduresIdenteties[procedureName]){
+		if(x in domain(allProceduresIdentities)){
+			if(#y != #allProceduresIdentities[procedureName]){
 				print("ATTENTION! Procedure $procedureName$ is being called with $#y$ parameter(s) instead of 
-						$#allProceduresIdenteties[procedureName]$ parameter(s)");
+						$#allProceduresIdentities[procedureName]$ parameter(s)");
 			}
 			for(z in y){
 				match(z){
 											
 				case ^variable(a):
-					//print("name: " + procedureName);
-					//print("counter: " + counter);
-					//print(allProceduresIdenteties);
-					//print("PARAMETER: $a$");
-					if(allProceduresIdenteties[procedureName][counter] == "0"){
+					if(allProceduresIdentities[procedureName][counter] == "0"){
 						getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 					}
 					else{
 						definedVars := definedVars + {a};
 						getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 					}
 					counter := counter + 1;
 				case [a|b]:	
 					for(x in [a|b]){
 						getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 					}
 											
 				default:	
-					//print("HIT2");
 					getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-							procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-							forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+							procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+							forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 					counter := counter + 1;
 				}
 			}
 		}
 		else{
-			if(isClass && (x in domain(allClassesIdenteties[className][3]))){
+			if(isClass && (x in domain(allClassesIdentities[className][3]))){
 				for(z in y){
 					getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-							procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-							forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+							procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+							forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 				}
 			}
 			else{
@@ -751,24 +745,24 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 					usedVariables += {x};
 					for(z in y){
 						getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+								procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+								forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 					}
 				}
 				else{
 					if(isProcedure && (x in procEmbeddedProcedures)){
 						for(z in y){
 							getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-									procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-									forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+									procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+									forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 						}
 					}
 					else{
-						if(x in domain(allClassesIdenteties)){
+						if(x in domain(allClassesIdentities)){
 							for(z in y){
 								getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-										procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-										forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+										procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+										forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 							}
 						}
 						else{
@@ -786,32 +780,32 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 								spliting := [];
 								spliting += [n[1..(position-1)]];
 								spliting += [n[(position+1)..]];
-								for(o in allClassesIdenteties){
+								for(o in allClassesIdentities){
 									if(spliting[2] in domain(o[2][3])){
 										found := true;
 										getUsedVariables(spliting[1], usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-												procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-												forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+												procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+												forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 										if(#y != #(o[2][3][spliting[2]])){
 											print("ATTENTION! Procedure $spliting[2]$ of class $o[1]$ is being called with $#y$ parameter(s) 
 													instead of $#(o[2][3][spliting[2]])$ parameter(s)");
 										}
 										for(z in y){
 											getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-													procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-													forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+													procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+													forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 										}
 									}
 								}
 								if(found == false){
 									print("Calling of procedure $spliting[2]$ for object $spliting[1]$ is uncorrect!");
 									getUsedVariables(^variable(spliting[1]), usedVariables, allUsedVars, tempDefinedVars, definedVars,
-											isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties,
-											forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+											isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities,
+											forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 									for(z in y){
 										getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-												procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-												forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+												procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+												forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 									}
 								}
 							}
@@ -821,13 +815,13 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 								}
 								else{
 									getUsedVariables(^variable(x), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure,
-											procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties,
-											forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+											procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities,
+											forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 								}
 								for(z in y){
 									getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-											procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-											forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+											procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+											forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 								}
 							}
 						}
@@ -841,54 +835,54 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	case {[a|b]}: 
 		for(y in [a|b]){
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		} 
 		return;
 	
 	case {a|b}: 
 		for(y in {a|b}){
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		} 
 		return;
 	
 	case [^setlIteration(x,y,z)]:
 		getUsedVariables(^setIteration(x,y,z), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return;
 	
 	case ^setIteration([a|b], y, z):
 		iteratorCase := true;
 		for(x in [a|b]){
 			getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 					// can use local variables -> 'expression' can use any locally defined variable
 		}
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 				//can use local variables -> 'condition' can use any locally defined variable
 		return;
 	
 	case ^setIteration(x, y, z):
 		iteratorCase := true;
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 				// can use local variables -> 'expression' can use any locally defined variable
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 				//can use local variables -> 'condition' can use any locally defined variable
 		return;
 									   
@@ -896,36 +890,36 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		iteratorCase := true;
 		for(x in [a|b]){
 			getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 					// can use local variables -> 'expression' can use any locally defined variable
 		}
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 				//can use local variables -> 'condition' can use any locally defined variable
 		return;
 	
 	case ^setlIteration(x, y, z):
 		iteratorCase := true;
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 				// can use local variables -> 'expression' can use any locally defined variable
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 				//can use local variables -> 'condition' can use any locally defined variable
 		return;
 									   
 	case ^setlIterator(^variable(x), [y], z): 
-		addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); 
+		addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdentities, isProcedure, false); 
 		// Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 		if(forLoopCase == true){
 			forLoopTmpDefVars := forLoopTmpDefVars + tempDefinedVars;
@@ -933,8 +927,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		usedVariablesInS := {};
 		for(w in [y]){
 			getUsedVariables(w, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		//print(usedVariablesInS);
 		for(v in usedVariablesInS){ // Checking that any S is defined before locally or globally
@@ -949,25 +943,25 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		if(!iteratorCase){ // for the loops' cases
 			for(w in [y]){
 				getUsedVariables(w, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); // Ss
 			}
 		}
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); //Any extra setIterator
 		return;
 
 	case ^setlIterator(^variable(x), y, z):
-		addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); 
+		addDefinedVariables(^assignment(^variable(x), 1), tempDefinedVars, isClass, className, allClassesIdentities, isProcedure, false); 
 		// Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 		if(forLoopCase == true){
 			forLoopTmpDefVars := forLoopTmpDefVars + tempDefinedVars;
 		}
 		usedVariablesInS := {};
 		getUsedVariables(y, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		//print(usedVariablesInS);
 		for(v in usedVariablesInS){ // Checking that any S is defined before locally or globally
 			//v := str(v);
@@ -980,17 +974,17 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		}
 		if(!iteratorCase){ // for the loops' cases
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); // Ss
 		}
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); //Any extra setIterator
 		return;
 
 	case ^setlIterator(^assignListConstructor(x), [y], z): 			
 		for(w in x){
-			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); 
+			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdentities, isProcedure, false); 
 			// Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 		}
 		if(forLoopCase == true){
@@ -999,8 +993,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		usedVariablesInS := {};
 		for(w in [y]){
 			getUsedVariables(w, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		//print(usedVariablesInS);
 		for(v in usedVariablesInS){ // Checking that any S is defined before locally or globally
@@ -1015,18 +1009,18 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		if(!iteratorCase){ // for the loops' cases
 			for(w in [y]){
 				getUsedVariables(w, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); // Ss
 			}
 		}
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); //Any extra setIterator
 		return;
 
 	case ^setlIterator(^assignListConstructor(x), y, z):
 		for(w in x){
-			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); 
+			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdentities, isProcedure, false); 
 			// Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 		}
 		if(forLoopCase == true){
@@ -1034,8 +1028,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		}
 		usedVariablesInS := {};
 		getUsedVariables(y, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		//print(usedVariablesInS);
 		for(v in usedVariablesInS){ // Checking that any S is defined before locally or globally
 			v := str(v);
@@ -1048,17 +1042,17 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		}
 		if(!iteratorCase){ // for the loops' cases
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); // Ss
 		}
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); //Any extra setIterator
 		return;
 		
 	case ^setlIterator(x, [y], z): 			
 		for(w in x){
-			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); 
+			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdentities, isProcedure, false); 
 			// Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 		}
 		if(forLoopCase == true){
@@ -1067,8 +1061,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		usedVariablesInS := {};
 		for(w in [y]){
 			getUsedVariables(w, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		//print(usedVariablesInS);
 		for(v in usedVariablesInS){ // Checking that any S is defined before locally or globally
@@ -1083,18 +1077,18 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		if(!iteratorCase){ // for the loops' cases
 			for(w in [y]){
 				getUsedVariables(w, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+						procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+						forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); // Ss
 			}
 		}
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); //Any extra setIterator
 		return;
 
 	case ^setlIterator(x, y, z): 			
 		for(w in x){
-			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdenteties, isProcedure, false); 
+			addDefinedVariables(^assignment(w, 1), tempDefinedVars, isClass, className, allClassesIdentities, isProcedure, false); 
 			// Xs -- Here I just wrote any imaginary assignment just to add the variable x to the list of temp. defined variables
 		}
 		if(forLoopCase == true){
@@ -1102,8 +1096,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		}
 		usedVariablesInS := {};
 		getUsedVariables(y, usedVariablesInS, {}, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		//print(usedVariablesInS);
 		for(v in usedVariablesInS){ // Checking that any S is defined before locally or globally
 			v := str(v);
@@ -1116,150 +1110,182 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		}
 		if(!iteratorCase){ // for the loops' cases
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); // Ss
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); // Ss
 		}
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); //Any extra setIterator
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); //Any extra setIterator
 		return;
 										
 	
 	case ^notEqual(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^stringConstructor(x, y):
 		for(z in y){
 			getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 	
 	case ^collectionAccess(x, [y, z, zz]):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(zz, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return;	
 	
 	case ^collectionAccess(x, [y]):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return;	
 	
 	
 	case ^collectionAccess(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^collectMap(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^collectionAccessRangeDummy():		return;						   
 									   
 	case ^cardinality(x):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;									
+	
+	case ^exists(^setlIterator(^variable(a), b, c), y):
+		definedVars += {a};
+		allUsedVars += {a};
+		getUsedVariables(^setlIterator(^variable(a), b, c), usedVariables, allUsedVars, tempDefinedVars, definedVars,
+				isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities,
+				forLoopCase,forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
+		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
+		return;
 	
 	case ^exists(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
+		return;
+	
+	case ^forall(^setlIterator(^variable(a), b, c), y):
+		definedVars += {a};
+		allUsedVars += {a};
+		getUsedVariables(^setlIterator(^variable(a), b, c), usedVariables, allUsedVars, tempDefinedVars, definedVars,
+				isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities,
+				forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
+		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^forall(x, y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 									   
 	case ^sumOfMembers([a|b]):
 		for(y in [a|b]){
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		}
 		return;
 	
 	case ^sumOfMembersBinary(x, [a|b]):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		for(y in [a|b]){
 			getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		}
 		return;
 	
 	case ^literalConstructor(x):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		return;
 	
 	case ^assert(x,y):
 		getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className); 
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
+		return;
+	
+	case ^explicitListWithRest([^in(^variable(a), b)], y): 
+		tempDefinedVars += {a};
+		getUsedVariables(^in(^variable(a), b), usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
+		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return;
 	
 	case ^explicitListWithRest([a|b], y): 
 		for(x in [a|b]){
 			getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		getUsedVariables(y, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return;
 	
 	case ^lambdaDefinition(y, z):	 	
 		getProcedureParameters(^procedure(y, z), definedVars, {});
 		getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		return; // This is always a directly used lamda definition
 	
 	case ^memberAccess(x, y):
@@ -1272,7 +1298,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 				tempYUsed := {};
 				getUsedVariables(y, tempYUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
 				tempY := first(tempYUsed);
-				for(o in allClassesIdenteties){
+				for(o in allClassesIdentities){
 					if(tempY in o[2][2]){
 						found := true;
 					}
@@ -1297,7 +1323,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 				}
 			}
 			else{
-				if(!(str(y) in {m : n in allClassesIdenteties, m in n[2][2]})){
+				if(!(str(y) in {m : n in allClassesIdentities, m in n[2][2]})){
 					if(isClass && isProcedure){
 						print("Usage of class variable $y$ for object $x$ in procedure $procName$ of class $className$ is uncorrect");
 					}
@@ -1317,11 +1343,11 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 				}
 			}
 			getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 		else{
-			if((str(x) != "this") && isClass && (!(str(y) in allClassesIdenteties[className][2]))){
+			if((str(x) != "this") && isClass && (!(str(y) in allClassesIdentities[className][2]))){
 				print("Class variable $y$ does not exist !");
 			}
 		}
@@ -1333,13 +1359,13 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 			tempYUsed := {};
 			getUsedVariables(y, tempYUsed, {}, {}, {}, false, "", {}, {}, false, {}, false, {}, {}, {}, {}, false, "");
 			tempY := first(tempYUsed);
-			for(o in allClassesIdenteties){
+			for(o in allClassesIdentities){
 				if(tempY in o[2][2]){
 					found := true;
 				}
 			}
 			if(found == false){
-				if(!(isProcedure && (str(x) in procParameters) && (str(y) in {m : n in allClassesIdenteties, m in n[2][2]}))){ 
+				if(!(isProcedure && (str(x) in procParameters) && (str(y) in {m : n in allClassesIdentities, m in n[2][2]}))){ 
 								//This condition is for cases were a procedure parameter might be actually an object
 					if(isClass && isProcedure){
 						print("Usage of variable $tempY$ for object $tempX$ in procedure $procName$ of class $className$ is uncorrect");
@@ -1360,8 +1386,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 				}
 			}
 			getUsedVariables(x, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
-					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase,
-					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdenteties, isClass, className);
+					procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
+					forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 		}
 	
 	default:
@@ -1384,13 +1410,13 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allClassesIdenteties, isProcedure, classCheck) {	
+addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allClassesIdentities, isProcedure, classCheck) {	
 //print("addDefinedVariables : " + canonical(l));
 	match(l){
 	
 	case ^block(x):
 		for(y in x){
-			addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+			addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		}
 		return;
 	
@@ -1413,8 +1439,8 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allCl
 	
 	case ^assignment(^variable(x), y):
 		definedVars := definedVars + {x};
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		if(isClass && (x in allClassesIdenteties[className][2]) && isProcedure){
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		if(isClass && (x in allClassesIdentities[className][2]) && isProcedure){
 			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class 
 				$className$, if you wish to assign the member variable add a prefix this. to it.");
 		}
@@ -1428,131 +1454,130 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allCl
 	
 	case ^assignment(^assignListConstructor([a|b]), y):
 		for(z in [a|b]){
-			addDefinedVariables(^assignment(z,2), definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+			addDefinedVariables(^assignment(z,y), definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		}
-		return; //Just putting any fake assignment for the 
-				//variable to be counted as a defined variable.
+		return;
 	
 	case ^assignment(x, y):
 		return;
 	
 	//Mathematics
 	case ^difference(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^sum(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^sumAssignment(x, y):
-		if(isClass && (str(x) in allClassesIdenteties[className][2]) && isProcedure){
+		if(isClass && (str(x) in allClassesIdentities[className][2]) && isProcedure){
 			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$,
 					if you wish to assign the member variable add a prefix this. to it.");
 		}
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck); return;
 	
 	case ^differenceAssignment(x, y):
-		if(isClass && (str(x) in allClassesIdenteties[className][2]) && isProcedure){
+		if(isClass && (str(x) in allClassesIdentities[className][2]) && isProcedure){
 			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$, 
 					if you wish to assign the member variable add a prefix this. to it.");
 		}
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck); return;
 	
 	case ^quotientAssignment(x, y):
-		if(isClass && (str(x) in allClassesIdenteties[className][2]) && isProcedure){
+		if(isClass && (str(x) in allClassesIdentities[className][2]) && isProcedure){
 			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$,
 					if you wish to assign the member variable add a prefix this. to it.");
 		}
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck); return;	
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck); return;	
 	
 	case ^integerDivision(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^quotient(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^product(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^modulo(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^power(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	//Booleans
 	case ^equals(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^notEqual(x, y): 
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^greaterThan(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^lessThan(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^lessOrEqual(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^greaterOrEqual(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^not(x):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 
 	case ^iterator(x, y, z):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(z, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(z, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^range(x, y, z):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(z, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(z, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^conjunction(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^disjunction(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^in(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	//return, backtrack, continue, break, exit
@@ -1582,8 +1607,8 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allCl
 	
 	//Other stuff
 	case ^collectionAccess(x, y):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^collectionAccessRangeDummy():
@@ -1600,22 +1625,22 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allCl
 	
 	case ^sumOfMembers([a|b]):
 		for(y in [a|b]){
-			addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);	
+			addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);	
 		}
 		return;
 	
 	case ^sumOfMembersBinary(x, [a|b]):
-		addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		for(y in [a|b]){
-			addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);	
+			addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);	
 		}
 		return;
 	
 	case ^explicitListWithRest([a|b], y):
 		for(x in [a|b]){
-			addDefinedVariables(x, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+			addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		}
-		addDefinedVariables(y, definedVars, isClass, className, allClassesIdenteties, isProcedure, classCheck);
+		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		return;
 	
 	case ^memberAccess(_,_):
@@ -1630,24 +1655,24 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allCl
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 checkCode := procedure(l, rw definedVars, rw allUsedVars, isProcedure, procName, procParameters, rw procEmbeddedProcedures,
-				rw allProceduresIdenteties, forLoopCase, rw forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, rw allClassesIdenteties) {
+				rw allProceduresIdentities, forLoopCase, rw forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, rw allClassesIdentities) {
 //print("checkCode : " + canonical(l));
 
 match(l){
 	case ^block(l2):  		
 		for(y in l2){
 			checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures,
-				allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+				allProceduresIdentities, forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		}
 		return;
 
 	case ^assignment(^variable(x), ^procedure(y, z)):
 		if(!isProcedure){
 			if(!isClass){
-				checkProcedure(x,^procedure(y,z), allProceduresIdenteties, allClassesIdenteties,{}, isClass, className);
+				checkProcedure(x,^procedure(y,z), allProceduresIdentities, allClassesIdentities,{}, isClass, className);
 			}
 			else{
-			    checkProcedure(x,^procedure(y,z), allProceduresIdenteties, allClassesIdenteties, allClassesIdenteties[className][2] + {"this"},
+			    checkProcedure(x,^procedure(y,z), allProceduresIdentities, allClassesIdentities, allClassesIdentities[className][2] + {"this"},
 							isClass, className);															   
 			}
 		}
@@ -1656,19 +1681,19 @@ match(l){
 			definedVars := definedVars + {x};
 			allUsedVars += {x};
 			getProcedureParameters(y, definedVars, {});
-			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		}
 		return;
 	
 	case ^assignment(^variable(x), ^cachedProcedure(y, z)) :	
 		if(!isProcedure){
 			if(!isClass){
-				checkProcedure(x,^procedure(y,z), allProceduresIdenteties, allClassesIdenteties, {}, isClass, className);
+				checkProcedure(x,^procedure(y,z), allProceduresIdentities, allClassesIdentities, {}, isClass, className);
 			}
 			else{
-			    checkProcedure(x,^procedure(y,z), allProceduresIdenteties, allClassesIdenteties,
-							allClassesIdenteties[className][2] + {"this"}, isClass, className);
+			    checkProcedure(x,^procedure(y,z), allProceduresIdentities, allClassesIdentities,
+							allClassesIdentities[className][2] + {"this"}, isClass, className);
 			}
 		}
 		else{
@@ -1676,19 +1701,19 @@ match(l){
 			definedVars := definedVars + {x};
 			allUsedVars += {x};
 			getProcedureParameters(y, definedVars, {});
-			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		}
 		return;
 	
 	case ^assignment(^variable(x), ^lambdaDefinition(y, z))	:	
 		if(!isProcedure){
 			if(!isClass){
-			    checkProcedure(x, ^procedure(y, ^block([z])), allProceduresIdenteties, allClassesIdenteties, {}, isClass, className);
+			    checkProcedure(x, ^procedure(y, ^block([z])), allProceduresIdentities, allClassesIdentities, {}, isClass, className);
 			}
 			else{
-				checkProcedure(x, ^procedure(y, ^block([z])), allProceduresIdenteties, allClassesIdenteties,
-							allClassesIdenteties[className][2] + {"this"}, isClass, className);
+				checkProcedure(x, ^procedure(y, ^block([z])), allProceduresIdentities, allClassesIdentities,
+							allClassesIdentities[className][2] + {"this"}, isClass, className);
 			}
 		}
 		else{
@@ -1696,8 +1721,8 @@ match(l){
 			definedVars := definedVars + {x};
 			allUsedVars += {x};
 			getProcedureParameters(y, definedVars, {});
-			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		}
 		return;
 																
@@ -1705,224 +1730,224 @@ match(l){
 	case ^assignment(^memberAccess(^variable(a),^variable(b)), ^procedure(y, z)) :	
 		newClassName := "extra-" + str(a);
 		//print(newClassName);
-		if(!(newClassName in domain(allClassesIdenteties))){
-			oldClassProperties := {oc : oc in allClassesIdenteties | str(a) in oc[2][4]};
+		if(!(newClassName in domain(allClassesIdentities))){
+			oldClassProperties := {oc : oc in allClassesIdentities | str(a) in oc[2][4]};
 			if(#oldClassProperties != 0){
 			    oldClassProperties := first(oldClassProperties);
 				oldClassProperties := oldClassProperties[2];
 			}
 			else{
-				a := {f : g in allClassesIdenteties, f in g[2][1]};
-				b := {f : g in allClassesIdenteties, f in g[2][2]};
-				c := {f : g in allClassesIdenteties, f in g[2][3]};
-				d := {f : g in allClassesIdenteties, f in g[2][4]};
+				a := {f : g in allClassesIdentities, f in g[2][1]};
+				b := {f : g in allClassesIdentities, f in g[2][2]};
+				c := {f : g in allClassesIdentities, f in g[2][3]};
+				d := {f : g in allClassesIdentities, f in g[2][4]};
 				oldClassProperties := [a, b, c, d];
 			}
 			oldClassProperties[4] := {str(a)};
 			//print(oldClassProperties);
-			checkProcedure(b, ^procedure(y, z), oldClassProperties[3], allClassesIdenteties,
+			checkProcedure(b, ^procedure(y, z), oldClassProperties[3], allClassesIdentities,
 						oldClassProperties[2] + {"this"}, isClass, className);
-			allClassesIdenteties := allClassesIdenteties + {[newClassName, oldClassProperties]};
+			allClassesIdentities := allClassesIdentities + {[newClassName, oldClassProperties]};
 		}
 		else{
-			checkProcedure(b, ^procedure(y, z), allClassesIdenteties[newClassName][3], allClassesIdenteties,
-						allClassesIdenteties[newClassName][2] + {"this"}, isClass, className);
+			checkProcedure(b, ^procedure(y, z), allClassesIdentities[newClassName][3], allClassesIdentities,
+						allClassesIdentities[newClassName][2] + {"this"}, isClass, className);
 		}
-		allClassesIdenteties[newClassName][3] += {[str(b),[]]};
-		getProcedureIdentity(str(b), ^procedure(y, z), allClassesIdenteties[newClassName][3]);
+		allClassesIdentities[newClassName][3] += {[str(b),[]]};
+		getProcedureIdentity(str(b), ^procedure(y, z), allClassesIdentities[newClassName][3]);
 		return;
 	
 	case ^assignment(^memberAccess(^variable(a),^variable(b)), ^cachedProcedure(y, z)) :	
 		newClassName := "extra-" + str(a);
 		//print(newClassName);
-		if(!(newClassName in domain(allClassesIdenteties))){
-			oldClassProperties := {oc : oc in allClassesIdenteties | str(a) in oc[2][4]};
+		if(!(newClassName in domain(allClassesIdentities))){
+			oldClassProperties := {oc : oc in allClassesIdentities | str(a) in oc[2][4]};
 			if(#oldClassProperties != 0){
 				oldClassProperties := first(oldClassProperties);
 				oldClassProperties := oldClassProperties[2];
 			}
 			else{
-				a := {f : g in allClassesIdenteties, f in g[2][1]};
-				b := {f : g in allClassesIdenteties, f in g[2][2]};
-				c := {f : g in allClassesIdenteties, f in g[2][3]};
-				d := {f : g in allClassesIdenteties, f in g[2][4]};
+				a := {f : g in allClassesIdentities, f in g[2][1]};
+				b := {f : g in allClassesIdentities, f in g[2][2]};
+				c := {f : g in allClassesIdentities, f in g[2][3]};
+				d := {f : g in allClassesIdentities, f in g[2][4]};
 				oldClassProperties := [a, b, c, d];
 			}
 			oldClassProperties[4] := {str(a)};
 			//print(oldClassProperties);
-			checkProcedure(b, ^procedure(y, z), oldClassProperties[3], allClassesIdenteties,
+			checkProcedure(b, ^procedure(y, z), oldClassProperties[3], allClassesIdentities,
 						oldClassProperties[2] + {"this"}, isClass, className);
-			allClassesIdenteties += [newClassName, oldClassProperties];
+			allClassesIdentities += [newClassName, oldClassProperties];
 		}
 		else{
-			checkProcedure(b, ^procedure(y, z), allClassesIdenteties[newClassName][3], allClassesIdenteties, 
-						allClassesIdenteties[newClassName][2] + {"this"}, isClass, className);
+			checkProcedure(b, ^procedure(y, z), allClassesIdentities[newClassName][3], allClassesIdentities, 
+						allClassesIdentities[newClassName][2] + {"this"}, isClass, className);
 		}
-		allClassesIdenteties[newClassName][3] += {[str(b),[]]};
-		getProcedureIdentity(str(b), ^procedure(y, z), allClassesIdenteties[newClassName][3]);
+		allClassesIdentities[newClassName][3] += {[str(b),[]]};
+		getProcedureIdentity(str(b), ^procedure(y, z), allClassesIdentities[newClassName][3]);
 		return;	
 																
 	case ^assignment(^memberAccess(^variable(a),^variable(b)), ^lambdaDefinition(y, z))	:
 		newClassName := "extra-" + str(a);
 		//print(newClassName);
-		if(!(newClassName in domain(allClassesIdenteties))){
-			oldClassProperties := {oc : oc in allClassesIdenteties | str(a) in oc[2][4]};
+		if(!(newClassName in domain(allClassesIdentities))){
+			oldClassProperties := {oc : oc in allClassesIdentities | str(a) in oc[2][4]};
 			if(#oldClassProperties != 0){
 				oldClassProperties := first(oldClassProperties);
 				oldClassProperties := oldClassProperties[2];
 			}
 			else{
-				a := {f : g in allClassesIdenteties, f in g[2][1]};
-				b := {f : g in allClassesIdenteties, f in g[2][2]};
-				c := {f : g in allClassesIdenteties, f in g[2][3]};
-				d := {f : g in allClassesIdenteties, f in g[2][4]};
+				a := {f : g in allClassesIdentities, f in g[2][1]};
+				b := {f : g in allClassesIdentities, f in g[2][2]};
+				c := {f : g in allClassesIdentities, f in g[2][3]};
+				d := {f : g in allClassesIdentities, f in g[2][4]};
 				oldClassProperties := [a, b, c, d];
 			}
 			oldClassProperties[4] := {str(a)};
 			//print(oldClassProperties);
-			checkProcedure(b, ^procedure(y, ^block([z])), oldClassProperties[3], allClassesIdenteties,
+			checkProcedure(b, ^procedure(y, ^block([z])), oldClassProperties[3], allClassesIdentities,
 						oldClassProperties[2] + {"this"}, isClass, className);
-			allClassesIdenteties += [newClassName, oldClassProperties];
+			allClassesIdentities += [newClassName, oldClassProperties];
 		}
 		else{
-			checkProcedure(b, ^procedure(y, ^block([z])), allClassesIdenteties[newClassName][3], allClassesIdenteties,
-						allClassesIdenteties[newClassName][2] + {"this"}, isClass, className);
+			checkProcedure(b, ^procedure(y, ^block([z])), allClassesIdentities[newClassName][3], allClassesIdentities,
+						allClassesIdentities[newClassName][2] + {"this"}, isClass, className);
 		}
-		allClassesIdenteties[newClassName][3] += {[str(b),[]]};
-		getProcedureIdentity(str(b), ^procedure(y, ^block([z])), allClassesIdenteties[newClassName][3]);
+		allClassesIdentities[newClassName][3] += {[str(b),[]]};
+		getProcedureIdentity(str(b), ^procedure(y, ^block([z])), allClassesIdentities[newClassName][3]);
 		return;
 	
 	case ^ifThen(x): 
 		for(y in x) 
 		{
-			checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+			checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		} 
 		return;
 	
 	case ^ifThenElseIfBranch(x, y): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties); 
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties); 
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities); 
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities); 
 		return;
 	
 	case ^ifThenBranch(cond, then): 
-		checkCode(cond, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(then, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(cond, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(then, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^ifThenElseBranch(x): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 									   
 	case ^while(x, y): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^for(x, y, z): 
 		forLoopCase := true;
 		temp := forLoopTmpDefVars;
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties); 
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities); 
 		forLoopTmpDefVars := temp; //return it to the way it was in case they were nested forloops.
 		forLoopCase := false;
 		return;
 	
 	case ^tryCatch(x, [a|b]): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		for(y in [a|b]){
-		    checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		    checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		}
 		return;
 	
 	case ^tryCatch(x, y): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^tryCatchLngBranch(x, y): 
-		addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties, isProcedure, false);
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdentities, isProcedure, false);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^tryCatchUsrBranch(x, y): 
-		addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties, isProcedure, false);
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdentities, isProcedure, false);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^tryCatchBranch(x, y): 
-		addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdenteties, isProcedure, false);
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		addDefinedVariables(^assignment(x,1), exceptionTmp, isClass, className, allClassesIdentities, isProcedure, false);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^check(x, y): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^switch(x): 
 		for(y in x) 
 		{
-			checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+			checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		} 
 		return;
 	
 	case ^switchCaseBranch(cond, do):
-		checkCode(cond, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(do, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties); 
+		checkCode(cond, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(do, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities); 
 		return;
 	
 	case ^switchDefaultBranch(x): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties); 
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities); 
 		return;
 	
 	case ^match(x, y): 
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		for(z in y) 
 		{
-			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties, 
-						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+			checkCode(z, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities, 
+						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		} 
 		return;
 	
 	case ^matchCaseBranch([v],cond,do) : 
 		getMatchedVariables(v, matchTmp);
 		usedVarsInMatch := {};
-		checkCode(cond, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(do, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(cond, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(do, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		allVariablesAreDefined := true;
 		undefinedVariables := {};
 		for(v in usedVarsInMatch){
@@ -1961,10 +1986,10 @@ match(l){
 		getMatchedVariables(x, matchTmp);
 		getMatchedVariables(y, matchTmp);
 		usedVarsInMatch := {};
-		checkCode(cond, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-				forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(do, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-				forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(cond, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+				forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(do, definedVars, usedVarsInMatch, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+				forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		allVariablesAreDefined := true;
 		undefinedVariables := {};
 		for(v in usedVarsInMatch){
@@ -2000,27 +2025,27 @@ match(l){
 		return;
 	
 	case ^matchDefaultBranch(x):  
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		return;
 	
 	case ^scan(^variable(x), y, z):	
 		matchTmp += {x};
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 					for(w in z){
-						checkCode(w, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-									forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+						checkCode(w, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+									forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 					}
 	
 	case ^scan(x, y, z):	
-		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		checkCode(x, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(y, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		for(w in z){
-			checkCode(w, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+			checkCode(w, definedVars, allUsedVars, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+						forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		}
 	
 	case ^classDefiner(w, ^setlClass(x, y, z)):	
@@ -2032,32 +2057,24 @@ match(l){
 		className := w;
 		definedVarsTmp := definedVars;
 		allUsedVarsTmp := allUsedVars;
-		classDefinedVars := allClassesIdenteties[w][1];
-		checkCode(y, classDefinedVars, {}, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
-		checkCode(z, classDefinedVars, {}, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdenteties,
-					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdenteties);
+		classDefinedVars := allClassesIdentities[w][1];
+		checkCode(y, classDefinedVars, {}, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
+		checkCode(z, classDefinedVars, {}, isProcedure, procName, procParameters, procEmbeddedProcedures, allProceduresIdentities,
+					forLoopCase, forLoopTmpDefVars, exceptionTmp, matchTmp, isClass, className, allClassesIdentities);
 		definedVars := definedVarsTmp;
 		allUsedVars := allUsedVarsTmp;
 													
 													
 	default:		
-		//print("isProcedure : $isProcedure$");
 		usedVariables := {};
 		tempDefinedVars := {};
 		iteratorCase := false;
-		//print(forLoopCase + " : " + canonical(l));
 		getUsedVariables(l, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName, procParameters,
-					procEmbeddedProcedures, iteratorCase, allProceduresIdenteties, forLoopCase, forLoopTmpDefVars, exceptionTmp,
-					matchTmp, allClassesIdenteties, isClass, className);
-		//print("usedVariables: $usedVariables$, allUsedVars: $allUsedVars$");
-		//print("getUsedVariables: " + canonical(l));
+					procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase, forLoopTmpDefVars, exceptionTmp,
+					matchTmp, allClassesIdentities, isClass, className);
 		allVariablesAreDefined := true;
 		undefinedVariables := {};
-		//print(usedVariables);
-		//print("Defined Variables : " + definedVars);
-		//print("TempDefinedVars : " + tempDefinedVars);
-		//print("forLoopTmpDefVars : " + forLoopTmpDefVars);
 		for(v in usedVariables){
 			v := str(v);
 			if(("[" in v) && ("]" in v)){    //for the case where the collectionAccess is to be used forcely by the user 
@@ -2090,7 +2107,7 @@ match(l){
 											"get","load","loadLibrary","multiLineMode","nprint","nprintErr","printErr",
 											"read","writeFile","cacheStats","clearCache","compare","getScope","logo",
 											"sleep","now","run","isObject","stop"};
-				if(!((v in domain(allProceduresIdenteties)) || (v in allPredefinedProcedures))){
+				if(!((v in domain(allProceduresIdentities)) || (v in allPredefinedProcedures))){
 					allVariablesAreDefined := false;
 					undefinedVariables := undefinedVariables + {v};
 					//print("FORTEMP : $forLoopTmpDefVars$");
@@ -2145,7 +2162,7 @@ match(l){
 			}
 		}
 		temp := definedVars;
-		addDefinedVariables(l, definedVars, isClass, className, allClassesIdenteties, isProcedure, false);
+		addDefinedVariables(l, definedVars, isClass, className, allClassesIdentities, isProcedure, false);
 		temp2 := definedVars - temp;
 		temp3 := temp2 - (matchTmp+forLoopTmpDefVars);  // for the case where iterators are replaced as "v := str(v)"
 		definedVars := temp + temp3;
@@ -2159,35 +2176,34 @@ match(l){
 
 //Getting the file directory of the file to check
 main := procedure(params){
-for(directory in params){
-	print("NOW CHECKING $directory$");
-	directory := str(directory);
-	l := readFile(directory); 
-	l := +/ [ g + "\n" : g in l ]; // Adding a new line to the end of all lines to avoid getting problems from the commands just like this one "//"
-	l := parseStatements(l);
+for(file in params){
+	print("NOW CHECKING $file$");
+	file := str(file);
+	listOfLines := readFile(file); 
+	listOfLinesSeparated := +/ [ g + "\n" : g in listOfLines ];
+	statements := parseStatements(listOfLinesSeparated);
 
 	definedVars := {};
 	allUsedVars := {};
-	allProceduresIdenteties := {};
-	allClassesIdenteties := {};
+	allProceduresIdentities := {};
+	allClassesIdentities := {};
 	
-	
-	identifyAllProcedures(l, allProceduresIdenteties);  // To avoid the calling cycles ! So we get all procedures' identities first before checking the code
-	identifyAllClasses(l, allClassesIdenteties);
-	analyzeAllLoadedFiles(l, definedVars, allUsedVars, allProceduresIdenteties, allClassesIdenteties);
-	checkCode(l, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdenteties, false, {}, {}, {}, false, "", allClassesIdenteties);
+	identifyAllProcedures(statements, allProceduresIdentities);
+	identifyAllClasses(statements, allClassesIdentities);
+	analyzeAllLoadedFiles(statements, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+	checkCode(statements, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdentities, false, {}, {}, {}, false, "", allClassesIdentities);
 	unUsedVars := definedVars-allUsedVars;
 	if(#unUsedVars != 0)
 	{
 		if(#unUsedVars == 1){
-		   print("Variable " + unUsedVars + " is defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure");
+		   print("Variable " + unUsedVars + " is defined but never used in the whole code! unless it was assigned to a returned procedure");
 		}
 		else{
-		   print("Variables " + unUsedVars + " are defined but never used in the whole code! unless it(they) was(were) assigned to a returned procedure");
+		   print("Variables " + unUsedVars + " are defined but never used in the whole code! unless they were assigned to a returned procedure");
 		
 		}
 	}
-	print("DONE CHECKING $directory$");
+	print("DONE CHECKING $file$");
 }
 };
 
