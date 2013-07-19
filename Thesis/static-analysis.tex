@@ -54,8 +54,28 @@ I hereby certify that the thesis comprises only my original work towards my Bach
 \today
 \end{flushright}
 
-\tableofcontents
+\pagebreak
 
+\begin{center}
+\begin{Large}
+\underline{\textbf{ACKNOWLEDGMENT}}
+\end{Large}
+\end{center}
+
+\vspace{2cm}
+
+\begin{Large}
+Foremost I would like to express my sincere gratitude to my advisor Prof. Karl Stroetmann for his continuous support in my bachelor project, for his patience, motivation, enthusiasm, and immense knowledge. His guidance helped me in all the time of implementation and writing this thesis. I could not have imagined having a better advisor and mentor for my bachelor project.\\
+
+I would like also to thank my mother Amaal Morsi for her continuous support and encouragement, and for pushing me to do my bachelor project abroad. I wouldn't have made it without her.\\
+
+I would also like to express my sincere thanks to Heidy Heweidy for her continuous support throughout my bachelor project.\\
+
+Last but not least, I would like to thank my sister Deena Aboulazm and my friends for always being there for me when I needed support.
+\end{Large}
+
+
+\tableofcontents
 
 \chapter{Introduction}
 As \textsc{SetlX} is an untyped language, type errors are only caught at runtime.  This is the same
@@ -82,10 +102,10 @@ static analysis for \textsc{SetlX} programs that is more precise than the corres
 
 The following chapters are going to be as follows
 \begin{enumerate}
-\item Chapter 2 : is going to be a brief introduction about the main language \textsc{setlX}.
-\item Chapter 3 : is going to discuss the implementation of the analyzer.
-\item Chapter 4 : is going to cover the part concerning the regression tests.
-\item Chapter 5 : is going to be about further implementation that can be done in the future.
+\item Chapter 2 : is an introduction about the main language \textsc{setlX}.
+\item Chapter 3 : discusses the implementation of the analyzer.
+\item Chapter 4 : covers the part concerning regression tests.
+\item Chapter 5 : discusses further implementation that can be added to the analyzer in the future.
 \end{enumerate}
 
 \chapter{Introducing \textsc{setlX}}
@@ -1330,10 +1350,10 @@ First of all, in order to run the analyzer you have to type
 \hspace*{1.3cm}
 \texttt{setlx analyzeCode.stlx --params fileName.stlx}
 \\[0.2cm]
-in the command line prompt for windows users or in the terminal for Mac or Unix users after setting up \textsc{setlX} on your computer, where \texttt{fileName} is either a file or a list of files separated by commas to be analyzed.
+in the command line prompt for windows users or in the terminal for Mac or Unix users after setting up \textsc{setlX} on your computer, where \texttt{fileName} is either a file or a list of files separated by commas or blanks to be analyzed.
 \\
 
-In the upcoming sections we will discuss each part of the code separately. Other parts will be referenced but won't be discussed at the time but instead in their own specified sections.
+In the upcoming sections we will discuss each part of the code separately. Each section will discuss a certain function.
 
 
 
@@ -1395,16 +1415,16 @@ In the upcoming sections we will discuss each part of the code separately. Other
 \label{fig:startAnalyzing}
 \end{figure}
 
-The main function of the code is shown in figure \ref{fig:startAnalyzing}.
+The main function of the code is shown in Figure \ref{fig:startAnalyzing}.
 \begin{enumerate}
 \item The main function takes one argument '\texttt{params}' which is the file or the list of files to be checked.
 \item The main function consists of a \textsl{for-loop} that loops through the files to be checked printing the beginning and the end of it to notify the user which file is being checked at the moment. 
-\item After reading the file into the variable \texttt{listOfLines}, in \textsl{line 6} a new line "$\setminus$n" in then added to the end of each line in the code in order to separate them. The reason for that is to avoid the commenting sign "//" at any line from commenting all code lines followed by it. That is saved into the variable \texttt{listOfLinesSeparated}.
-\item After that in \textsl{line 7} the code is then parsed and saved in the same variable \texttt{statements}.
-\item In lines $9$ to $12$, four empty sets are created to be used later for checking the code. Sets \texttt{definedVars} and \texttt{allUsedVars} to save the defined and used variables in the code, while \texttt{allProceduresIdentities} and \texttt{allClassesIdentities} are used to save all existing procedures and classes in the code in a certain format that is going to be discussed later.
+\item After reading the file into the variable \texttt{listOfLines}, in \textsl{line 6} a new line "$\setminus$n" is then added to the end of each line in the code in order to separate them. The reason for that is to avoid the commenting sign "//" at any line from commenting all code lines followed by it. That is saved into the variable \texttt{listOfLinesSeparated}.
+\item After that in \textsl{line 7} the code is then parsed and saved in the variable \texttt{statements}.
+\item In lines $9$ to $12$, four empty sets are created to be used later for checking the code. Sets \texttt{definedVars} and \texttt{allUsedVars} are used to save the defined and used variables in the code, while \texttt{allProceduresIdentities} and \texttt{allClassesIdentities} are used to save all existing procedures and classes in the code in a certain format that is going to be discussed later.
 \item In \textsl{line 14} and \textsl{line 15} all existing procedures and classes in the code being checked are saved by a certain format in the variables called \textsl{allProceduresIdentities} and \textsl{allClassesIdentities}.
 \item After that in \textsl{line 16} the analyzer checks all files being loaded by the analyzed file using the \textsl{analyzeAllLoadedFiles} function so that any important information in them would be available further on when checking the file being analyzed.
-\item The most important part then comes at \textsl{line 18} which is checking if there is any problem in the code that should appear to the user using the \textsl{checkCode} function.
+\item The most important part then comes at \textsl{line 18} where the function \textsl{checkCode} tries to find all problem in the code that should be reported to the user.
 \item Then starting \textsl{line 21} upto \textsl{line 35} the analyzer checks if there were any variables defined throughout the whole code that were never used and in such case it prints to the user a notification concerning these variables.
 \item This process is then repeated in case there were more files to be checked.
 \end{enumerate}
@@ -1529,7 +1549,7 @@ are the variables $x$ and $y$.
 
 \item In \textsl{line 3}, variable \textsl{usedVarsInMatch} is assigned to an empty set and then all used variables in the condition '\texttt{cond}' and in the do part '\texttt{do}' are added to this set in \textsl{lines 4 and 5}.
 
-\item After that in \textsl{line 6} the variable \texttt{allVariablesAreDefined} is assigned the boolean value of true initially, and an empty set \texttt{undefinedVariables} is declared at \textsl{line 7}.
+\item After that in \textsl{line 6 and 7} the boolean variable \texttt{allVariablesAreDefined} and the set \texttt{undefinedVariables} are declared.
 
 \item Then starting \textsl{line 8} upto \textsl{line 19} all the used variables are checked if they were defined before or not, if they were not defined before, the boolean variable \texttt{allVariablesAreDefined} is set to false and the undefined variable is added to the set \texttt{undefinedVariables}.
 
@@ -1537,7 +1557,7 @@ are the variables $x$ and $y$.
 
 \end{enumerate}
 
-The case of procedure assignment is not decomposed as the rest cases but is held in a different way as shown in figure \ref{fig:procedure assignment case}.
+The case of procedure assignment is not decomposed as the other cases but is held in a different way as shown in figure \ref{fig:procedure assignment case}.
 
 \begin{figure}[!htb]
 \centering
@@ -1601,7 +1621,7 @@ The cached procedures and the lambda procedures are also held the same way. Obje
 \\
 \\
 
-Now anything that reaches the default branch would actually be a single statement. The default branch's first part is shown in figure \ref{fig:default case branch}.
+Now anything that reaches the default branch would actually be a single statement. The default branch's first part is shown in Figure \ref{fig:default case branch}.
 
 \begin{figure}[!htb]
 \centering
@@ -1630,9 +1650,7 @@ Now anything that reaches the default branch would actually be a single statemen
 	   if(("[" in v) && ("]" in v)){
 		pos := 1;
 		while(true){
-			if(v[pos] == "["){
-				break;
-			}
+			if(v[pos] == "["){ break;}
 			pos += 1;
 		}
 		v := v[..(pos-1)];
@@ -1650,8 +1668,7 @@ Now anything that reaches the default branch would actually be a single statemen
 		       (v in allPredefinedProcedures))){
 			   allVariablesAreDefined := false;
 			   undefinedVariables := undefinedVariables + {v};
-		   }
-		   else{
+		   }else{
 			  print("ATTENTION! Procedure \"$v$\" is being used 
 			      not as a procedure maybe a parameter to be called,
 			      please check that this is correct.");
@@ -1666,17 +1683,17 @@ Now anything that reaches the default branch would actually be a single statemen
 
 
 \begin{enumerate}
-\item In \textsl{lines 2 and 3} in figure \ref{fig:default case branch} two empty sets variables are defined which are \texttt{usedVariables} and \texttt{tempDefinedVars}. In \textsl{line 4} the variable \texttt{iteratorCase} is given the boolean value of \textsl{false} initially.
+\item In \textsl{lines 2 and 3} in figure \ref{fig:default case branch} the sets \texttt{usedVariables} and \texttt{tempDefinedVars} are defined and in \textsl{line 4} the boolean variable \texttt{iteratorCase} is declared.
 
 \item In \textsl{line 5} all used variables in the statement are stored in the set \texttt{usedVariables} using the function \texttt{getUsedVariables}.
 
 \item After that in \textsl{lines 10 and 11}, the variable \texttt{allVariablesAreDefined} is assigned to the boolean value of \textsl{true} initially and the variable \texttt{undefinedVariables} is assigned to the empty set.
 
-\item Then starting \textsl{line 12} upto \textsl{line 44} a \textsl{for-loop} loops over the used variables to check if they were defined previously or not.
+\item Then starting \textsl{line 12} upto \textsl{line 41} a \textsl{for-loop} loops over the used variables to check if they were defined previously or not.
 
-\item What happens in short from \textsl{line 14} till \textsl{line 23} that if one of the used variables was in the form of a collection access "a[n]" where n is a natural number, the part of the access "[n]" is removed to check if the variable '$a$' was defined previously or not.
+\item What happens in short from \textsl{line 14} till \textsl{line 21} that if one of the used variables was in the form of a collection access "a[n]" where n is a natural number, the part of the access "[n]" is removed to check if the variable '$a$' was defined previously or not.
 
-\item From \textsl{line 24} till \textsl{line 43}, the definedness of the used variable '$v$' is checked, if it was defined in the set \texttt{definedVariables} only then it will be added to the set \texttt{allUsedVars}. If it wasn't defined at all, we check if it is defined as a procedure, if it wasn't defined as a procedure then the variable \texttt{allVariablesAreDefined} is set to \texttt{false} and the variable '$v$' is added to the set \texttt{undefinedVariables}.
+\item From \textsl{line 22} till \textsl{line 40}, the definedness of the used variable '$v$' is checked, if it was defined in the set \texttt{definedVariables} only then it will be added to the set \texttt{allUsedVars}. If it wasn't defined at all, we check if it is defined as a procedure, if it wasn't defined as a procedure then the variable \texttt{allVariablesAreDefined} is set to \texttt{false} and the variable '$v$' is added to the set \texttt{undefinedVariables}.
 
 \item In the rest of the default branch that isn't shown in the figure all the undefined variables are printed out to the user with their location.
 

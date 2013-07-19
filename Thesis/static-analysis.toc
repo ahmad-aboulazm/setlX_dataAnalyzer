@@ -1,22 +1,22 @@
-\contentsline {chapter}{\numberline {1}Introduction}{3}{chapter.1}
-\contentsline {chapter}{\numberline {2}Introducing \textsc {setlX}}{4}{chapter.2}
-\contentsline {section}{\numberline {2.1}\textsc {SetlX} Data Types}{4}{section.2.1}
-\contentsline {section}{\numberline {2.2}Statements in \textsc {setlX}}{10}{section.2.2}
-\contentsline {section}{\numberline {2.3}Regular Expressions}{15}{section.2.3}
-\contentsline {section}{\numberline {2.4}Functional Programming}{17}{section.2.4}
-\contentsline {section}{\numberline {2.5}Exceptions and Backtracking}{20}{section.2.5}
-\contentsline {section}{\numberline {2.6}Objects and Classes}{20}{section.2.6}
-\contentsline {section}{\numberline {2.7}Predefined Functions}{23}{section.2.7}
-\contentsline {chapter}{\numberline {3}Implementation}{26}{chapter.3}
-\contentsline {section}{\numberline {3.1}main Function}{26}{section.3.1}
-\contentsline {section}{\numberline {3.2}checkCode Function}{28}{section.3.2}
-\contentsline {section}{\numberline {3.3}addDefinedVariables Function}{33}{section.3.3}
-\contentsline {section}{\numberline {3.4}getUsedVariables Function}{34}{section.3.4}
-\contentsline {section}{\numberline {3.5}identifyAllClasses Function}{38}{section.3.5}
-\contentsline {section}{\numberline {3.6}identifyAllProcedures Function}{38}{section.3.6}
-\contentsline {section}{\numberline {3.7}checkProcedure Function}{38}{section.3.7}
-\contentsline {section}{\numberline {3.8}getProcedureParameters Function}{39}{section.3.8}
-\contentsline {section}{\numberline {3.9}analyzeAllLoadedFiles Function}{39}{section.3.9}
-\contentsline {section}{\numberline {3.10}getMatchedVariables Function}{39}{section.3.10}
-\contentsline {section}{\numberline {3.11}Helper Functions}{39}{section.3.11}
-\contentsline {chapter}{\numberline {4}Regression Tests}{42}{chapter.4}
+\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}
+\contentsline {chapter}{\numberline {2}Introducing \textsc {setlX}}{5}{chapter.2}
+\contentsline {section}{\numberline {2.1}\textsc {SetlX} Data Types}{5}{section.2.1}
+\contentsline {section}{\numberline {2.2}Statements in \textsc {setlX}}{11}{section.2.2}
+\contentsline {section}{\numberline {2.3}Regular Expressions}{16}{section.2.3}
+\contentsline {section}{\numberline {2.4}Functional Programming}{18}{section.2.4}
+\contentsline {section}{\numberline {2.5}Exceptions and Backtracking}{21}{section.2.5}
+\contentsline {section}{\numberline {2.6}Objects and Classes}{21}{section.2.6}
+\contentsline {section}{\numberline {2.7}Predefined Functions}{24}{section.2.7}
+\contentsline {chapter}{\numberline {3}Implementation}{27}{chapter.3}
+\contentsline {section}{\numberline {3.1}main Function}{27}{section.3.1}
+\contentsline {section}{\numberline {3.2}checkCode Function}{29}{section.3.2}
+\contentsline {section}{\numberline {3.3}addDefinedVariables Function}{35}{section.3.3}
+\contentsline {section}{\numberline {3.4}getUsedVariables Function}{36}{section.3.4}
+\contentsline {section}{\numberline {3.5}identifyAllClasses Function}{40}{section.3.5}
+\contentsline {section}{\numberline {3.6}identifyAllProcedures Function}{40}{section.3.6}
+\contentsline {section}{\numberline {3.7}checkProcedure Function}{40}{section.3.7}
+\contentsline {section}{\numberline {3.8}getProcedureParameters Function}{41}{section.3.8}
+\contentsline {section}{\numberline {3.9}analyzeAllLoadedFiles Function}{41}{section.3.9}
+\contentsline {section}{\numberline {3.10}getMatchedVariables Function}{41}{section.3.10}
+\contentsline {section}{\numberline {3.11}Helper Functions}{41}{section.3.11}
+\contentsline {chapter}{\numberline {4}Regression Tests}{43}{chapter.4}

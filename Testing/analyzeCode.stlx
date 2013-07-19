@@ -193,62 +193,63 @@ getProcedureParameters := procedure(y, rw allProcedureDefinedVariables, rw allPr
 
 };
 
-analyzeAllLoadedFiles := procedure(code, rw definedVars, rw allUsedVars, rw allProceduresIdentities, rw allClassesIdentities){
+analyzeAllLoadedFiles := procedure(prefix, code, rw definedVars, rw allUsedVars, rw allProceduresIdentities, rw allClassesIdentities){
 match(code){
 	case ^block(x):
 		for(y in x){
-			analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+			analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 		} 
 		return;
 	
 	case ^ifThen(x):	
 		for(y in x){
-			analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+			analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 		}
 	
 	case ^ifThenElseIfBranch(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^ifThenBranch(cond, then):
-		analyzeAllLoadedFiles(then, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, then, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^ifThenElseBranch(x):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^while(x, y):
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^for(x, y, z):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(z, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, z, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatch(x, y):	
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatchLngBranch(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatchUsrBranch(x, y):	
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^tryCatchBranch(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	case ^check(x, y):
-		analyzeAllLoadedFiles(x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
-		analyzeAllLoadedFiles(y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, x, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+		analyzeAllLoadedFiles(prefix, y, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	
 	
 	case ^call("load", x):
 		for(y in x){
 			print("NOW CHECKING LOADED FILE $y$");
-			l := readFile(y); 
+			y2 := prefix + y;
+			l := readFile(y2);
 			l := +/ [ g + "\n" : g in l ];
 			l := parseStatements(l);	
 			identifyAllProcedures(l, allProceduresIdentities);
@@ -669,7 +670,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		}
 	
 	case ^call(x, y): 	
-		allPredefinedProcedures := ["print","throw","abort","isString","nDecimalPlaces","str","canonical",
+		allPredefinedProcedures := {"print","throw","abort","isString","nDecimalPlaces","str","canonical",
 									"parseStatements","readFile","arb","first","last","from","fromB","fromE",
 									"domain","max","min","pow","range","reverse","sort","char","endsWith",
 									"eval","execute","matches","join","replace","replaceFirst","split",
@@ -684,7 +685,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 									"finish","finishLoop","resume","reset","dbgHelp","appendFile","deleteFile",
 									"get","loadLibrary","multiLineMode","nprint","nprintErr","printErr",
 									"read","writeFile","cacheStats","clearCache","compare","getScope","logo",
-									"sleep","now","run","isObject","stop"];
+									"sleep","now","run","isObject","stop","collect"};
 		if(x in allPredefinedProcedures){
 			for(z in y){
 				getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
@@ -1188,7 +1189,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 	
 	case ^exists(^setlIterator(^variable(a), b, c), y):
 		definedVars += {a};
-		allUsedVars += {a};
+		usedVariables += {a};
+		//print(definedVars + " " + allUsedVars);
 		getUsedVariables(^setlIterator(^variable(a), b, c), usedVariables, allUsedVars, tempDefinedVars, definedVars,
 				isProcedure, procName, procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities,
 				forLoopCase,forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
@@ -2066,7 +2068,7 @@ match(l){
 		allUsedVars := allUsedVarsTmp;
 													
 													
-	default:		
+	default:	
 		usedVariables := {};
 		tempDefinedVars := {};
 		iteratorCase := false;
@@ -2087,7 +2089,7 @@ match(l){
 				}
 				v := v[..(pos-1)];
 			}
-			if((v in definedVars) && (!((v in tempDefinedVars) || (v in forLoopTmpDefVars) || (v in exceptionTmp) || (v in matchTmp)))){
+			if(v in definedVars){
 				allUsedVars := allUsedVars + {v};
 			}
 			if(!(v in definedVars || v in tempDefinedVars || v in forLoopTmpDefVars || v in exceptionTmp || v in matchTmp)){
@@ -2106,7 +2108,7 @@ match(l){
 											"finish","finishLoop","resume","reset","dbgHelp","appendFile","deleteFile",
 											"get","load","loadLibrary","multiLineMode","nprint","nprintErr","printErr",
 											"read","writeFile","cacheStats","clearCache","compare","getScope","logo",
-											"sleep","now","run","isObject","stop"};
+											"sleep","now","run","isObject","stop","collect"};
 				if(!((v in domain(allProceduresIdentities)) || (v in allPredefinedProcedures))){
 					allVariablesAreDefined := false;
 					undefinedVariables := undefinedVariables + {v};
@@ -2190,7 +2192,22 @@ for(file in params){
 	
 	identifyAllProcedures(statements, allProceduresIdentities);
 	identifyAllClasses(statements, allClassesIdentities);
-	analyzeAllLoadedFiles(statements, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+	prefix := "";
+/*	if("\" in file){
+		splitting := split(file,"\");
+		fromE(splitting);
+		for(x in splitting){
+			prefix := prefix + "$x$\";
+		}
+	}
+*/	if("/" in file){
+		splitting := split(file,"/");
+		fromE(splitting);
+		for(x in splitting){
+			prefix := prefix + "$x$/";
+		}
+	}
+	analyzeAllLoadedFiles(prefix, statements, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
 	checkCode(statements, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdentities, false, {}, {}, {}, false, "", allClassesIdentities);
 	unUsedVars := definedVars-allUsedVars;
 	if(#unUsedVars != 0)
