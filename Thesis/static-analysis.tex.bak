@@ -87,7 +87,7 @@ is to implement similar static analysis techniques for \textsc{SetlX}.  In contr
 \textsl{Prolog} programs, where a predicate can both read a variable and define it, the direction of
 the data flow in \textsc{SetlX} programs is well defined.  Therefore, it is possible to implement a
 static analysis for \textsc{SetlX} programs that is more precise than the corresponding analysis for
-\textsl{Prolog}:  In particular, five main different checks are possible.
+\textsl{Prolog}:  In particular, six main different checks are possible.
 
 \begin{enumerate}
 \item We can check whether a variable is defined before it is used.
@@ -97,6 +97,7 @@ static analysis for \textsc{SetlX} programs that is more precise than the corres
       analysis is known as live variable analysis.
 \item Checking if any used procedure or class are defined in the code or not.
 \item Checking that any procedure or class are called with the correct number of parameters.
+\item Checking if all member variables and procedures called for objects actually do exist or not.
 \item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix \texttt{this.} before the variable's name.
 \end{enumerate}
 
@@ -105,7 +106,7 @@ The following chapters are going to be as follows
 \item Chapter 2 : is an introduction about the main language \textsc{setlX}.
 \item Chapter 3 : discusses the implementation of the analyzer.
 \item Chapter 4 : covers the part concerning regression tests.
-\item Chapter 5 : discusses further implementation that can be added to the analyzer in the future.
+\item Chapter 5 : i
 \end{enumerate}
 
 \chapter{Introducing \textsc{setlX}}
@@ -1998,11 +1999,302 @@ There are two helper function that haven't been discussed in the previous sectio
 
 \chapter{Regression Tests}
 
+Regression tests were created in order to sustain the analyzer's functionalities in further implementations. In order to run the regression tests just navigate to the directory where the file and the tests are placed. Then run the command
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{setlx regressionTests.stlx}
+\\[0.2cm]
+and all tests will run printing out a message in case any of them failed.
+\\
+
+The \texttt{regressionTests.sltx} file has one main function shown in Figure \ref{fig:regressionTests.stlx}.
+
+\begin{figure}[!ht]
+\centering
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    test := procedure(fileName, expectedOutput, rw allPassed){
+	print("Now testing $fileName$");
+	output := run("setlx analyzeCode.stlx --params $fileName$");
+	if(output[1] != expectedOutput){
+		//print(output[1]);
+		print("Testing $fileName$ has failed");
+		allPassed := false;
+	}
+    };
+\end{Verbatim}
+\vspace*{-0.3cm}
+\caption{Test procedure in the regression tests' file}
+\label{fig:regressionTests.stlx}
+\end{figure}
+
+\begin{enumerate}
+\item The function '\texttt{text}' shown in Figure \ref{fig:regressionTests.stlx} takes three arguments which are 
+	\begin{enumerate}
+	\item \texttt{fileName} : which is the name of the 			test file being checked.
+	\item \texttt{expectedOutput} : which is the expected 	output from running the the analyzer on the test 			file.
+	\item \texttt{rw allPassed} : which is a boolean 			variable to indicate if any test has failed.
+	\end{enumerate}
+
+\item In \textsl{line 2} the function prints the start of testing a certain file so the user would know which test file is being checked at the moment.
+
+\item In \textsl{line 3} the output of the test file is saved in the variable \texttt{output}.
+
+\item After that the function checks if the output of the test file matches the expected output or not. If they didn't match it prints in \textsl{line 6} that this test has failed.
+\end{enumerate}
+
+The rest of the \texttt{regressionTests.stlx} is composed of three parts which are :
+\begin{enumerate}
+\item Creating a boolean variable \texttt{allPassed} and setting it initially to \texttt{true}.
+
+\item Calling the function \texttt{test} for each and every test file. An example for that is shown below :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    fileName := "basicTest1.stlx";
+    expectedOutput := ["NOW CHECKING basicTest1.stlx", 
+	"Variables {\"y\"} is 
+	  called to be used in procedure called f without being defined !", 
+	"Variable {\"x\"} is 
+	  defined but never used in the procedure called f!!", 
+	"DONE CHECKING basicTest1.stlx"];
+    test(fileName, expectedOutput, allPassed);
+\end{Verbatim}
+
+\item At the end of the file the boolean variable '\texttt{allPassed}' is checked, and if its value was \texttt{true} then the file prints that all tests have passed successfully.
+\end{enumerate}
+
+Of course the \texttt{regressionTests.stlx} file might need to be modified in the future in case the analyzer's messages (prints) were modified or extra check messages were added.
+
+\chapter{Conclusion}
+
+In short, \textsc{setlX} is an untyped language and type errors in it are only caught at run time. But after the implementation of this analyzer, errors can actually be caught before run time. To be specific the analyzer successfully covers the following checks :
+\begin{enumerate}
+\item Checking whether a variable is defined before it is used, so the code shown below :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    x := 2;
+    z := x + y;
+    print("z = $z$");
+\end{Verbatim}
+would have the following output printed to the user :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    NOW CHECKING new.stlx
+    Variable {"y"} is called to be used without being defined !
+    DONE CHECKING new.stlx
+\end{Verbatim}
+assuming that \texttt{new.stlx} is the name of the file being checked.
+
+\item Checking whether a variable is ever used after being defined, so the code shown below :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    w := 1;
+    x := 2;
+    y := 3;
+    z := x + y;
+    print("z = $z$");
+\end{Verbatim}
+would have the following output printed to the user :
+\pagebreak
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    NOW CHECKING new.stlx
+    Variable {"w"} is defined but never used in the whole code! 
+      unless it was assigned to a returned procedure
+    DONE CHECKING new.stlx
+\end{Verbatim}
+assuming that \texttt{new.stlx} is the name of the file being checked.
+
+\item Checking whether a used procedure is defined, so the code shown below :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    x := add(1, 2);
+    print(x);
+\end{Verbatim}
+would have the following output printed to the user :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    NOW CHECKING new.stlx
+    PROCEDURE add is undefined!
+    DONE CHECKING new.stlx
+\end{Verbatim}
+assuming that \texttt{new.stlx} is the name of the file being checked.
+
+\item Checking whether any procedure or class are called with the correct number of parameters, so the code shown below : 
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    add := procedure(x, y){
+    return x+y;
+    };
+
+    class complex(real, imag) {
+        mReal := real;
+        mImag := imag;
+    }
+
+    x := add(1);
+    y := complex(1, 2, 3);
+    
+\end{Verbatim}
+would have the following output printed to the user :
+\pagebreak
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    NOW CHECKING new.stlx
+    ATTENTION! Procedure add is being called with 1 parameter(s) 
+        instead of 2 parameter(s)
+    Object y is called to be created of class complex with 3 parameters
+        instead of 2
+    Variables {"x", "y"} are defined but never used in the whole code!
+        unless they were assigned to a returned procedure
+    DONE CHECKING new.stlx
+\end{Verbatim}
+assuming that \texttt{new.stlx} is the name of the file being checked.
+
+\item Checking if all member variables and procedures called for objects actually do exist or not, so the code shown below : 
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    class complex(real, imag) {
+        mReal := real;
+        mImag := imag;
+        sum := that |-> complex(mReal + that.mReal, mImag + that.mImag);
+    }
+    x:= complex(1, 2);
+    print(x.real);
+    print(x.add(x));
+\end{Verbatim}
+would have the following output printed to the user :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    NOW CHECKING new.stlx
+    Usage of variable real for object x is uncorrect
+    Attention! calling class procedure add for object x is uncorrect!
+    DONE CHECKING new.stlx
+\end{Verbatim}
+assuming that \texttt{new.stlx} is the name of the file being checked.
 
 
-
-
-
+\item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix \texttt{this.} before the variable's name. So the code shown below :
+\pagebreak
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    class complex(real, imag) {
+        mReal := real;
+        mImag := imag;
+        setmReal := procedure(x){
+	        mReal := x;
+        };
+    }
+\end{Verbatim}
+would have the following output printed to the user :
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    NOW CHECKING new.stlx
+    Warning: A new variable mReal is being defined instead of 
+        assigning the member variable of class complex, if you 
+        wish to assign the member variable add a prefix "this." to it.
+    DONE CHECKING new.stlx
+\end{Verbatim}
+assuming that \texttt{new.stlx} is the name of the file being checked.
+\end{enumerate}
 
 
 

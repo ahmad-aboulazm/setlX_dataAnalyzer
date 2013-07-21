@@ -1,0 +1,11 @@
+add := procedure(x, y){
+	return x + y;
+};
+
+class complex(real, imag){
+	mReal := real;
+	mImag := imag;
+}
+
+x := add(1);
+y := complex(1, 2, 3);

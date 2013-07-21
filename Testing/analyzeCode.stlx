@@ -413,8 +413,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 				procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
 				forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className); 
 		if(isClass && (x in allClassesIdentities[className][2]) && isProcedure){
-			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$,
-					if you wish to assign the member variable add a prefix this. to it.");
+			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$," +
+			" if you wish to assign the member variable add a prefix this. to it.");
 		}
 		return;
 	
@@ -683,7 +683,7 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 									"isMap","isNumber","isProcedure","isRational","isReal","isSet","isString",
 									"isTerm","trace","setBreak","rmBreak","lsBreak","step","uStep","fStep",
 									"finish","finishLoop","resume","reset","dbgHelp","appendFile","deleteFile",
-									"get","loadLibrary","multiLineMode","nprint","nprintErr","printErr",
+									"get","loadLibrary","multiLineMode","nPrint","nprintErr","printErr",
 									"read","writeFile","cacheStats","clearCache","compare","getScope","logo",
 									"sleep","now","run","isObject","stop","collect"};
 		if(x in allPredefinedProcedures){
@@ -698,8 +698,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 		counter := 1;
 		if(x in domain(allProceduresIdentities)){
 			if(#y != #allProceduresIdentities[procedureName]){
-				print("ATTENTION! Procedure $procedureName$ is being called with $#y$ parameter(s) instead of 
-						$#allProceduresIdentities[procedureName]$ parameter(s)");
+				print("ATTENTION! Procedure $procedureName$ is being called with $#y$ parameter(s) instead of $#allProceduresIdentities[procedureName]$" +
+				" parameter(s)");
 			}
 			for(z in y){
 				match(z){
@@ -788,8 +788,8 @@ getUsedVariables := procedure(l, rw usedVariables, allUsedVars, rw tempDefinedVa
 												procParameters, procEmbeddedProcedures, iteratorCase, allProceduresIdentities, forLoopCase,
 												forLoopTmpDefVars, exceptionTmp, matchTmp, allClassesIdentities, isClass, className);
 										if(#y != #(o[2][3][spliting[2]])){
-											print("ATTENTION! Procedure $spliting[2]$ of class $o[1]$ is being called with $#y$ parameter(s) 
-													instead of $#(o[2][3][spliting[2]])$ parameter(s)");
+											print("ATTENTION! Procedure $spliting[2]$ of class $o[1]$ is being called with $#y$ parameter(s) instead of" + 
+											" $#(o[2][3][spliting[2]])$ parameter(s)");
 										}
 										for(z in y){
 											getUsedVariables(z, usedVariables, allUsedVars, tempDefinedVars, definedVars, isProcedure, procName,
@@ -1443,8 +1443,8 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allCl
 		definedVars := definedVars + {x};
 		addDefinedVariables(y, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck);
 		if(isClass && (x in allClassesIdentities[className][2]) && isProcedure){
-			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class 
-				$className$, if you wish to assign the member variable add a prefix this. to it.");
+			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$," + 
+			" if you wish to assign the member variable add a prefix this. to it.");
 		}
 		return;
 	
@@ -1476,22 +1476,22 @@ addDefinedVariables := procedure(l, rw definedVars, isClass, className, rw allCl
 	
 	case ^sumAssignment(x, y):
 		if(isClass && (str(x) in allClassesIdentities[className][2]) && isProcedure){
-			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$,
-					if you wish to assign the member variable add a prefix this. to it.");
+			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$," + 
+			"if you wish to assign the member variable add a prefix this. to it.");
 		}
 		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck); return;
 	
 	case ^differenceAssignment(x, y):
 		if(isClass && (str(x) in allClassesIdentities[className][2]) && isProcedure){
-			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$, 
-					if you wish to assign the member variable add a prefix this. to it.");
+			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$," + 
+			"if you wish to assign the member variable add a prefix this. to it.");
 		}
 		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck); return;
 	
 	case ^quotientAssignment(x, y):
 		if(isClass && (str(x) in allClassesIdentities[className][2]) && isProcedure){
-			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$,
-					if you wish to assign the member variable add a prefix this. to it.");
+			print("Warning: A new variable $x$ is being defined instead of assigning the member variable of class $className$," + 
+			" if you wish to assign the member variable add a prefix this. to it.");
 		}
 		addDefinedVariables(x, definedVars, isClass, className, allClassesIdentities, isProcedure, classCheck); return;	
 	
@@ -1965,12 +1965,12 @@ match(l){
 		if(allVariablesAreDefined == false){
 			if(isProcedure){
 				if(#undefinedVariables == 1){
-					print("Variable " + undefinedVariables + " is called to be used in a match statement in procedure called " +
-								procName + " without being defined !");
+					print("Variable " + undefinedVariables + " is called to be used in a match statement in procedure called " + procName +
+					" without being defined !");
 				}
 				else{
-					print("Variables " + undefinedVariables + " are called to be used in a match statement in procedure called " +
-								procName + " without being defined !");													
+					print("Variables " + undefinedVariables + " are called to be used in a match statement in procedure called " + procName +
+					" without being defined !");													
 				}
 			}
 			else{
@@ -2007,12 +2007,12 @@ match(l){
 		if(allVariablesAreDefined == false){
 			if(isProcedure){
 				if(#undefinedVariables == 1){
-					print("Variable " + undefinedVariables + " is called to be used in a match statement in procedure called " +
-							procName + " without being defined !");
+					print("Variable " + undefinedVariables + " is called to be used in a match statement in procedure called " + procName +
+					" without being defined !");
 				}
 				else{
-					print("Variables " + undefinedVariables + " are called to be used in a match statement in procedure called " +
-							procName + " without being defined !");
+					print("Variables " + undefinedVariables + " are called to be used in a match statement in procedure called " + procName +
+					" without being defined !");
 				}
 			}
 			else{
@@ -2106,7 +2106,7 @@ match(l){
 											"isMap","isNumber","isProcedure","isRational","isReal","isSet","isString",
 											"isTerm","trace","setBreak","rmBreak","lsBreak","step","uStep","fStep",
 											"finish","finishLoop","resume","reset","dbgHelp","appendFile","deleteFile",
-											"get","load","loadLibrary","multiLineMode","nprint","nprintErr","printErr",
+											"get","load","loadLibrary","multiLineMode","nPrint","nprintErr","printErr",
 											"read","writeFile","cacheStats","clearCache","compare","getScope","logo",
 											"sleep","now","run","isObject","stop","collect"};
 				if(!((v in domain(allProceduresIdentities)) || (v in allPredefinedProcedures))){
@@ -2115,8 +2115,7 @@ match(l){
 					//print("FORTEMP : $forLoopTmpDefVars$");
 				}
 				else{
-					print("ATTENTION! Procedure \"$v$\" is being used not as a procedure maybe a parameter to be called,
-							please check that this is correct.");
+					print("ATTENTION! Procedure \"$v$\" is being used not as a procedure maybe a parameter to be called, please check that this is correct.");
 				}
 			}
 		}
@@ -2124,22 +2123,20 @@ match(l){
 			if(isProcedure){
 				if(!isClass){
 					if(#undefinedVariables == 1){
-						print("Variable " + undefinedVariables + " is called to be used in procedure called " +
-								procName + " without being defined !");
+						print("Variable " + undefinedVariables + " is called to be used in procedure called " + procName + " without being defined !");
 					}
 					else{
-						print("Variables " + undefinedVariables + " are called to be used in procedure called " 
-								+ procName + " without being defined !");													   
+						print("Variables " + undefinedVariables + " are called to be used in procedure called " + procName + " without being defined !");													   
 					}
 				}
 				else{
 					if(#undefinedVariables == 1){
-						print("Variable " + undefinedVariables + " is called to be used in procedure called " +
-								procName + " in class " + className + " without being defined !");
+						print("Variable " + undefinedVariables + " is called to be used in procedure called " + procName + " in class " + className +
+						" without being defined !");
 					}
 					else{
-						print("Variables " + undefinedVariables + " are called to be used in procedure called " +
-								procName + " in class " + className + " without being defined !");													   
+						print("Variables " + undefinedVariables + " are called to be used in procedure called " + procName + " in class " + className +
+						" without being defined !");													   
 					}
 				}
 			}
@@ -2192,15 +2189,9 @@ for(file in params){
 	
 	identifyAllProcedures(statements, allProceduresIdentities);
 	identifyAllClasses(statements, allClassesIdentities);
+	
 	prefix := "";
-/*	if("\" in file){
-		splitting := split(file,"\");
-		fromE(splitting);
-		for(x in splitting){
-			prefix := prefix + "$x$\";
-		}
-	}
-*/	if("/" in file){
+	if("/" in file){
 		splitting := split(file,"/");
 		fromE(splitting);
 		for(x in splitting){
@@ -2208,6 +2199,7 @@ for(file in params){
 		}
 	}
 	analyzeAllLoadedFiles(prefix, statements, definedVars, allUsedVars, allProceduresIdentities, allClassesIdentities);
+	
 	checkCode(statements, definedVars, allUsedVars, false, "", {}, {}, allProceduresIdentities, false, {}, {}, {}, false, "", allClassesIdentities);
 	unUsedVars := definedVars-allUsedVars;
 	if(#unUsedVars != 0)

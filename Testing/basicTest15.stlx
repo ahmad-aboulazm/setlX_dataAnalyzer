@@ -1,0 +1,7 @@
+class complex(real, imag) {
+    mReal := real;
+    mImag := imag;
+    setmReal := procedure(x){
+	    mReal := x;
+    };
+}

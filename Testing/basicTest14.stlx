@@ -1,0 +1,8 @@
+class complex(real, imag) {
+    mReal := real;
+    mImag := imag;
+    sum := that |-> complex(mReal + that.mReal, mImag + that.mImag);
+}
+x:= complex(1, 2);
+print(x.real);
+print(x.add(x));

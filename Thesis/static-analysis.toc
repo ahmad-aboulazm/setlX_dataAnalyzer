@@ -20,3 +20,4 @@
 \contentsline {section}{\numberline {3.10}getMatchedVariables Function}{41}{section.3.10}
 \contentsline {section}{\numberline {3.11}Helper Functions}{41}{section.3.11}
 \contentsline {chapter}{\numberline {4}Regression Tests}{43}{chapter.4}
+\contentsline {chapter}{\numberline {5}Conclusion}{45}{chapter.5}
