@@ -2177,10 +2177,9 @@ match(l){
 main := procedure(params){
 for(file in params){
 	print("NOW CHECKING $file$");
-	file := str(file);
 	listOfLines := readFile(file); 
-	listOfLinesSeparated := +/ [ g + "\n" : g in listOfLines ];
-	statements := parseStatements(listOfLinesSeparated);
+	codeSeparated := +/ [ g + "\n" : g in listOfLines ];
+	statements := parseStatements(codeSeparated);
 
 	definedVars := {};
 	allUsedVars := {};
@@ -2191,8 +2190,8 @@ for(file in params){
 	identifyAllClasses(statements, allClassesIdentities);
 	
 	prefix := "";
-	if("/" in file){
-		splitting := split(file,"/");
+	if("/" in str(file)){
+		splitting := split(str(file),"/");
 		fromE(splitting);
 		for(x in splitting){
 			prefix := prefix + "$x$/";

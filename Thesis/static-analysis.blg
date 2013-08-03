@@ -1,0 +1,16 @@
+This is BibTeX, Version 0.99dThe top-level auxiliary file: static-analysis.aux
+The style file: plain.bst
+Database file #1: cs.bib
+Warning--entry type for "definiteAssignmentAnalysis:Online" isn't style-file defined
+--line 127 of file cs.bib
+Warning--string name "july" is undefined
+--line 130 of file cs.bib
+Warning--entry type for "liveVariableAnalysis:Online" isn't style-file defined
+--line 133 of file cs.bib
+Warning--string name "july" is undefined
+--line 136 of file cs.bib
+Warning--entry type for "CollatzConjecture:Online" isn't style-file defined
+--line 139 of file cs.bib
+Warning--string name "july" is undefined
+--line 142 of file cs.bib
+(There were 6 warnings)

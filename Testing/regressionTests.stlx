@@ -390,7 +390,7 @@ test(fileName, expectedOutput, allPassed);
 //Testing the code itself
 fileName := "analyzeCode.stlx";
 expectedOutput := 	["NOW CHECKING analyzeCode.stlx", 
-					"Variable params in an iterator is called without being defined !", 
+					"Usage of variable y for object x in procedure getUsedVariables is uncorrect", 
 					"Variable {\"params\"} is called to be used without being defined !", 
 					"DONE CHECKING analyzeCode.stlx"];
 test(fileName, expectedOutput, allPassed);

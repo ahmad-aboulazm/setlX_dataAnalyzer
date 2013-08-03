@@ -1,0 +1,35 @@
+\begin{thebibliography}{1}
+
+\bibitem{RegularExpressions}
+Alfred~V Aho.
+\newblock {\em Algorithms for finding patterns in strings}.
+\newblock The MIT Press., 1990.
+
+\bibitem{bratko:90}
+Ivan Bratko.
+\newblock {\em {PROLOG} Programming for Artificial Intelligence}.
+\newblock Addison-Wesley, 2nd edition, 1990.
+
+\bibitem{milner:90}
+Robin Milner, Mads Tofte, and Robert Harper.
+\newblock {\em The Definition of Standard ML}.
+\newblock MIT Press, 1990.
+
+\bibitem{vanRossum:95}
+Guido van Rossum.
+\newblock Python tutorial.
+\newblock Technical report, Centrum Wiskunde \& Informatica, Amsterdam, 1995.
+
+\bibitem{CollatzConjecture:Online}
+Wikipedia.
+\newblock Collatz conjecture.
+
+\bibitem{definiteAssignmentAnalysis:Online}
+Wikipedia.
+\newblock Definite assignment analysis.
+
+\bibitem{liveVariableAnalysis:Online}
+Wikipedia.
+\newblock Live variable analysis.
+
+\end{thebibliography}

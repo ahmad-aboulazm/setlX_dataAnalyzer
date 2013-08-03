@@ -6,7 +6,7 @@
 \usepackage{fancyvrb}
 \usepackage{fancyhdr}
 
-\pagestyle{fancy}\pagestyle{fancy}
+\pagestyle{fancy}
 
 \setlength{\textheight}{22.0cm}
 \fancyfoot[C]{--- \thepage\ ---}
@@ -43,7 +43,7 @@
 \textbf{Bachelor Thesis}
 \begin{tabbing}\hspace{5cm}
 Author: Ahmed AboulAzm\\\hspace{5cm}
-Supervisor: Professor Karl Stroetmann\\\hspace{5cm}
+Supervisor: Prof. Dr. Karl Stroetmann\\\hspace{5cm}
 Submission Date: {\today}
 \end{tabbing}
 \end{center}
@@ -65,7 +65,7 @@ I hereby certify that the thesis comprises only my original work towards my Bach
 \vspace{2cm}
 
 \begin{Large}
-Foremost I would like to express my sincere gratitude to my advisor Prof. Karl Stroetmann for his continuous support in my bachelor project, for his patience, motivation, enthusiasm, and immense knowledge. His guidance helped me in all the time of implementation and writing this thesis. I could not have imagined having a better advisor and mentor for my bachelor project.\\
+Foremost I would like to express my sincere gratitude to my advisor Prof. Dr. Karl Stroetmann for his continuous support in my bachelor project, for his patience, motivation, enthusiasm, and immense knowledge. His guidance helped me in all the time of implementation and writing this thesis. I could not have imagined having a better advisor and mentor for my bachelor project.\\
 
 I would like also to thank my mother Amaal Morsi for her continuous support and encouragement, and for pushing me to do my bachelor project abroad. I wouldn't have made it without her.\\
 
@@ -79,7 +79,7 @@ Last but not least, I would like to thank my sister Deena Aboulazm and my friend
 
 \chapter{Introduction}
 As \textsc{SetlX} is an untyped language, type errors are only caught at runtime.  This is the same
-as in untyped languages like \textsl{Prolog} or \textsl{Python}.  However, current \textsl{Prolog}
+as in untyped languages like \textsl{Prolog}\cite{bratko:90} or \textsl{Python}\cite{vanRossum:95}.  However, current \textsl{Prolog}
 implementations check for \emph{singleton variables}, i.e.~variables that are used only once.  The
 reason is that many typos result in singleton variables.  Therefore, checking singleton variables
 can uncover mistyped variable names.  Our intention 
@@ -91,33 +91,33 @@ static analysis for \textsc{SetlX} programs that is more precise than the corres
 
 \begin{enumerate}
 \item We can check whether a variable is defined before it is used.
-      This is commonly referred to as definite assignment analysis.
+      This is commonly referred to as definite assignment analysis\cite{definiteAssignmentAnalysis:Online}.
 \item We can check whether a variable is read after it is written.  If a variable is written but
       never read afterwards, the assignement to this variable is useless.  This kind of data flow
-      analysis is known as live variable analysis.
+      analysis is known as live variable analysis\cite{liveVariableAnalysis:Online}.
 \item Checking if any used procedure or class are defined in the code or not.
 \item Checking that any procedure or class are called with the correct number of parameters.
 \item Checking if all member variables and procedures called for objects actually do exist or not.
-\item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix \texttt{this.} before the variable's name.
+\item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix "\texttt{this.}" before the variable's name.
 \end{enumerate}
 
 The following chapters are going to be as follows
 \begin{enumerate}
-\item Chapter 2 : is an introduction about the main language \textsc{setlX}.
-\item Chapter 3 : discusses the implementation of the analyzer.
-\item Chapter 4 : covers the part concerning regression tests.
-\item Chapter 5 : is the conclusion of this thesis.
+\item Chapter 2 is an introduction about the main language \textsc{setlX}.
+\item Chapter 3 discusses the implementation of the analyzer.
+\item Chapter 4 covers regression tests.
+\item Chapter 5 concludes this thesis.
 \end{enumerate}
 
 \chapter{Introducing \textsc{setlX}}
 
 \textsc{setlX} has been upgraded lately from the old untyped language \href{http://en.wikipedia.org/wiki/SETL}{\emph{SETL}}. It has been invented mainly for educational purposes as it is well suited to familiarize students with set theory, terms and functional programming.
 
-In the following sections we are going to introduce the most important features of this language.
+In the following sections we are going to introduce the most important features of this language. If you wish to see the official full tutorial and instructions to download \textsc{setlX} kindly visit this following link : 
 
-\begin{center} If you wish to see the official full tutorial and instructions to download \textsc{setlX} kindly visit this following link : 
-
-\url{http://wwwlehre.dhbw-stuttgart.de/~stroetma/SetlX/setlX.php} \end{center}
+\begin{center}
+\url{http://wwwlehre.dhbw-stuttgart.de/~stroetma/SetlX/setlX.php} 
+\end{center}
 
 \section{\textsc{SetlX} Data Types}
 
@@ -131,12 +131,12 @@ and hitting return yields to this response
 \hspace*{1.3cm}
 \texttt{\symbol{126}< Result: 11/15 >\symbol{126}}
 \\[0.2cm]
-This example shows that \textsc{setlX} actually supports rational numbers, it also makes sure that the answer is in the simplest form. So after typing
+This example shows that \textsc{setlX} supports rational numbers, it also makes sure that the answer is in the simplest form. So after typing
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{\textsl{1/3 + 2/3;}}
 \\[0.2cm]
-The response would be
+the response would be
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{\symbol{126}< Result: 1 >\symbol{126}}
@@ -148,10 +148,9 @@ The precision of any result computed in \textsc{setlX} is unlimited unless there
 \hspace*{1.3cm}
 \texttt{\textsl{50!;}}
 \\[0.2cm]
-The result would be
+the result would be
 \\[0.2cm]
-\hspace*{0.6cm}
-\texttt{\symbol{126}< Result: 30414093201713378043612608166064768844377641568960512000000000000 >\symbol{126}}
+\texttt{\symbol{126}< Result: 3041409320171337804361260816606476884437764156896051200000000 >\symbol{126}}
 \\[0.2cm]
 To calculate floating point values in \textsc{setlX} the simplest way is to add 0.0 to the calculated expression as in
 \\[0.2cm]
@@ -176,25 +175,25 @@ which outputs
 \texttt{}
 \\[0.2cm]
 
-To assign a value to a variable in \textsc{setlX}, we use the ':=' operator which is the major difference between \textsc{setlX} and the programming language \textsl{C}
+To assign a value to a variable in \textsc{setlX}, we use the ':=' operator which is the major difference in the syntax between \textsc{setlX} and the programming language \textsl{C}
 so writing 
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{\textsl{x := 2;}}
 \\[0.2cm]
-assigns the value '2' to the variable 'x'. Always keep in mind that in \textsc{setlX} variables always have to start with a lower case.
+assigns the value '2' to the variable 'x'. Always keep in mind that in \textsc{setlX} variables always have to start with a lower case character.
 \\
 \\
 \textsc{setlX} provides some operators to combine boolean expressions. Which are
 \begin{enumerate}
-\item \texttt{\&\&} as the logical and.
-\item \texttt{||} as the logical or.
-\item \texttt{!} as the logical not.
-\item \texttt{=>} as the logical implication.
-\item \texttt{<==>} as the logical equivalence which can be also replaced with \texttt{==}.
-\item \texttt{<!=>} as the logical antivalence which can be also replaced with \texttt{!=}.
+\item "\texttt{\&\&}" as the logical and.
+\item "\texttt{||}" as the logical or.
+\item "\texttt{!}" as the logical not.
+\item "\texttt{=>}" as the logical implication.
+\item "\texttt{<==>}" as the logical equivalence which can be also replaced with "\texttt{==}".
+\item "\texttt{<!=>}" as the logical antivalence which can be also replaced with "\texttt{!=}".
 \end{enumerate}
-It provides some operators to create boolean expressions as well such as \texttt{>,<,==,!=,<=,>=}.
+It provides some operators to create boolean expressions as well such as \texttt{">","<","==","!=","<=",">="}.
 
 
 It also supports the universal and existential quantifiers \textsl{"forall"} and \textsl{"exists"}.
@@ -243,16 +242,16 @@ will create a \textsl{set} containing all elements counting from $a$ till $c$ wi
 \\
 There are some basic operators on sets which are
 \begin{enumerate}
-\item \texttt{"+"} to compute the union of 2 sets.
-\item \texttt{"*"} to compute the intersection of 2 sets.
-\item \texttt{"-"} to compute the difference of 2 sets.
-\item \texttt{"><"} to compute the cartesian product of 2 sets.
+\item \texttt{"+"} to compute the union of two sets.
+\item \texttt{"*"} to compute the intersection of two sets.
+\item \texttt{"-"} to compute the difference of two sets.
+\item \texttt{"><"} to compute the cartesian product of two sets.
 \item \texttt{"** 2"} to compute the cartesian product of a set with itself.
 \item \texttt{"2 **"} to compute the power set of a set.
-\item \texttt{"\%"} to compute the symmetric difference of 2 sets.
+\item \texttt{"\%"} to compute the symmetric difference of two sets.
 \end{enumerate}
 
-Another interesting thing about \textsl{sets} in \textsc{setlX} is set comprehension which is used to build sets which has the general formula of
+Another interesting thing about \textsl{sets} in \textsc{setlX} is \emph{set comprehension} which is used to build sets which has the general formula of
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{\{ $\textsl{expr}$ :$\;x_1$ in $s_1$, $\cdots$, $x_n$ in $s_n$ | $\textsl{cond}$ \}}.
@@ -286,26 +285,26 @@ which returns the \emph{first} element of the set $s$, and
 \hspace*{1.3cm}
 \texttt{last($s$)} 
 \\[0.2cm]
-which returns the \emph{last} element of the set $s$.
+which returns the \emph{last} element of the set $s$. Note that sets in \textsc{setlX} are internally ordered, so \texttt{first(s)} is the smallest element with respect to this order, while \texttt{last(s)} yields the largest element.
 \\
 \\
-\textsc{setlX} also supports lists which have 2 main differences with sets which are :
+\textsc{setlX} also supports lists which have 2 main differences with sets which are:
 \begin{enumerate}
-\item A syntactical difference : the
+\item A syntactical difference: the
 curly braces ``\texttt{\{}'' and ``\texttt{\}}'' of sets are substituted with the square brackets
 ``\texttt{[}'' and ``\texttt{]}'' for lists.
-\item A logical difference :  A list is an ordered collection of elements which can contain an element more than once unlike sets.
+\item A logical difference:  A list is an ordered collection of elements which can contain an element more than once unlike sets.
 \end{enumerate} 
-Apart from these two points, lists are almost the same as sets and they support everything mentioned above concerning sets.
+Apart from these two points, lists are almost the same as sets and they support everything mentioned above concerning sets. Note that for a list $l$, \texttt{first(l)} is indeed the first element of the list, while \texttt{last(l)} is the last element of $l$ which is different than the case of sets.
 \\
 
-Alike \textsc{setL} the old version of \textsc{setlX}, \textsc{setlX} pairs are supported. A pair is represented in \textsc{setlX} as a list of length two. A binary relation can be represented as a set of pairs. So if we can consider \textsl{r} as a binary relation, then we have a domain and a range represented in the formulas 
+Alike \textsc{setl} the old version of \textsc{setlX}, \textsc{setlX} pairs are supported. A pair is represented in \textsc{setlX} as a list of length two. A binary relation can be represented as a set of pairs. So if we can consider \textsl{r} as a binary relation, then we have a domain and a range represented in the formulas 
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{domain(r) = \{ x :[x,y] in r \}} \quad and \quad
 \texttt{range(r)  = \{ y :[x,y] in r \}}.
 \\[0.2cm]
-Furthermore, binary relations can be used as a map. In that case if \textsl{r} is the binary relation, we have a definition for $r[x]$
+Furthermore, binary relations can be used as maps. In that case if \textsl{r} is the binary relation, we have a definition for $r[x]$
 \\[0.2cm]
 \hspace*{1.3cm}
 $r[x] := \left\{
@@ -315,9 +314,9 @@ $r[x] := \left\{
 \end{array} \right.
 $
 \\[0.2cm]
-The symbol $\Omega$ in \textsc{setlX} appears when there is no solution or result to a certain expression.
+The symbol $om$ in \textsc{setlX} appears when there is no solution or result to a certain expression.
 
-Binary relations seem very helpful that they actually can be used as functions, but that won't be smart as that would consume a lot of memory and will compute even cases that aren't needed. Thus in \textsc{setlX} \textsl{procedures} are used for that. Figure \ref{fig:primes.stlx} for example defines a procedure that computes prime numbers starting $2$ up to a given number $n$.
+Binary relations seem very helpful that they actually can be used as functions, but that won't be smart as that would consume a lot of memory and will compute even cases that aren't needed. Thus in \textsc{setlX} \textsl{procedures} are used for that. Figure \ref{fig:primes.stlx} for example defines a procedure that computes prime numbers starting at $2$ up to a given number $n$.
 \begin{figure}[!ht]
 \centering
 \begin{Verbatim}[ frame         = lines, 
@@ -339,12 +338,12 @@ Binary relations seem very helpful that they actually can be used as functions, 
 \label{fig:primes.stlx}
 \end{figure}
 
-In Figure \ref{fig:primes.stlx}, the block starts with assigning ``\texttt{procedure(n) \{}'' to a variable \texttt{primes} which is the name of the procedure where $n$ in this case is the parameter given to this \textsl{procedure}, then the procedure's block ends with a closing bracket ``\texttt{\}}'' followed by a semi column \texttt{';'}. The procedure's block itself contains the logic that the procedure has to perform.\\
+In Figure \ref{fig:primes.stlx}, the block starts with assigning ``\texttt{procedure(n) \{}'' to a variable \texttt{primes} which is the name of the procedure where $n$ in this case is the parameter given to this \textsl{procedure}, then the procedure's block ends with a closing bracket ``\texttt{\}}'' followed by a semicolon \texttt{';'}. The procedure's block itself contains the logic that the procedure has to perform.\\
 In \textsc{setlX} procedures can be
 \begin{enumerate}
-\item assigned to a variable.
-\item used as an argument to another procedure.
-\item be returned from other procedures.
+\item assigned to a variable,
+\item used as an argument to another procedure,
+\item be returned from other procedures,
 \end{enumerate}
 more about procedures will be discussed later on.
 \\
@@ -355,7 +354,7 @@ Strings in \textsc{setlX} are a sequence of characters enclosed by double quotes
 \item \texttt{s * n} : \texttt{*} to concatenate multiple instances of the string $s$ $n$ times where $n$ is a natural number.
 \item \texttt{s[i]} : to get the $i_{th}$ character of string $s$.
 \end{enumerate}
-\textsc{setlX} also provides \textsl{string interpolation} where any string containing substring of it enclosed between two ``\texttt{\symbol{36}}'' signs, \textsc{setlX} evaluates the expression between them then substitute the result of it into the string. For example, if $n$ has the value of $6$
+\textsc{setlX} also provides \textsl{string interpolation} where any string containing substring of it enclosed between two ``\texttt{\symbol{36}}'' signs is evaluated and the result is substituted into the string. For example, if $n$ has the value of $6$
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{print(\symbol{34}\symbol{36}n\symbol{36}! = \symbol{36}n!\symbol{36}\symbol{34})};
@@ -377,7 +376,7 @@ will actually print
 \\[0.2cm]
 \\
 
-\textsc{setlX} provides also \textsl{first order terms} similar to the one provided by the programming language \textsl{Prolog}. Terms consists of \textsl{functors} and \textsl{arguments}. The difference between a \textsl{functor} and a \textsl{function} is that \textsl{functors} start with a capital letter and don't evaluate anything. An example for using \textsl{Terms} is implementing \href{http://en.wikipedia.org/wiki/Binary_search_tree}{\emph{ordered binary trees}}.
+\textsc{setlX} provides also \textsl{first order terms} similar to the one provided by the programming language \textsl{Prolog}. Terms consists of \textsl{functors} and \textsl{arguments}. The difference between a \textsl{functor} and a \textsl{function} is that a \textsl{functor} starts with a capital letter and doesn't evaluate anything. An example for using \textsl{Terms} is implementing \href{http://en.wikipedia.org/wiki/Binary_search_tree}{\emph{ordered binary trees}}.
 \begin{enumerate}
 \item An empty tree is represented as
       \\[0.2cm]
@@ -409,12 +408,37 @@ is actually representing the tree that looks as follows
 \item \texttt{args(t)} which returns the arguments of a term $t$.
 \item \texttt{makeTerm(f,l)} which creates a term of functor $f$ and arguments $l$.
 \end{enumerate}
-So executing \texttt{fct(Node(3,Nil(),Nil()))} yields a result of \texttt{"Node"},\\
-and executing \texttt{args(Node(3,Nil(),Nil()))} yields a result of \texttt{[3, Nil(), Nil()]},\\
-and executing \texttt{makeTerm(\symbol{34}Node\symbol{34},[ makeTerm(\symbol{34}Nil\symbol{34},[]), makeTerm(\symbol{34}Nil\symbol{34},[]) ])} constructs the term \texttt{Node(3, Nil(), Nil())}.
+So executing 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{fct(Node(3,Nil(),Nil()))} 
 \\
+yields a result of 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{"Node"},
 \\
-Figure \ref{fig:binary-tree-no-matching.stlx} actually shows how terms can be used in \textsc{setlX} to implement ordered binary trees.
+and executing 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{args(Node(3,Nil(),Nil()))} 
+\\
+yields a result of 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{[3, Nil(), Nil()]},
+\\
+while executing 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{makeTerm(\symbol{34}Node\symbol{34},[ makeTerm(\symbol{34}Nil\symbol{34},[]), makeTerm(\symbol{34}Nil\symbol{34},[]) ])} 
+\\
+constructs the term 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{Node(3, Nil(), Nil())}.
+\\[0.4cm]
+Figure \ref{fig:binary-tree-no-matching.stlx} shows how terms can be used in \textsc{setlX} to implement ordered binary trees.
 \pagebreak
 \begin{figure}[!ht]
 \centering
@@ -448,7 +472,7 @@ Figure \ref{fig:binary-tree-no-matching.stlx} actually shows how terms can be us
 \label{fig:binary-tree-no-matching.stlx}
 \end{figure}
 
-In an ordered binary tree any node will have nodes with lower values inserted on left of it and any nodes with higher values inserted on right of it, and in case the inserted node has the same value of an existing node then it won't be inserted into the tree. This is exactly what happens in the example shown in Figure \ref{fig:binary-tree-no-matching.stlx} where $m$ represents the tree and $k1$ represents the value of the node to be inserted. The tree's parent node is first checked if it's empty by checking if the functor of this node is \texttt{Nil} which will match the first case of the switch statement. If that condition is true then the returned tree will just be the newly inserted node, otherwise if it's a non-empty \texttt{Node} it will then match the second statement, in this case at line '$6$' $k2$ will have the value of this node while $l$ and $r$ will hold the left and right sub-trees of this node respectively. After that three nested \textsl{if-conditions} are executed. If the inserted node's value has the same value of the current node being checked then it just returns the original tree $m$, otherwise if it has a lower value then a recursion happens only this time checking the inserted node with the left sub-tree, the same goes for the case if the inserted node is higher only this time with the right sub-tree. 
+In an ordered binary tree any node will have nodes with smaller values inserted on left of it and any nodes with bigger values inserted on right of it, and in case the inserted node has the same value as an existing node then it won't be inserted into the tree. This is exactly what happens in the example shown in Figure \ref{fig:binary-tree-no-matching.stlx} where $m$ represents the tree and $k1$ represents the value of the node to be inserted. The tree's parent node is first checked if it's empty by checking if the functor of this node is \texttt{Nil} which will match the first case of the switch statement. If that condition is true then the returned tree will just be the newly inserted node, otherwise if it's a non-empty \texttt{Node} it will then match the second statement, in this case at line '$6$' $k2$ will have the value of this node while $l$ and $r$ will hold the left and right sub-trees of this node respectively. After that three nested \textsl{if-conditions} are executed. If the inserted node's value has the same value of the current node being checked then it just returns the original tree $m$, otherwise if it has a smaller value then a recursion happens only this time checking the inserted node with the left sub-tree, the same goes for the case if the inserted node is bigger only this time with the right sub-tree. 
 
 \section{Statements in \textsc{setlX}}
 In this section we are going to talk about different kinds of statements in \textsc{setlX}. The most basic statements are the assignment statements. In \textsc{setlX}, you can have a single assignment like
@@ -456,34 +480,34 @@ In this section we are going to talk about different kinds of statements in \tex
 \hspace*{1.3cm}
 \texttt{x := 2;}
 \\[0.2cm]
-which assigns the variable $x$ to the value of $2$. Chained assignments can also be used as
+which assigns the value of $2$ to the variable $x$. Chained assignments can also be used as
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{a := b := 2;}
 \\[0.2cm]
-which assigns both variables $a$ and $b$ to the value of 2, you can also have simultaneous assignments at the same time like
+which assigns the value of 2 to both variables $a$ and $b$, you can also have simultaneous assignments like
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{[x, y, z] := [1, 2, 3];}
 \\[0.2cm]
-which assigns variable $x$ to a value of 1, variable $y$ to a value of 2 and variable $z$ to a value of 3. Simultaneous assignment can also be useful when swapping values is needed. For example, the statement
+which assigns variable $x$ to a value of 1, variable $y$ to a value of 2 and variable $z$ to a value of 3. Simultaneous assignment can also be useful when swapping values. For example, the statement
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{[x, y] := [y, x];}
 \\[0.2cm]
-actually swaps the values between $x$ and $y$.
+actually swaps the values of $x$ and $y$.
 \\
 
-Functions and their structure have been discussed before but lets see some more examples about them. Looking at Figure \ref{fig:primes-slim.stlx}, the first function 'factors' is a function that computes the factors of a given number while the second one 'primes' make use of the function 'factors' to compute all prime numbers upto a given number $p$. We can give a grammar rule for defining a function as
+Functions and their structure have been discussed before but lets see some more examples. Looking at Figure \ref{fig:primes-slim.stlx}, the first function '\texttt{factors}' is a function that computes the factors of a given number while the second one '\texttt{primes}' make use of the function '\texttt{factors}' to compute all prime numbers upto a given number $p$. We can give a grammar rule for defining a function as
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{fctDef -> VAR ":=" "procedure" "(" paramList ")" "{" block "}" ";"}
+\texttt{fctDef -> \textsl{VAR} ":=" "procedure" "(" \textsl{paramList} ")" "\{" \textsl{block} "\}" ";"}
 \\[0.2cm]
 where the symbols in this grammar means the following
 \begin{enumerate}
-\item \texttt{VAR} is a variable which will be used as the name of the function further on.
-\item \texttt{paramList} is the list of parameters used in the function separated by commas. Parameters can just be a variable name or a variable name preceded by "rw" which means that this variable is a "read-write" variable and after the procedure is executed, that variable's value might actually be changed.
-\item \texttt{block} is the code holding the logic of the function itself.
+\item \texttt{\textsl{VAR}} is a variable which will be used as the name of the function further on.
+\item \texttt{\textsl{paramList}} is the list of parameters used in the function separated by commas. Parameters can just be a variable name or a variable name preceded by "rw" which means that this variable is a "read-write" variable and after the procedure is executed, that variable's value might actually be changed.
+\item \texttt{\textsl{block}} is the code holding the logic of the function itself.
 \end{enumerate}
 
 \begin{figure}[!ht]
@@ -513,16 +537,16 @@ where the symbols in this grammar means the following
 There is actually a simpler way to define a procedure in \textsc{setlX} if the procedure's logic is a single expression, which is called the lambda definition and has the grammar rule
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{fctDef -> ID ":=" "lambdaParams" "|->" exp ";"}
+\texttt{fctDef -> \textsl{ID} ":=" "\textsl{lambdaParams}" "|->" \textsl{exp} ";"}
 \\[0.2cm]
-where \texttt{lambdaParams} is either a single parameter or a set of parameters enclosed by square brackets. An example of using the lambda definition is
+where \texttt{\textsl{lambdaParams}} is either a single parameter or a set of parameters enclosed by square brackets. An example of using the lambda definition is
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{double := x |-> x*2;}
 \\[0.2cm]
 \\
 
-\textsc{setlX} supports \textsl{if-then-else statements}, \textsl{switch statements} and \textsl{match statements}. An example of the use of the \textsl{if-then-else statements} is shown in Figure \ref{fig:toBin.stlx} while an example for the use of the \textsl{switch statements} is shown in Figure \ref{fig:sort3.stlx}.
+\textsc{setlX} supports \textsl{if-then-else statements}, \textsl{switch statements} and \textsl{match statements}. An example of the use of the \textsl{if-then-else statements} is shown in Figure \ref{fig:toBin.stlx} while an example for the use of the \textsl{switch statements} is shown in Figure \ref{fig:sort3switch.stlx}.
 
 \begin{figure}[!ht]
 \centering
@@ -563,29 +587,23 @@ where \texttt{lambdaParams} is either a single parameter or a set of parameters 
                 ]
     sort3 := procedure(l) {
         [ x, y, z ] := l;
-        if (x <= y) {
-            if (y <= z) {
-                return [ x, y, z ];
-            } else if (x <= z) { 
-                return [ x, z, y ];
-            } else {
-                return [ z, x, y ];
-            }
-        } else if (z <= y) { 
-            return [z, y, x];
-        } else if (x <= z) { 
-            return [ y, x, z ];
-        } else {
-            return [ y, z, x ];
+        switch {
+            case x <= y && y <= z: return [ x, y, z ];
+            case x <= z && z <= y: return [ x, z, y ];
+            case y <= x && x <= z: return [ y, x, z ];
+            case y <= z && z <= x: return [ y, z, x ];
+            case z <= x && x <= y: return [ z, x, y ];
+            case z <= y && y <= x: return [ z, y, x ];
+            default: print("Impossible error occurred!");
         }
     };
 \end{Verbatim}
 \vspace*{-0.3cm}
-\caption{A function to sort a list of three elements.}
-\label{fig:sort3.stlx}
+\caption{Sorting a list of 3 elements using a \texttt{switch} statement.}
+\label{fig:sort3switch.stlx}
 \end{figure}
 
-As for match statements, there are different types of matching statements. One kind is called \textsl{string-matching}. One example for it is shown in Figure \ref{fig:reverse.stlx}
+As for match statements, there are different types of matching statements. One kind is called \textsl{string-matching}. One example for it is shown in Figure \ref{fig:reverse.stlx}. Calling \texttt{reverse("abc");} will yield an output of "cba". There are other kinds of matching like \textsl{list-matching}, \textsl{set-matching} and \textsl{term-matching}. Term-Matching is the most elaborate form of matching, it's similar to the matching provided in programming languages \textsl{Prolog} \cite{bratko:90} and \textsc{Ml} \cite{milner:90}. An example for \textsl{term-matching} is shown in Figure \ref{fig:binary-tree.stlx} which does the same work as the code shown in Figure \ref{fig:binary-tree-no-matching.stlx} discussed previously.
 
 \begin{figure}[!ht]
 \centering
@@ -610,8 +628,6 @@ As for match statements, there are different types of matching statements. One k
 \caption{A function that reverses a string.}
 \label{fig:reverse.stlx}
 \end{figure}
-Calling \texttt{reverse("abc");} will yield an output of "cba". There are other kinds of matching like \textsl{list-matching}, \textsl{set-matching} and \textsl{term-matching}. Term-Matching is the most elaborate form of matching, it's similar to the matching provided in programming languages \href{http://en.wikipedia.org/wiki/Prolog}{\textsl{Prolog}} and 
-\href{http://en.wikipedia.org/wiki/ML_(programming_language)}{\textsc{Ml}}. An example for \textsl{term-matching} is shown in Figure \ref{fig:binary-tree.stlx} which does the same work as the code shown in Figure \ref{fig:binary-tree-no-matching.stlx} discussed previously.
 
 \begin{figure}[!ht]
 \centering
@@ -645,7 +661,7 @@ Calling \texttt{reverse("abc");} will yield an output of "cba". There are other 
 \label{fig:binary-tree.stlx}
 \end{figure}
 
-A more complex example is shown in Figure \ref{fig:diff.stlx} which computes the derivative of $t$ relative to $x$. In order to understand this example better, we have to discuss some predefined functions which convert strings to terms which are the \textsl{canonical} and the \textsl{parse} functions. These functions are going to be discussed in the last section entitled \textsl{predefined functions}.
+A more complex example is shown in Figure \ref{fig:diff.stlx} which computes the derivative of $t$ relative to $x$. In order to understand this example better, we have to discuss some predefined functions which convert strings to terms which are the \texttt{canonical} and the \texttt{parse} functions. These functions are going to be discussed in the last section entitled \textsl{predefined functions}.
 
 \begin{figure}[!ht]
 \centering
@@ -688,12 +704,12 @@ A more complex example is shown in Figure \ref{fig:diff.stlx} which computes the
 \label{fig:diff.stlx}
 \end{figure}
 
-\textsc{setlX} offers two kinds of loops which are the \textsl{while loops} and the \textsl{for loops}. The while loops follows the grammar rule
+\textsc{setlX} offers two kinds of loops which are the \texttt{while loops} and the \texttt{for loops}. The while loops follows the grammar rule
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{statement -> "while" "(" boolExpr ")" "{" block "}" }.
+\texttt{statement -> "while" "(" \textsl{boolExpr} ")" "\{" \textsl{block} "\}" }.
 \\[0.2cm]
-Figure \ref{fig:ulam.stlx} is an example for implementing \href{http://en.wikipedia.org/wiki/Collatz_conjecture}{\emph{Collatz conjecture}}: which is represented as the recursive function $f$ with definition
+Figure \ref{fig:ulam.stlx} is an example for testing \emph{Collatz conjecture}\cite{CollatzConjecture:Online} which is represented as the recursive function $f$ with definition
 \begin{enumerate}
 \item $f(n) := 1$ \hspace*{2.13cm} if $n \leq 1$,
 \item $f(n) := \left\{
@@ -704,7 +720,7 @@ Figure \ref{fig:ulam.stlx} is an example for implementing \href{http://en.wikipe
        \right.
       $ 
 \end{enumerate}
-using the while loop.
+using the \texttt{while} loop.
 \begin{figure}[!ht]
 \centering
 \begin{Verbatim}[ frame         = lines, 
@@ -735,10 +751,10 @@ using the while loop.
 \label{fig:ulam.stlx}
 \end{figure}
 
-On the other hand \textsl{for-loops} follow the grammar rule
+On the other hand \texttt{for-loops} follow the grammar rule
 \\[0.2cm]
 \hspace*{1.3cm}
-\texttt{statement -> "for" "(" iterator("," iterator)* ")" "{" block "}" }.
+\texttt{statement -> "for" "(" \textsl{iterator}("," \textsl{iterator})* ")" "\{" \textsl{block} "\}" }.
 \\[0.2cm]
 A simple iterator would be $x$ in $s$ where $s$ is a set or a list or a string. An example for the usage of \textsl{for-loops} is represented in Figure \ref{fig:multiplication-table.stlx} and has an output represented in Figure \ref{fig:multiplication-table}.
 \begin{figure}[!ht]
@@ -800,7 +816,7 @@ A simple iterator would be $x$ in $s$ where $s$ is a set or a list or a string. 
 \pagebreak
 
 \section{Regular Expressions}
-\textsc{setlX} like most modern programming languages supports \href{http://en.wikipedia.org/wiki/Regular_expression}{\emph{Regular expressions}} which is a very powerful tool to process strings. Regular Expressions can be used in match statements. One example for that is shown in Figure \ref{fig:regexp.stlx} which is a procedure that takes a string and recognizes if it's a word, integer or just a white space.
+\textsc{setlX} like most modern programming languages supports \emph{regular expressions}\cite{RegularExpressions} which is a very powerful tool to process strings. Regular Expressions can be used in match statements. One example for that is shown in Figure \ref{fig:regexp.stlx} which is a procedure that takes a string and recognizes if it's a word, integer or just a white space.
 
 \begin{figure}[!ht]
 \centering
@@ -882,13 +898,12 @@ Regular expressions can also be used with \textsl{scan-statements} as shown in F
     };
 \end{Verbatim}
 \vspace*{-0.3cm}
-\caption{Extracting comments using the match statement.}
+\caption{Extracting comments using the scan statement.}
 \label{fig:find-comments-scan.stlx}
 \end{figure}
 
 Given bellow are some examples for predefined functions for regular expressions.
 \begin{enumerate}
-\item \texttt{testRegexp('(a*)(a+)b',"aaab");} yields a result \texttt{["aaab", "aa", "a"]} where every item of the list is defined by the order of the opening parenthesis.
 \item \texttt{matches('(a*)(a+)b',"aaab", true);} with three arguments with the last one defined as a boolean \textsl{true} has the exact same effect as the \texttt{testRegexp} and has the same return value of \texttt{["aaab", "aa", "a"]}.
 \item \texttt{matches('(a*)(a+)b',"aaab");} with two arguments returns true if the string given matches the regular expression or false otherwise. In this case given in the example the result would be true.
 \item \texttt{replace(s, r, t)} replaces every substring of $s$ that matches the regular expression $r$ by the string $t$.
@@ -896,9 +911,9 @@ Given bellow are some examples for predefined functions for regular expressions.
 
 
 \section{Functional Programming}
-It has been stated previously that \textsc{setlX} is a full-fledged functional language. Functions can be used as arguments to other functions and as return values. There is no big difference between the type of a function and any other type that can be assigned to a variable.
+It has been stated previously that \textsc{setlX} is a full-fledged functional language. Functions can be used as arguments to other functions and as return values. There is no difference between the type of a function and any other type that can be assigned to a variable.
 
-Using functions as arguments to other functions is not that commonly seen in conventional programming languages. Figure \ref{fig:reduce.stlx} shows an example for that. In this example the function \textsl{reduce} takes two arguments which are $l$ as a list and $f$ as a function. What this function do is that it reduces the list to one single value at the end by combining all its elements by the function $f$, so if we could say that $f$ was an add function then the function \textsl{reduce} computes the sum of all its elements. In case the list was empty then the function returns the value om($\Omega$).
+Using functions as arguments to other functions is not that commonly seen in conventional programming languages. Figure \ref{fig:reduce.stlx} shows an example for that. In this example the function \textsl{reduce} takes two arguments which are $l$ as a list and $f$ as a function. What this function does is that it reduces the list to one single value at the end by combining all its elements by the function $f$, so if we could say that $f$ was an add function then the function \textsl{reduce} computes the sum of all its elements. In case the list was empty then the function returns the value \texttt{om}($\Omega$).
 
 \begin{figure}[!ht]
 \centering
@@ -929,8 +944,6 @@ Using functions as arguments to other functions is not that commonly seen in con
 \caption{Implementing a second order function.}
 \label{fig:reduce.stlx}
 \end{figure}
-
-Another example for second order functions is shown in Figure \ref{fig:merge-sort.stlx}.
 
 \begin{figure}[!ht]
 \centering
@@ -973,7 +986,7 @@ Another example for second order functions is shown in Figure \ref{fig:merge-sor
 \label{fig:merge-sort.stlx}
 \end{figure}
 
-In this example the function \textsl{sort} takes two arguments. The first argument $l$ is a list and the second argument $cmp$ is a function that compares two list elements and returns either true or false. What this function does is that it orders the list according to the second order function given as an argument. If for example the function \texttt{less} defined in line 20 was given as an argument, then the resulting list would be ordered ascendingly. If instead the function \texttt{greater} was the argument given, then the resulting list would be ordered descendingly.
+An example for second order functions is shown in Figure \ref{fig:merge-sort.stlx}. In this example the function \textsl{sort} takes two arguments. The first argument $l$ is a list and the second argument $cmp$ is a function that compares two list elements and returns either \texttt{true} or \texttt{false}. What this function does is that it orders the list according to the function '\texttt{f}' given as the last argument. If for example the function \texttt{less} defined in line 20 was given as an argument, then the resulting list would be ordered ascendingly. If instead the function \texttt{greater} was the argument given, then the resulting list would be ordered descendingly.
 \\
 
 The previous two examples showed how functions can be used as arguments to other functions. As mentioned before functions can also be used as return values from other functions. Shown in Figure \ref{fig:finite-difference.stlx} is an example that computes the \textsl{discrete-derivative} of a certain function $f$. This example shows how functions can actually be used as a return value from other functions.
@@ -1068,7 +1081,7 @@ then if we would print the object itself by writing
 \hspace*{1.3cm}
 \texttt{print(origin);}
 \\[0.2cm]
-that would yield the output shown in Figure \ref{fig:print_origin}. This output has been formatted this way to make it readable. Note that the constructor of the class \texttt{point} is part of the object origin.
+that would yield the output shown in Figure \ref{fig:print_origin}. This output has been formatted this way to make it readable. Note that the constructor of the class \texttt{point} is part of the object \texttt{origin}.
 
 \begin{figure}[!ht]
 \centering
@@ -1112,7 +1125,7 @@ that would yield the output shown in Figure \ref{fig:print_origin}. This output 
 \label{fig:print_origin}
 \end{figure}
 
-The fact that all methods are stored as part of the object may seem redundant but in fact it's useful in case we needed to disable a method of the class from being used for a certain object. For example to disable the setter methods for the object \textsl{origin} by simply writing
+The fact that all methods are stored as part of the object may seem redundant but in fact it's useful in case we needed to disable a method of the class from being used for a certain object. For example to disable the setter methods for the object \texttt{origin} we simply write: 
 \\[0.2cm]
 \hspace*{1.3cm}
 \texttt{origin.setX := om;}
@@ -1203,12 +1216,12 @@ will yield the output shown in Figure \ref{fig:point-static.stlx-origin}.
 
 \textsc{setlX} provides a lot of predefined functions for
 \begin{enumerate}
-\item dealing with sets and strings.
-\item dealing with strings.
-\item working with terms.
-\item working with mathematical functions.
-\item dealing with objects.
-\item supporting interactive debugging.
+\item dealing with sets and lists,
+\item dealing with strings,
+\item working with terms,
+\item working with mathematical functions,
+\item dealing with objects,
+\item supporting interactive debugging,
 \item dealing with I/O.
 \end{enumerate}
 
@@ -1327,8 +1340,7 @@ Some of the predefined functions have been mentioned earlier. Since there are to
       $\mathtt{parseStatements}(s)$ 
       \\[0.2cm]
       tries to parse the string $s$ as a sequence of \textsc{setlX} statements.   In order to visualize the structure of
-      this term,  the function \texttt{canonical} disussed above can be used.  For
-      example, the expression
+      this term,  the function \texttt{canonical} disussed above can be used.  For example, the expression
       \\[0.2cm]
       \hspace*{1.3cm}
       \texttt{canonical(parseStatements("x := 1; y := 2; z := x + y;"));}
@@ -1375,18 +1387,25 @@ In the upcoming sections we will discuss each part of the code separately. Each 
     main := procedure(params){
     for(file in params){
 	print("NOW CHECKING $file$");
-	file := str(file);
 	listOfLines := readFile(file); 
-	listOfLinesSeparated := +/ [ g + "\n" : g in listOfLines ];
-	statements := parseStatements(listOfLinesSeparated);
+	codeSeparated := +/ [ g + "\n" : g in listOfLines ];
+	statements := parseStatements(codeSeparated);
 
 	definedVars := {};
 	allUsedVars := {};
-	allProceduresidentities := {};
-	allClassesidentities := {};
+	allProceduresIdentities := {};
+	allClassesIdentities := {};
 	
-	identifyAllProcedures(statements, allProceduresidentities);
-	identifyAllClasses(statements, allClassesidentities);
+	identifyAllProcedures(statements, allProceduresIdentities);
+	identifyAllClasses(statements, allClassesIdentities);
+        prefix := "";
+        if("/" in str(file)){
+            splitting := split(str(file),"/");
+            fromE(splitting);
+            for(x in splitting){
+                prefix := prefix + "$x$/";
+            }
+        }	
 	analyzeAllLoadedFiles(statements, definedVars, allUsedVars,
 	   allProceduresidentities, allClassesidentities);
 	checkCode(statements, definedVars, allUsedVars, false, "", {},
@@ -1395,17 +1414,7 @@ In the upcoming sections we will discuss each part of the code separately. Each 
 	unUsedVars := definedVars-allUsedVars;
 	if(#unUsedVars != 0)
 	{
-		if(#unUsedVars == 1){
-		   print("Variable " + unUsedVars + " is defined but 
-		   never used in the whole code! unless it was assigned 
-		   to a returned  procedure");
-		}
-		else{
-		   print("Variables " + unUsedVars + " are defined but
-		    never used in the whole code! unless they were 
-		    assigned to a returned procedure");
-		
-		}
+            ...
 	}
 	print("DONE CHECKING $file$");
     }
@@ -1418,21 +1427,22 @@ In the upcoming sections we will discuss each part of the code separately. Each 
 
 The main function of the code is shown in Figure \ref{fig:startAnalyzing}.
 \begin{enumerate}
-\item The main function takes one argument '\texttt{params}' which is the file or the list of files to be checked.
-\item The main function consists of a \textsl{for-loop} that loops through the files to be checked printing the beginning and the end of it to notify the user which file is being checked at the moment. 
-\item After reading the file into the variable \texttt{listOfLines}, in \textsl{line 6} a new line "$\setminus$n" is then added to the end of each line in the code in order to separate them. The reason for that is to avoid the commenting sign "//" at any line from commenting all code lines followed by it. That is saved into the variable \texttt{listOfLinesSeparated}.
-\item After that in \textsl{line 7} the code is then parsed and saved in the variable \texttt{statements}.
-\item In lines $9$ to $12$, four empty sets are created to be used later for checking the code. Sets \texttt{definedVars} and \texttt{allUsedVars} are used to save the defined and used variables in the code, while \texttt{allProceduresIdentities} and \texttt{allClassesIdentities} are used to save all existing procedures and classes in the code in a certain format that is going to be discussed later.
-\item In \textsl{line 14} and \textsl{line 15} all existing procedures and classes in the code being checked are saved by a certain format in the variables called \textsl{allProceduresIdentities} and \textsl{allClassesIdentities}.
-\item After that in \textsl{line 16} the analyzer checks all files being loaded by the analyzed file using the \textsl{analyzeAllLoadedFiles} function so that any important information in them would be available further on when checking the file being analyzed.
-\item The most important part then comes at \textsl{line 18} where the function \textsl{checkCode} tries to find all problem in the code that should be reported to the user.
-\item Then starting \textsl{line 21} upto \textsl{line 35} the analyzer checks if there were any variables defined throughout the whole code that were never used and in such case it prints to the user a notification concerning these variables.
+\item The main function takes one argument '\texttt{params}' which is the list of files to be checked.
+\item The main function consists of a \textsl{for-loop} that loops through the files to be checked printing the start and the end of the checking of each file in the list.
+\item After reading the file into the variable \texttt{listOfLines}, in \textsl{line 4} a new line "$\setminus$n" is then added to the end of each line in the code in order to separate them. The reason for that is to avoid the commenting sign "//" at any line from commenting all code lines followed by it when merging all code lines into the string \texttt{codeSeparated}.
+\item After that in \textsl{line 6} the code is then parsed and saved in the variable \texttt{statements}.
+\item In lines $8$ to $11$, four empty sets are created to be used later for checking the code. Sets \texttt{definedVars} and \texttt{allUsedVars} are used to save the defined and used variables in the code, while \texttt{allProceduresIdentities} and \texttt{allClassesIdentities} are used to save all existing procedures and classes in the code in a certain format that is going to be discussed later.
+\item In \textsl{line 13} and \textsl{line 14} all existing procedures and classes in the code being checked are saved by a certain format in the variables called \textsl{allProceduresIdentities} and \textsl{allClassesIdentities}.
+\item From \textsl{line 15} upto \textsl{line 22} any prefix in the name of the file being checked is extracted into the variable \texttt{prefix}. For example the prefix in the file name \texttt{/User/example.stlx} is \texttt{/User/}. The prefix of a file name is actually the directory of its location which is very important when checking the loaded files in it.
+\item After that in \textsl{line 23} the analyzer checks all files being loaded by the analyzed file using the \textsl{analyzeAllLoadedFiles} function so that any important information in them would be available further on when checking the file being analyzed.
+\item The most important part then comes at \textsl{line 25} where the function \textsl{checkCode} tries to find all problem in the code that should be reported to the user.
+\item Then starting \textsl{line 28} upto \textsl{line 32} the analyzer checks if there were any variables defined throughout the whole code that were never used and in such case it prints to the user a notification concerning these variables.
 \item This process is then repeated in case there were more files to be checked.
 \end{enumerate}
 
 \section{checkCode Function}
-
-The \textsl{checkcode} function takes 15 arguments which are :
+The main job of the \texttt{checkCode} function is to decompose the code into simple statements to extract the used variables and defined variables in each of them in order.
+The \textsl{checkcode} function takes 15 arguments which are:
 \begin{enumerate}
 \item \texttt{l} : which holds the code to be analyzed after being parsed in the main part.
 \item \texttt{rw definedVars} : which is a set containing all defined variables at the point.
@@ -1499,10 +1509,10 @@ where $x$ is the variable being scanned, $y$ is the optional variable being used
 	       	   checkCode(z, ...);
 	    	} 
 \end{Verbatim}
-where $x$ is the variable being matched and $y$ is the list of cases.
+In the previous case $x$ is the variable being matched and $y$ is the list of cases.
 \\
 
-Then checking their cases' first part is shown in Figure \ref{fig:matchCaseBranch-part1}.
+Then checking each case is shown in Figure \ref{fig:matchCaseBranch}
 \begin{figure}[!htb]
 \centering
 \begin{Verbatim}[ frame         = lines, 
@@ -1523,25 +1533,34 @@ Then checking their cases' first part is shown in Figure \ref{fig:matchCaseBranc
 		undefinedVariables := {};
 		for(v in usedVarsInMatch){
    		  v := str(v);
-   		  if((v in definedVars) && (!((v in 
-   		     forLoopTmpDefVars)|| (v in exceptionTmp) 
-   		     || (v in matchTmp)))){
+   		  if((v in definedVars) && 
+   		    (!((v in forLoopTmpDefVars)|| (v in exceptionTmp) 
+   		       || (v in matchTmp)))){
       	     	allUsedVars := allUsedVars + {v};
 		     }
    		  if(!(v in definedVars || v in forLoopTmpDefVars 
-   		  || v in exceptionTmp || v in matchTmp)){
-      		 allVariablesAreDefined := false;
-      		 undefinedVariables := undefinedVariables + {v};
+   		      || v in exceptionTmp || v in matchTmp)){
+      		      allVariablesAreDefined := false;
+      		      undefinedVariables := undefinedVariables + {v};
   		   }
+		}
+		if(allVariablesAreDefined == false){
+		    ...
 		}
 \end{Verbatim}
 \vspace*{-0.3cm}
-\caption{Match case branch-Part 1}
-\label{fig:matchCaseBranch-part1}
+\caption{Match case branch}
+\label{fig:matchCaseBranch}
 \end{figure}
-
+where "\texttt{v}" is the case itself, "\texttt{cond}" is the case condition and "\texttt{do}" is what happens when this case is true. For example in the case: 
+\\[0.2cm]
+\hspace*{0.6cm}
+\texttt{case sum(x, y) | x != y : z := x + y;}
+\\[0.2cm]
+"\texttt{v}" is \texttt{sum(variable(x),variable(y))},\\ "\texttt{cond}" is \texttt{notEqual(variable(x), variable(y))} and\\
+"\texttt{do}" is \texttt{assignment(variable(z), sum(variable(x), variable(y)))}.
 \begin{enumerate}
-\item In \textsl{line 2} of figure \ref{fig:matchCaseBranch-part1}, all defined variables for a certain case are saved in the set \texttt{matchTmp} using the function \texttt{getMatchedVariables}. The defined variables for the case
+\item In \textsl{line 2} of figure \ref{fig:matchCaseBranch}, all defined variables for a certain case are saved in the set \texttt{matchTmp} using the function \texttt{getMatchedVariables}. The defined variables for the case
 \\[0.2cm]
 \hspace*{0.6cm} 
 \texttt{case sum(variable(x), variable(y)) : $\cdots$}
@@ -1550,15 +1569,15 @@ are the variables $x$ and $y$.
 
 \item In \textsl{line 3}, variable \textsl{usedVarsInMatch} is assigned to an empty set and then all used variables in the condition '\texttt{cond}' and in the do part '\texttt{do}' are added to this set in \textsl{lines 4 and 5}.
 
-\item After that in \textsl{line 6 and 7} the boolean variable \texttt{allVariablesAreDefined} and the set \texttt{undefinedVariables} are declared.
+\item After that in \textsl{line 6 and 7} the boolean variable \texttt{allVariablesAreDefined} and the set \texttt{undefinedVariables} are defined.
 
 \item Then starting \textsl{line 8} upto \textsl{line 19} all the used variables are checked if they were defined before or not, if they were not defined before, the boolean variable \texttt{allVariablesAreDefined} is set to false and the undefined variable is added to the set \texttt{undefinedVariables}.
 
-\item In the rest of the match case branch that doesn't appear in the figure, the undefined variables are then printed to the user indicating their location.
+\item From \textsl{line 21} to \textsl{line 23} the undefined variables are then printed to the user indicating their location.
 
 \end{enumerate}
 
-The case of procedure assignment is not decomposed as the other cases but is held in a different way as shown in figure \ref{fig:procedure assignment case}.
+The case of procedure assignment is not decomposed as the other cases but is held in a different way as shown in figure \ref{fig:procedure assignment case} where "\texttt{x}" is the name of the procedure, "\texttt{y}" is the list of parameters of this procedure and "\texttt{z}" is the code of the procedure itself.
 
 \begin{figure}[!htb]
 \centering
@@ -1656,14 +1675,12 @@ Now anything that reaches the default branch would actually be a single statemen
 		}
 		v := v[..(pos-1)];
 	   }
-	   if((v in definedVars) && (!((v in tempDefinedVars) || 
-	      (v in forLoopTmpDefVars) || (v in exceptionTmp) || 
-	      (v in matchTmp)))){
+	   if(v in definedVars){
 		  allUsedVars := allUsedVars + {v};
 	   }
 	   if(!(v in definedVars || v in tempDefinedVars || 
-	      v in forLoopTmpDefVars || v in exceptionTmp ||
-	      v in matchTmp)){
+	        v in forLoopTmpDefVars || v in exceptionTmp ||
+	        v in matchTmp)){
 		   allPredefinedProcedures := { ... };
 		   if(!((v in domain(allProceduresidentities)) ||
 		       (v in allPredefinedProcedures))){
@@ -1684,21 +1701,21 @@ Now anything that reaches the default branch would actually be a single statemen
 
 
 \begin{enumerate}
-\item In \textsl{lines 2 and 3} in figure \ref{fig:default case branch} the sets \texttt{usedVariables} and \texttt{tempDefinedVars} are defined and in \textsl{line 4} the boolean variable \texttt{iteratorCase} is declared.
+\item In \textsl{lines 2 and 3} in figure \ref{fig:default case branch} the sets \texttt{usedVariables} and \texttt{tempDefinedVars} are defined to be used to store the defined and used variables for the statement being checked.
 
 \item In \textsl{line 5} all used variables in the statement are stored in the set \texttt{usedVariables} using the function \texttt{getUsedVariables}.
 
-\item After that in \textsl{lines 10 and 11}, the variable \texttt{allVariablesAreDefined} is assigned to the boolean value of \textsl{true} initially and the variable \texttt{undefinedVariables} is assigned to the empty set.
+\item After that in \textsl{lines 10 and 11}, the variable \texttt{allVariablesAreDefined} is assigned to the boolean value of \textsl{true} initially and the variable \texttt{undefinedVariables} is assigned to the empty set. The set and the boolean variable are to be used further on detecting and printing the unused variables for the user.
 
-\item Then starting \textsl{line 12} upto \textsl{line 41} a \textsl{for-loop} loops over the used variables to check if they were defined previously or not.
+\item Then starting \textsl{line 12} upto \textsl{line 39} a \textsl{for-loop} loops over the used variables to check if they were defined previously or not.
 
 \item What happens in short from \textsl{line 14} till \textsl{line 21} that if one of the used variables was in the form of a collection access "a[n]" where n is a natural number, the part of the access "[n]" is removed to check if the variable '$a$' was defined previously or not.
 
-\item From \textsl{line 22} till \textsl{line 40}, the definedness of the used variable '$v$' is checked, if it was defined in the set \texttt{definedVariables} only then it will be added to the set \texttt{allUsedVars}. If it wasn't defined at all, we check if it is defined as a procedure, if it wasn't defined as a procedure then the variable \texttt{allVariablesAreDefined} is set to \texttt{false} and the variable '$v$' is added to the set \texttt{undefinedVariables}.
+\item From \textsl{line 22} till \textsl{line 38}, the definedness of the used variable '$v$' is checked, if it was defined in the set \texttt{definedVariables} only then it will be added to the set \texttt{allUsedVars}. If it wasn't defined at all, we check if it is defined as a procedure, if it wasn't defined as a procedure then the variable \texttt{allVariablesAreDefined} is set to \texttt{false} and the variable '$v$' is added to the set \texttt{undefinedVariables}.
 
 \item In the rest of the default branch that isn't shown in the figure all the undefined variables are printed out to the user with their location.
 
-\item The last part is of the default branch is getting the defined variables of the statement using the \texttt{addDefinedVariables} function as shown:
+\item Then the defined variables of the statement are extracted using the \texttt{addDefinedVariables} function as shown:
 \\[0.2cm]
 \hspace*{0.6cm}
 \texttt{addDefinedVariables(l, definedVars, isClass, className,}
@@ -1724,14 +1741,14 @@ The \texttt{addDefinedVariables} function takes seven arguments which are :
 
 \item \texttt{className} : which is the name of the class that the statement being analyzed belongs to. If the statement didn't belong to a class then this argument is just an empty string. 
 
-\item \texttt{rw allClassesidentities} : which is the list of all classes in the code along with their properties in a certain format.
+\item \texttt{rw allClassesIdentities} : which is the list of all classes in the code along with their properties in a certain format.
 
 \item \texttt{isProcedure} : which is a boolean value that indicates if the statement being analyzed belonged to a procedure or not.
 
 \item  \texttt{classCheck} : which is a boolean value that indicates if the analyzing was part of a class check or not.
 \end{enumerate}
 
-The \texttt{addDefinedVariables} function explores the statement given to it using a match statement until it reaches an assignment, at which then saves the defined variable in it in the \texttt{definedVars} set. The assignment case would be as follows: 
+The \texttt{addDefinedVariables} function explores the statement given to it using a match statement until it reaches an assignment, and when it finds one it saves the defined variable in it in the \texttt{definedVars} set. The assignment case would be as follows: 
 
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
@@ -1756,7 +1773,7 @@ The \texttt{addDefinedVariables} function explores the statement given to it usi
 		}
 		return;
 \end{Verbatim}
-where in \textsl{line 2} the defined variable '$x$' is added to the set \texttt{definedVars}, and in \textsl{line 3} the function \texttt{addDefinedVariables} is recursively called on whatever the variable $x$ was assigned to. After that starting \textsl{line 6} the function checks if the defined variable was inside a class and had the same name as a member variable of the class, in this case it prints out to the user a warning that a new variable is created instead of assigning a new value to the member variable, the same goes concerning this warning for sum, difference and quotient assignments.
+where in \textsl{line 2} the defined variable '$x$' is added to the set \texttt{definedVars}, and in \textsl{line 3} the function \texttt{addDefinedVariables} is recursively called on whatever the variable $x$ was assigned to. After that starting \textsl{line 6} the function checks if the defined variable was inside a class and had the same name as a member variable of the class, in this case it prints out to the user a warning that a new variable is created instead of assigning a new value to the member variable, the same goes concerning this warning for assignments in the form +=, -=, *= and /=.
 \\
 
 In case of mutual assignments, the function recursively calls each assignment by its own as shown below :
@@ -1800,11 +1817,11 @@ The function \texttt{getUsedVariables} takes 18 arguments which are :
 
 \item \texttt{isProcedure} : which is a boolean value indicating if the statement $l$ belonged to a procedure or not.
 
-\item \texttt{procName} : If the statement being checked '$l$' belonged to a procedure, then this argument is the name of that procedure.
+\item \texttt{procName} : If the statement being checked $l$ belonged to a procedure, then this argument is the name of that procedure.
 
-\item \texttt{procParameters} : If the statement being checked '$l$' belonged to a procedure, then this argument is a set containing the parameters of this procedure.
+\item \texttt{procParameters} : If the statement being checked $l$ belonged to a procedure, then this argument is a set containing the parameters of this procedure.
 
-\item \texttt{rw procEmbeddedProcedures} : If the statement being checked '$l$' belonged to a procedure, then this argument is a set containing any embedded procedure if existed.
+\item \texttt{rw procEmbeddedProcedures} : If the statement being checked $l$ belonged to a procedure, then this argument is a set containing any embedded procedure if existed.
 
 \item \texttt{iteratorCase} : which is a boolean value indicating if an iterator is being checked at the time.
 
@@ -1822,7 +1839,7 @@ The function \texttt{getUsedVariables} takes 18 arguments which are :
 
 \item \texttt{isClass} : which is a boolean value indicating if the statement being checked belonged to a class or not.
 
-\item \texttt{className} : If the statement being checked '$l$' belonged to a class, then this argument is the class name.
+\item \texttt{className} : If the statement being checked $l$ belonged to a class, then this argument is the class name.
 
 \end{enumerate}
 
@@ -1867,17 +1884,88 @@ The case of a call '\texttt{call(x, y)}' can happen under so many different circ
 
 \begin{enumerate}
 
-\item The case of calling the '\texttt{load}' function : This case should do nothing unless it was inside a procedure as the analyzer has already extracted all the needed information from all loaded files that are outside procedures in the main function before checking the code. If the \texttt{load} function was inside a procedure then the file being loaded is checked for any problems and all needed information for the analyzind is extracted from it.
+\item The case of calling the '\texttt{load}' function: This case should do nothing unless it was inside a procedure as the analyzer has already extracted all the needed information from all loaded files that are outside procedures in the main function before checking the code. If the \texttt{load} function was inside a procedure then the file being loaded is checked for any problems and all needed information for the analyzing is extracted from it. An example for that is shown below: 
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+   loadInformationFile := procedure(){
+      load(informationFile.stlx);
+   }
+\end{Verbatim}
+In this case the file \texttt{informationFile.stlx} is checked.
 
-\item In case the function called was a class procedure being called through an object of that class, the analyzer checks that this procedure already exists in the class, in case it didn't exist then a message is printed out to the user that the procedure doesn't exist. After that all variables given as parameters to that function are added to the set \texttt{usedVariables} and the case branch ends.
+\item In case the function called was a class procedure being called through an object of that class, the analyzer checks that this procedure already exists in the class, in case it didn't exist then a message is printed out to the user that the procedure doesn't exist. After that all variables given as parameters to that function are added to the set \texttt{usedVariables} and the case branch ends. For example given the code below:
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    class complex(real, imag) {
+        mReal := real;
+        mImag := imag;
+       static {    
+          sum := 
+            that |-> complex(mReal + that.mReal, mImag + that.mImag);
+       }
+    }
+    p1 := complex(0,0);
+    p2 := complex(1,1);
+    p3 := p1.sum(p2);
+    p4 := p1.difference(p2);
+\end{Verbatim}
+The sum procedure called in \textsl{line 11} wouldn't be a problem while the difference called in \textsl{line 12} would actually be a problem as it doesn't exist in the class \texttt{complex} and a message concerning that will be printed to the user.
 
 \item If the call wasn't any of the previous two cases then the function checks if the function was a predefined \textsc{setlX} function. In case it was then all the variables used as parameters are added to the set \texttt{usedVariables} and the case branch ends.
 
-\item After that the the analyzer checks if the function was defined in the code or not by looking in the set \texttt{allProceduresIdentities}, if it was indeed defined in the code the analyzer checks that it is called by the correct number of parameters, if not a message is printed to the user to notify him/her that the function is called with the wrong number of parameters. Then all parameters used are added to the set \texttt{usedVariables} and to the set \texttt{definedVars} as well in case they were rw parameters and that could be known by looking into the set \texttt{allProceduresIdentities}.
+\item After that the the analyzer checks if the function was defined in the code or not by looking in the set \texttt{allProceduresIdentities}, if it was indeed defined in the code the analyzer checks that it is called by the correct number of parameters, if not a message is printed to the user to notify him/her that the function is called with the wrong number of parameters. Then all parameters used are added to the set \texttt{usedVariables} and to the set \texttt{definedVars} as well in case they were rw parameters and that could be known by looking into the set \texttt{allProceduresIdentities}. An example to demonstrate that is shown below:
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    sum := procedure(x, y){
+       return x+y;
+    };
+    x1 := 1;
+    x2 := 2;
+    a := sum(x1,x2);
+    b := sum(x1,x2,x1);
+    c := add(x1,x2);
+\end{Verbatim}
+In this piece of code the sum procedure called at \textsl{line 6} goes fine as the procedure is actually defined with the correct number of parameters $2$ while the procedure calling at \textsl{line 7} is reported to the user as it is given three parameters instead of two. Lastly, the procedure calling at \textsl{line 8} is reported as the procedure \texttt{add} is undefined at all.
 
 \item The analyzer after that checks if the call existed in a class and that the procedure was defined inside it, if that was true then all parameters used are added to the set \texttt{usedVariables} and the case branch ends.
 
-\item Next the analyzer checks if the call existed inside a procedure and if the function was one of the procedure's arguments or existed in the set \texttt{procEmbeddedProcedures} and if one of these cases was satisfied then all the parameters given are added to the set \texttt{usedVariables} and the case branch ends.
+\item Next the analyzer checks if the call existed inside a procedure and if the function was one of the procedure's arguments or existed in the set \texttt{procEmbeddedProcedures} and if one of these cases was satisfied then all the parameters given are added to the set \texttt{usedVariables} and the case branch ends. An example for that is shown below: 
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    dumbSum := procedure(x,y){
+       sum := [x,y] |-> x+y;
+       return sum(x,y);
+    };
+\end{Verbatim}
+Note that in this example the defined procedure \texttt{sum} is only defined inside the procedure \texttt{dumbSum}.
 
 \item The analyzer then checks if the call was actually for a class and if it actually was, then all parameters given to the class are added to the set \texttt{usedVariables} and the case branch ends.
 
@@ -1887,15 +1975,15 @@ The case of a call '\texttt{call(x, y)}' can happen under so many different circ
 
 \end{enumerate}
 
-When the analyzer is dealing with an iteration, it has to check it in a different way than other statements. Shown below in a simple way how it is treated :
+When the analyzer is dealing with an iteration, it has to check it in a different way than other statements. Shown below a simple demonstration about how iterators are treated:
 \\
 
 \texttt{getUsedVariables(\{$e$:$\;x_1$ in $s_1$, $\cdots$, $x_n$ in $t_n$ | $c$ \}) :=} \\[0.2cm]
       \hspace*{0.8cm} 
-      \texttt{getUsedVariables($e$)$\,\cup\,$getUsedVariables($s_1$)$\,\cup \,\cdots\, \cup\,
+      \texttt{getUsedVariables($e$)$\,\cup\, $getUsedVariables($s_1$)$\,\cup \,\cdots\, \cup\,
      \\ \hspace*{0.9cm} 
        $getUsedVariables($s_n$)$\,\cup\
-                  ,$getUsedVariables($c$) $\backslash$ $\{x_1, \cdots, x_n \}$}.
+                  $getUsedVariables($c$) $\backslash$ $\{x_1, \cdots, x_n \}$}.
 \\
 \\
       The previous equation needs some discussion.   To understand it, consider the following set definition:
@@ -2036,7 +2124,7 @@ The \texttt{regressionTests.sltx} file has one main function shown in Figure \re
 \end{figure}
 
 \begin{enumerate}
-\item The function '\texttt{text}' shown in Figure \ref{fig:regressionTests.stlx} takes three arguments which are 
+\item The function '\texttt{test}' shown in Figure \ref{fig:regressionTests.stlx} takes three arguments which are 
 	\begin{enumerate}
 	\item \texttt{fileName} : which is the name of the 			test file being checked.
 	\item \texttt{expectedOutput} : which is the expected 	output from running the the analyzer on the test 			file.
@@ -2077,10 +2165,10 @@ The rest of the \texttt{regressionTests.stlx} is composed of three parts which a
 \item At the end of the file the boolean variable '\texttt{allPassed}' is checked, and if its value was \texttt{true} then the file prints that all tests have passed successfully.
 \end{enumerate}
 
-Of course the \texttt{regressionTests.stlx} file might need to be modified in the future in case the analyzer's messages (prints) were modified or extra check messages were added.
 
 \chapter{Conclusion}
 
+\section{Samle Run}
 In short, \textsc{setlX} is an untyped language and type errors in it are only caught at run time. But after the implementation of this analyzer, errors can actually be caught before run time. To be specific the analyzer successfully covers the following checks :
 \begin{enumerate}
 \item Checking whether a variable is defined before it is used, so the code shown below :
@@ -2296,8 +2384,29 @@ would have the following output printed to the user :
 assuming that \texttt{new.stlx} is the name of the file being checked.
 \end{enumerate}
 
+\section{Future Work}
+For future work on this analyzer more checks can be implemented. An example for these checks is \textsl{Type checking}. \textsl{Type checking} is a program analysis that verifies something about the types that are used in the program.
+In the strictest sense, the sense found in programming language analysis conferences, the analysis verifies (when it is successful) that the analyzed program will not have type errors when it is executed. Given the following example: 
+\begin{Verbatim}[ frame         = lines, 
+                  framesep      = 0.3cm, 
+                  firstnumber   = 1,
+                  labelposition = bottomline,
+                  numbers       = left,
+                  numbersep     = -0.2cm,
+                  xleftmargin   = 0.8cm,
+                  xrightmargin  = 0.8cm,
+                ]
+    x := "string";
+    y := 2;
+    z := x/y;
+\end{Verbatim}
+After \textsl{Type checking} is implemented, the analyzer would report a message to the user that dividing the string \texttt{x} by 2 in \textsl{line 3} is actually wrong and will cause a type error so that the user could fix it before running the program.
 
 
 
+
+
+\bibliographystyle{plain}
+\bibliography{cs}
 
 \end{document}
