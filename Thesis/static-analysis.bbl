@@ -10,6 +10,16 @@ Ivan Bratko.
 \newblock {\em {PROLOG} Programming for Artificial Intelligence}.
 \newblock Addison-Wesley, 2nd edition, 1990.
 
+\bibitem{CollatzConjecture:Online}
+Richard~K. Guy.
+\newblock {\em Unsolved problems in number theory (3rd ed.)}.
+\newblock Springer-Verlag, 2004.
+
+\bibitem{definiteAssignmentAnalysis:Online}
+G.~Steele G.~Bracha J.~Gosling, B.~Joy.
+\newblock {\em The Java Language Specification, 3rd Edition}.
+\newblock 2008.
+
 \bibitem{milner:90}
 Robin Milner, Mads Tofte, and Robert Harper.
 \newblock {\em The Definition of Standard ML}.
@@ -20,16 +30,9 @@ Guido van Rossum.
 \newblock Python tutorial.
 \newblock Technical report, Centrum Wiskunde \& Informatica, Amsterdam, 1995.
 
-\bibitem{CollatzConjecture:Online}
-Wikipedia.
-\newblock Collatz conjecture.
-
-\bibitem{definiteAssignmentAnalysis:Online}
-Wikipedia.
-\newblock Definite assignment analysis.
-
 \bibitem{liveVariableAnalysis:Online}
-Wikipedia.
-\newblock Live variable analysis.
+Whaley.
+\newblock {\em Datalog with Binary Decision Diagrams for Program Analysis}.
+\newblock 2004.
 
 \end{thebibliography}

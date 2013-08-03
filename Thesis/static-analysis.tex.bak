@@ -2165,14 +2165,13 @@ The rest of the \texttt{regressionTests.stlx} is composed of three parts which a
 \item At the end of the file the boolean variable '\texttt{allPassed}' is checked, and if its value was \texttt{true} then the file prints that all tests have passed successfully.
 \end{enumerate}
 
-Of course the \texttt{regressionTests.stlx} file might need to be modified in the future in case the analyzer's messages (prints) were modified or extra check messages were added.
 
 \chapter{Conclusion}
 
-\section{Samle Run}
-In short, \textsc{setlX} is an untyped language and type errors in it are only caught at run time. But after the implementation of this analyzer, errors can actually be caught before run time. To be specific the analyzer successfully covers the following checks :
+\section{Sample Run}
+In short, \textsc{setlX} is an untyped language and type errors in it are only caught at run time. However, after the implementation of this analyzer, errors can actually be caught before run time. To be specific, the analyzer successfully covers the following checks:
 \begin{enumerate}
-\item Checking whether a variable is defined before it is used, so the code shown below :
+\item Checking whether a variable is defined before it is used, so the code shown below:
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
                   firstnumber   = 1,
@@ -2186,7 +2185,7 @@ In short, \textsc{setlX} is an untyped language and type errors in it are only c
     z := x + y;
     print("z = $z$");
 \end{Verbatim}
-would have the following output printed to the user :
+would have the following output printed to the user:
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
                   firstnumber   = 1,
@@ -2202,7 +2201,7 @@ would have the following output printed to the user :
 \end{Verbatim}
 assuming that \texttt{new.stlx} is the name of the file being checked.
 
-\item Checking whether a variable is ever used after being defined, so the code shown below :
+\item Checking whether a variable is ever used after being defined, so the code shown below:
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
                   firstnumber   = 1,
@@ -2218,7 +2217,7 @@ assuming that \texttt{new.stlx} is the name of the file being checked.
     z := x + y;
     print("z = $z$");
 \end{Verbatim}
-would have the following output printed to the user :
+would have the following output printed to the user:
 \pagebreak
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
@@ -2265,7 +2264,7 @@ would have the following output printed to the user :
 \end{Verbatim}
 assuming that \texttt{new.stlx} is the name of the file being checked.
 
-\item Checking whether any procedure or class are called with the correct number of parameters, so the code shown below : 
+\item Checking whether any procedure or class are called with the correct number of parameters, so the code shown below: 
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
                   firstnumber   = 1,
@@ -2288,7 +2287,7 @@ assuming that \texttt{new.stlx} is the name of the file being checked.
     y := complex(1, 2, 3);
     
 \end{Verbatim}
-would have the following output printed to the user :
+would have the following output printed to the user:
 \pagebreak
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
@@ -2310,7 +2309,7 @@ would have the following output printed to the user :
 \end{Verbatim}
 assuming that \texttt{new.stlx} is the name of the file being checked.
 
-\item Checking if all member variables and procedures called for objects actually do exist or not, so the code shown below : 
+\item Checking if all member variables and procedures called for objects actually do exist or not, so the code shown below: 
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
                   firstnumber   = 1,
@@ -2347,7 +2346,7 @@ would have the following output printed to the user :
 assuming that \texttt{new.stlx} is the name of the file being checked.
 
 
-\item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix \texttt{this.} before the variable's name. So the code shown below :
+\item Giving a warning in classes in case the user defined a new variable with the same name of a class variable due to not adding a prefix \texttt{this.} before the variable's name. So the code shown below:
 \pagebreak
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
@@ -2386,7 +2385,7 @@ assuming that \texttt{new.stlx} is the name of the file being checked.
 \end{enumerate}
 
 \section{Future Work}
-For future work on this analyzer more checks can be implemented. An example for these checks is \textsl{Type checking}. \textsl{Type checking} is a program analysis that verifies something about the types that are used in the program.
+For future work on this analyzer, more checks can be implemented. An example for these checks is \textsl{Type checking}. \textsl{Type checking} is a program analysis that verifies something about the types that are used in the program.
 In the strictest sense, the sense found in programming language analysis conferences, the analysis verifies (when it is successful) that the analyzed program will not have type errors when it is executed. Given the following example: 
 \begin{Verbatim}[ frame         = lines, 
                   framesep      = 0.3cm, 
